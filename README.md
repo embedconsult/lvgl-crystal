@@ -101,7 +101,7 @@ crystal tool format
 Generate API documentation locally:
 
 ```bash
-crystal docs -o docs
+crystal docs
 ```
 
 
