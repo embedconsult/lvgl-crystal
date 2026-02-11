@@ -1,6 +1,7 @@
-# TODO: Write documentation for `Lvgl::Crystal`
+require "./lvgl/raw"
+require "./lvgl/runtime"
+
+# Crystal bindings and runtime helpers for LVGL examples.
 module Lvgl::Crystal
   VERSION = "0.1.0"
-
-  # TODO: Put your code here
 end
