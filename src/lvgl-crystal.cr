@@ -1,5 +1,6 @@
 require "./lvgl/raw"
 require "./lvgl/runtime"
+require "./lvgl/backend"
 require "./lvgl/object"
 require "./lvgl/event"
 require "./lvgl/widgets/label"
