@@ -1,0 +1,14 @@
+name: lvgl-crystal
+version: 0.1.0
+
+authors:
+  - Codex <codex@openai.com>
+  - Jason Kridner <jkridner@beagleboard.org>
+
+targets:
+  lvgl-crystal:
+    main: src/lvgl-crystal.cr
+
+crystal: '>= 1.19.1'
+
+license: MIT
