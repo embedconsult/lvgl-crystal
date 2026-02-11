@@ -12,8 +12,7 @@ module Lvgl::Widgets
     # ## What it does
     # Creates a new LVGL button (`lv_button_create`) attached to `parent`.
     #
-    # If `parent` is `nil`, this uses `Lvgl::Object.screen_active` as parent so
-    # the button is added to the active screen.
+    # If `parent` is `nil`, LVGL uses the active screen as parent.
     #
     # ## Parameters
     # - `parent`: Optional parent object in the LVGL object tree.
@@ -25,14 +24,7 @@ module Lvgl::Widgets
     # ## LVGL docs
     # - https://docs.lvgl.io/9.4/API/widgets/button/lv_button.html#c.lv_button_create
     def self.new(parent : Lvgl::Object?) : self
-      ensure_runtime_initialized!
-
-      parent_obj = parent || Lvgl::Object.screen_active
-      raw_button = LibLvgl.lv_button_create(parent_obj.to_unsafe)
-
-      allocate.tap do |instance|
-        instance.initialize(Lvgl::Object.from_raw(raw_button))
-      end
+      new(Lvgl::Object.new_button(parent))
     end
 
     # ## What it does
@@ -53,12 +45,6 @@ module Lvgl::Widgets
     # - https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_size
     def set_size(width : Int32, height : Int32) : Nil
       @object.set_size(width, height)
-    end
-
-    private def self.ensure_runtime_initialized! : Nil
-      return if Lvgl::Runtime.initialized?
-
-      raise "Lvgl::Runtime.init must be called before creating Lvgl::Widgets::Button instances"
     end
   end
 end

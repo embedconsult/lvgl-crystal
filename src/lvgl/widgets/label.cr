@@ -12,8 +12,7 @@ module Lvgl::Widgets
     # ## What it does
     # Creates a new LVGL label (`lv_label_create`) attached to `parent`.
     #
-    # If `parent` is `nil`, this uses `Lvgl::Object.screen_active` as parent so
-    # the label is added to the active screen.
+    # If `parent` is `nil`, LVGL uses the active screen as parent.
     #
     # ## Parameters
     # - `parent`: Optional parent object in the LVGL object tree.
@@ -25,14 +24,7 @@ module Lvgl::Widgets
     # ## LVGL docs
     # - https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_create
     def self.new(parent : Lvgl::Object?) : self
-      ensure_runtime_initialized!
-
-      parent_obj = parent || Lvgl::Object.screen_active
-      raw_label = LibLvgl.lv_label_create(parent_obj.to_unsafe)
-
-      allocate.tap do |instance|
-        instance.initialize(Lvgl::Object.from_raw(raw_label))
-      end
+      new(Lvgl::Object.new_label(parent))
     end
 
     # ## What it does
@@ -44,8 +36,7 @@ module Lvgl::Widgets
     #
     # Encoding assumptions:
     # - LVGL expects text as `const char *`.
-    # - In this binding we treat it as UTF-8 text, matching Crystal `String`
-    #   encoding and LVGL's standard text-rendering expectations.
+    # - This wrapper passes Crystal strings as UTF-8 text.
     #
     # ## Parameters
     # - `text`: New label content. Existing dynamic text is released by LVGL and
@@ -58,13 +49,7 @@ module Lvgl::Widgets
     # ## LVGL docs
     # - https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_set_text
     def set_text(text : String) : Nil
-      LibLvgl.lv_label_set_text(@object.to_unsafe, text)
-    end
-
-    private def self.ensure_runtime_initialized! : Nil
-      return if Lvgl::Runtime.initialized?
-
-      raise "Lvgl::Runtime.init must be called before creating Lvgl::Widgets::Label instances"
+      @object.set_label_text(text)
     end
   end
 end

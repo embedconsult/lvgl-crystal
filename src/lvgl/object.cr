@@ -6,6 +6,8 @@ require "./runtime"
 # API references:
 # - [`lv_obj.h`](lib/lvgl/src/core/lv_obj.h)
 # - [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h)
+# - [`lv_label.h`](lib/lvgl/src/widgets/label/lv_label.h)
+# - [`lv_button.h`](lib/lvgl/src/widgets/button/lv_button.h)
 #
 # ## Why this wrapper exists
 #
@@ -57,7 +59,7 @@ class Lvgl::Object
     ensure_runtime_initialized!
 
     parent_ptr = parent ? parent.to_unsafe : lv_screen_active_ptr
-    from_raw(LibLvgl.lv_obj_create(parent_ptr))
+    new(LibLvgl.lv_obj_create(parent_ptr))
   end
 
   # Return a wrapper around LVGL's current active screen object.
@@ -66,7 +68,34 @@ class Lvgl::Object
   def self.screen_active : Object
     ensure_runtime_initialized!
 
-    from_raw(lv_screen_active_ptr)
+    new(lv_screen_active_ptr)
+  end
+
+  # Create an LVGL label object and return it as `Lvgl::Object`.
+  #
+  # Higher-level wrappers should call this instead of using `LibLvgl` directly.
+  def self.new_label(parent : Object?) : Object
+    ensure_runtime_initialized!
+
+    parent_ptr = parent ? parent.to_unsafe : lv_screen_active_ptr
+    new(LibLvgl.lv_label_create(parent_ptr))
+  end
+
+  # Create an LVGL button object and return it as `Lvgl::Object`.
+  #
+  # Higher-level wrappers should call this instead of using `LibLvgl` directly.
+  def self.new_button(parent : Object?) : Object
+    ensure_runtime_initialized!
+
+    parent_ptr = parent ? parent.to_unsafe : lv_screen_active_ptr
+    new(LibLvgl.lv_button_create(parent_ptr))
+  end
+
+  # Set label text on this object using LVGL's dynamic text API.
+  #
+  # LVGL copies the bytes of `text` to internal storage.
+  def set_label_text(text : String) : Nil
+    LibLvgl.lv_label_set_text(@raw, text)
   end
 
   # Set object width and height in LVGL coordinate units (`lv_coord_t`).
@@ -94,15 +123,6 @@ class Lvgl::Object
   # wrapper is not yet available for a specific LVGL function.
   def to_unsafe : Pointer(LibLvgl::LvObjT)
     @raw
-  end
-
-  # :nodoc:
-  # Internal constructor used by higher-level widget wrappers that receive
-  # already-created LVGL `lv_obj_t*` pointers from widget-specific constructors.
-  def self.from_raw(raw : Pointer(LibLvgl::LvObjT)) : Object
-    allocate.tap do |instance|
-      instance.initialize(raw)
-    end
   end
 
   private def self.lv_screen_active_ptr : Pointer(LibLvgl::LvObjT)
