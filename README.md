@@ -83,6 +83,24 @@ sudo apt-get install -y build-essential pkg-config libsdl2-dev
 For framebuffer or DRM/KMS targets, install the corresponding development
 packages and grant the required runtime permissions.
 
+## Runtime Ownership Model
+
+- Use a **single-owner fiber** model for LVGL calls whenever possible.
+- `Lvgl::Object`/widget constructors auto-start runtime on first use (`Lvgl::Runtime.start`, idempotent).
+- Prefer deterministic cleanup with `Lvgl::Runtime.shutdown` during app teardown.
+- Treat direct `LibLvgl.lv_init` / `LibLvgl.lv_deinit` calls as low-level escape hatches.
+
+Minimal lifecycle example (auto-start via first object):
+
+```crystal
+root = Lvgl::Object.new(nil)
+# ... create and manipulate widgets from the same UI fiber ...
+Lvgl::Runtime.shutdown
+```
+
+If your app prefers explicit bring-up, calling `Lvgl::Runtime.start` before
+creating objects is still safe and idempotent.
+
 ## Development
 
 Run specs:

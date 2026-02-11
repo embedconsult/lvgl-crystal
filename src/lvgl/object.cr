@@ -11,7 +11,7 @@ require "./runtime"
 #
 # - Holding the raw LVGL pointer for one object instance.
 # - Tracking the wrapper's parent relationship used when this object is created.
-# - Guarding construction so objects are not created before `Lvgl::Runtime.init`.
+# - Starting LVGL runtime exactly once as object wrappers are constructed.
 # - Exposing common object operations (`set_size`, `center`, `to_unsafe`).
 # - Providing reusable constructor helpers for subclasses that need custom
 #   `lv_*_create(...)` entry points.
@@ -24,18 +24,41 @@ require "./runtime"
 #
 # ## Runtime and threading expectations
 #
-# LVGL APIs assume a coordinated execution context. Callers should initialize
-# LVGL once (`Lvgl::Runtime.init`) and then keep object manipulation on the same
-# synchronized UI context used for other LVGL calls.
+# LVGL APIs assume a coordinated execution context. `Lvgl::Object` constructors
+# call `Lvgl::Runtime.start` automatically (idempotent), so callers do not need
+# to start runtime manually before creating the first object.
 #
+# Keep object manipulation on the same synchronized UI context used for other
+# LVGL calls.
+#
+#
+# ## Example
+#
+# ```
+# # Runtime auto-starts on first object creation.
+# root = Lvgl::Object.new(nil)
+# label = Lvgl::Widgets::Label.new(root)
+# label.set_text("Hello")
+#
+# # Prefer explicit teardown when your app exits.
+# Lvgl::Runtime.shutdown
+# ```
 # ## Authority links (for attribution)
 #
 # - LVGL object overview: https://docs.lvgl.io/9.4/overview/object.html
 # - `lv_obj.h` API family: https://docs.lvgl.io/9.4/API/core/lv_obj.html
 # - Positioning/sizing APIs: https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html
 class Lvgl::Object
+  @@state_lock = Mutex.new
+  @@instance_count = Atomic(Int32).new(0)
+
   @raw : Pointer(LibLvgl::LvObjT) = Pointer(LibLvgl::LvObjT).null
   @parent : Object? = nil
+
+  # Returns number of currently-live Crystal wrapper instances.
+  def self.instance_count : Int32
+    @@instance_count.get
+  end
 
   # Raw pointer accessor for the wrapped `lv_obj_t *`.
   #
@@ -107,8 +130,8 @@ class Lvgl::Object
   #   - If non-`nil`, the object is created under that parent.
   #   - If `nil`, the active screen is resolved and used as the parent.
   #
-  # ## Runtime requirement
-  # Raises unless `Lvgl::Runtime.init` has already been called.
+  # ## Runtime behavior
+  # Ensures `Lvgl::Runtime.start` has been called (idempotent).
   #
   # ## Authority
   # - https://docs.lvgl.io/9.4/API/core/lv_obj.html#c.lv_obj_create
@@ -127,13 +150,13 @@ class Lvgl::Object
   # - Useful as an explicit parent when building trees.
   # - Returned wrapper has `parent == nil`.
   #
-  # ## Runtime requirement
-  # Raises unless `Lvgl::Runtime.init` has already been called.
+  # ## Runtime behavior
+  # Ensures `Lvgl::Runtime.start` has been called (idempotent).
   #
   # ## Authority
   # - https://docs.lvgl.io/9.4/API/display/lv_display.html#c.lv_screen_active
   def self.screen_active : Object
-    ensure_runtime_initialized!
+    Lvgl::Runtime.start
 
     allocate_with(raw: LibLvgl.lv_screen_active, parent: nil)
   end
@@ -198,7 +221,7 @@ class Lvgl::Object
   # Subclasses use this to implement specialized constructors while sharing one
   # runtime-guard and allocation path.
   protected def self.build_with_parent(parent : Object?, & : Pointer(LibLvgl::LvObjT) -> Pointer(LibLvgl::LvObjT)) : self
-    ensure_runtime_initialized!
+    Lvgl::Runtime.start
 
     parent_obj = parent || screen_active
     raw = yield parent_obj.to_unsafe
@@ -217,20 +240,27 @@ class Lvgl::Object
     instance = allocate
     instance.raw = raw
     instance.parent = parent
+    increment_instance_count!
     instance
   end
 
-  # Guard object construction on LVGL runtime initialization.
-  #
-  # ## What it does
-  # Raises when construction is attempted before `Lvgl::Runtime.init`.
-  #
-  # ## Why this exists
-  # Creating LVGL objects before runtime init is invalid and difficult to debug;
-  # this provides a direct, early failure mode.
-  protected def self.ensure_runtime_initialized! : Nil
-    return if Lvgl::Runtime.initialized?
+  # Called by GC before wrapper memory is reclaimed.
+  def finalize : Nil
+    self.class.decrement_instance_count!
+  end
 
-    raise "Lvgl::Runtime.init must be called before creating Lvgl::Object instances"
+  def self.increment_instance_count! : Nil
+    @@state_lock.synchronize do
+      Lvgl::Runtime.start if @@instance_count.get == 0
+      @@instance_count.add(1)
+    end
+  end
+
+  def self.decrement_instance_count! : Nil
+    @@state_lock.synchronize do
+      return if @@instance_count.get <= 0
+
+      @@instance_count.sub(1)
+    end
   end
 end
