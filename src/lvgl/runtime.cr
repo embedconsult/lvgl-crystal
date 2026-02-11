@@ -35,6 +35,17 @@ require "./raw"
 # app stop -> Runtime.deinit
 # ```
 module Lvgl::Runtime
+  @@initialized = false
+
+  # Returns whether this process has successfully called `Runtime.init` and has
+  # not yet called `Runtime.deinit`.
+  #
+  # This flag is useful when higher-level wrappers need to guard object creation
+  # so LVGL APIs are not called before global initialization.
+  def self.initialized? : Bool
+    @@initialized
+  end
+
   # Source credit:
   # - Header: `lib/lvgl/src/lv_init.h`
   # - Function: `lv_init`
@@ -45,8 +56,14 @@ module Lvgl::Runtime
   # - Call once before creating LVGL objects, displays, input devices, themes, or styles.
   # - Must execute on the same synchronized execution context used for later LVGL calls.
   # - Re-initialization without `deinit` is undefined and should be avoided.
+  #
+  # This wrapper is idempotent: if the runtime is already initialized,
+  # calling `init` again is a no-op.
   def self.init : Nil
+    return if @@initialized
+
     LibLvgl.lv_init
+    @@initialized = true
   end
 
   # Source credit:
@@ -87,7 +104,13 @@ module Lvgl::Runtime
   # - Shut down display/input backend threads and callbacks before calling this.
   # - Do not call other LVGL APIs after deinit unless you initialize again.
   # - In managed app lifecycles, pair one successful `init` with one final `deinit`.
+  #
+  # This wrapper is idempotent: if LVGL is already deinitialized, this method is
+  # a no-op.
   def self.deinit : Nil
+    return unless @@initialized
+
     LibLvgl.lv_deinit
+    @@initialized = false
   end
 end
