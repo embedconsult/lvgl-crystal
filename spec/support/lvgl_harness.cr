@@ -9,6 +9,14 @@ module Lvgl::SpecSupport
       @@backend
     end
 
+    def self.runtime_prerequisites_available? : Bool
+      @@backend.available?
+    end
+
+    def self.runtime_prerequisite_reason : String
+      @@backend.unavailable_reason || "backend '#{@@backend.key}' is unavailable"
+    end
+
     def self.runtime_ready? : Bool
       ensure_setup
       @@runtime_ready
@@ -26,7 +34,7 @@ module Lvgl::SpecSupport
 
       unless @@backend.available?
         @@runtime_ready = false
-        @@runtime_skip_reason = @@backend.unavailable_reason || "backend '#{@@backend.key}' is unavailable"
+        @@runtime_skip_reason = runtime_prerequisite_reason
         return
       end
 

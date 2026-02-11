@@ -1,9 +1,9 @@
 require "../spec_helper"
 
-if Lvgl::SpecSupport::Harness.runtime_ready?
+if Lvgl::SpecSupport::Harness.runtime_prerequisites_available?
   describe Lvgl::Widgets::Label do
     it "auto-starts runtime before .new" do
-      Lvgl::Runtime.shutdown
+      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
 
       label = Lvgl::Widgets::Label.new(nil)
 
@@ -12,6 +12,8 @@ if Lvgl::SpecSupport::Harness.runtime_ready?
     end
 
     it "creates label and updates text" do
+      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
+
       label = Lvgl::Widgets::Label.new(nil)
 
       label.set_text("lvgl-crystal")
@@ -21,7 +23,7 @@ if Lvgl::SpecSupport::Harness.runtime_ready?
 
   describe Lvgl::Widgets::Button do
     it "auto-starts runtime before .new" do
-      Lvgl::Runtime.shutdown
+      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
 
       button = Lvgl::Widgets::Button.new(nil)
 
@@ -30,6 +32,8 @@ if Lvgl::SpecSupport::Harness.runtime_ready?
     end
 
     it "creates a button and sets size" do
+      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
+
       button = Lvgl::Widgets::Button.new(nil)
 
       button.set_size(96, 44)
@@ -38,6 +42,6 @@ if Lvgl::SpecSupport::Harness.runtime_ready?
   end
 else
   describe "LVGL widget runtime specs" do
-    pending "runtime widget specs skipped: #{Lvgl::SpecSupport::Harness.runtime_skip_reason}"
+    pending "runtime widget specs skipped: #{Lvgl::SpecSupport::Harness.runtime_prerequisite_reason}"
   end
 end
