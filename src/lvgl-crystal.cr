@@ -1,6 +1,8 @@
 require "./lvgl/raw"
 require "./lvgl/runtime"
 require "./lvgl/object"
+require "./lvgl/widgets/label"
+require "./lvgl/widgets/button"
 
 # Crystal bindings and runtime helpers for LVGL examples.
 module Lvgl::Crystal
