@@ -127,7 +127,7 @@ Docs cross-reference used during implementation:
   https://docs.lvgl.io/master/details/auxiliary-modules/test/index.html
 
 To run headless runtime specs in CI-like Debian environments, enable LVGL test symbols in the
-shared library and enable Crystal's matching compile-time flag:
+shared library:
 
 ```bash
 sudo apt-get update
@@ -135,10 +135,10 @@ sudo apt-get install -y build-essential clang lld pkg-config
 
 shards install
 # ./scripts/build_lvgl_headless_test.sh (Now part of the default build)
-crystal spec -Dlvgl_use_test
+crystal spec
 ```
 
-If `-DLV_USE_TEST=1` in the shared LVGL build and `-Dlvgl_use_test` in Crystal compilation are not both set,
+If test-module symbols are not available in the shared LVGL build (`-DLV_USE_TEST=1`),
 runtime-dependent specs are skipped with a clear reason from `spec/support/lvgl_harness.cr`.
 
 SDL and Wayland backends are follow-up runtime profiles and currently placeholders.
