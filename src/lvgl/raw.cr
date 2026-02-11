@@ -52,6 +52,25 @@ lib LibLvgl
   # Reference: [`lv_obj.h`](lib/lvgl/src/core/lv_obj.h).
   fun lv_obj_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
 
+  # Create a label widget object.
+  #
+  # `parent` is the parent object. If `NULL`, LVGL creates a new screen object.
+  # Reference: [`lv_label.h`](lib/lvgl/src/widgets/label/lv_label.h).
+  fun lv_label_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
+
+  # Set label text from a UTF-8 C string.
+  #
+  # LVGL copies the bytes into an internal, dynamically allocated buffer.
+  # Reference: [`lv_label.h`](lib/lvgl/src/widgets/label/lv_label.h).
+  fun lv_label_set_text(obj : Pointer(LvObjT), text : UInt8*) : Void
+
+  # Create a button widget object.
+  #
+  # Symbol name follows LVGL 9 exports (`lv_button_create`) from
+  # `lib/lvgl/build/crystal/liblvgl.so`.
+  # Reference: [`lv_button.h`](lib/lvgl/src/widgets/button/lv_button.h).
+  fun lv_button_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
+
   # Set object width and height in LVGL coordinate units.
   #
   # `w` and `h` are `lv_coord_t` values interpreted by LVGL layout/size rules.
