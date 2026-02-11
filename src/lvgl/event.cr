@@ -42,22 +42,33 @@ module Lvgl::Event
 
   # Event payload emitted through `Subscription#channel`.
   struct Message
+    # Raw LVGL event code value.
     getter code_raw : Int32
+
+    # Original target object pointer from LVGL.
     getter target_raw : Pointer(LibLvgl::LvObjT)
+
+    # Current target object pointer from LVGL bubbling/trickling context.
     getter current_target_raw : Pointer(LibLvgl::LvObjT)
 
+    # Build a message value from raw LVGL callback data.
     def initialize(@code_raw : Int32, @target_raw : Pointer(LibLvgl::LvObjT), @current_target_raw : Pointer(LibLvgl::LvObjT))
     end
 
     # Returns wrapped enum value when present in the current subset.
+    #
+    # Unknown values return `nil` so callers can stay forward-compatible.
     def code? : Code?
       Code.from_value?(@code_raw)
     end
   end
 
+  # Internal registry payload retained for each active LVGL callback registration.
   private class Handler
+    # Channel receiving mapped event messages.
     getter channel : Channel(Message)
 
+    # Build handler state bound to one subscription channel.
     def initialize(@channel : Channel(Message))
     end
   end
@@ -69,20 +80,25 @@ module Lvgl::Event
     @user_data : Void*
     @released = false
 
+    # Stream of event messages delivered for this registration.
     getter channel : Channel(Message)
 
     protected getter object : Lvgl::Object
     protected getter descriptor : Pointer(LibLvgl::LvEventDscT)
     protected getter user_data : Void*
 
+    # Create a subscription wrapper from LVGL registration results.
     protected def initialize(@object : Lvgl::Object, @descriptor : Pointer(LibLvgl::LvEventDscT), @user_data : Void*, @channel : Channel(Message))
     end
 
+    # Returns whether this subscription has already been released.
     def released? : Bool
       @released
     end
 
     # Remove callback and close channel. Idempotent.
+    #
+    # Returns `true` only on the first successful release.
     def release : Bool
       return false if @released
 
@@ -99,6 +115,8 @@ module Lvgl::Event
   #
   # `capacity` configures channel buffering. Buffered channels avoid blocking in
   # LVGL callback context. Events are dropped if the channel buffer is full.
+  #
+  # Raises `ArgumentError` when `capacity` is negative.
   def self.on(object : Lvgl::Object, filter : Code = Code::All, capacity : Int32 = 32) : Subscription
     raise ArgumentError.new("capacity must be >= 0") if capacity < 0
 
@@ -116,6 +134,9 @@ module Lvgl::Event
     Subscription.new(object, descriptor, user_data, channel)
   end
 
+  # Remove one registered LVGL event descriptor and clear retained handler state.
+  #
+  # Returns `true` when LVGL reports successful descriptor removal.
   protected def self.unregister(subscription : Subscription) : Bool
     removed = LibLvgl.lv_obj_remove_event_dsc(subscription.object.to_unsafe, subscription.descriptor)
     return false unless removed
@@ -124,6 +145,10 @@ module Lvgl::Event
     true
   end
 
+  # Static callback trampoline passed to LVGL.
+  #
+  # Looks up retained handler state by `user_data`, maps raw event fields into
+  # `Message`, and non-blockingly forwards into the channel.
   private def self.trampoline(event : Pointer(LibLvgl::LvEventT)) : Nil
     user_data = LibLvgl.lv_event_get_user_data(event)
     return if user_data.null?
@@ -140,15 +165,20 @@ module Lvgl::Event
     )
 
     # Avoid blocking LVGL's callback context.
-    handler.channel.try_send(message)
+    select
+    when handler.channel.send(message)
+    else
+    end
   end
 
+  # Drop retained handler state for `user_data` and return it when present.
   private def self.release_handler(user_data : Void*) : Handler?
     @@registry_mutex.synchronize do
       @@handler_registry.delete(pointer_key(user_data))
     end
   end
 
+  # Convert a pointer to a stable hash key representation.
   private def self.pointer_key(pointer : Void*) : UInt64
     pointer.address.to_u64
   end
