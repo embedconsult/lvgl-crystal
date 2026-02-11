@@ -12,6 +12,7 @@ targets:
 dependencies:
   lvgl:
     github: embedconsult/lvgl
+    version: "= 9.0.4"
 
 crystal: '>= 1.19.1'
 
