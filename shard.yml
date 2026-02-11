@@ -9,6 +9,10 @@ targets:
   lvgl-crystal:
     main: src/lvgl-crystal.cr
 
+dependencies:
+  lvgl:
+    github: embedconsult/lvgl
+
 crystal: '>= 1.19.1'
 
 license: MIT

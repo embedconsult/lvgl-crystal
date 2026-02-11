@@ -33,16 +33,13 @@ This repository is intended as a practical starting point for:
 
 2. Install Crystal (Debian package or official install script).
 
-3. Install project dependencies:
+3. Install project dependencies (including the LVGL shard):
 
    ```bash
    shards install
    ```
 
-4. Prepare LVGL and backend libraries for your Debian target.
-
-> Note: exact LVGL binding and backend wiring depends on your selected strategy
-> (native C bindings, generated bindings, or wrapper shard).
+4. Prepare LVGL backend libraries for your Debian target (for example SDL2).
 
 ## Usage
 
@@ -52,7 +49,7 @@ Run the app entry point:
 crystal run src/lvgl-crystal.cr
 ```
 
-Build the default shard target:
+Build the default shard target (depends on `shards install` having already populated `lib/`):
 
 ```bash
 shards build

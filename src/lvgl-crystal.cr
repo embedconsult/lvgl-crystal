@@ -1,3 +1,5 @@
+require "lvgl"
+
 # TODO: Write documentation for `Lvgl::Crystal`
 module Lvgl::Crystal
   VERSION = "0.1.0"
