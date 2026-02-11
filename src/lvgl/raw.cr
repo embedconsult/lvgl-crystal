@@ -12,6 +12,10 @@ lib LibLvgl
   # [`lv_obj_event.h`](lib/lvgl/src/core/lv_obj_event.h).
   type LvEventDscT = Void
 
+  # Opaque LVGL display handle from
+  # [`lv_display.h`](lib/lvgl/src/display/lv_display.h).
+  type LvDisplayT = Void
+
   # LVGL coordinate type (`lv_coord_t`) used for object geometry.
   #
   # Coordinates are interpreted in LVGL's object-local coordinate system and are
@@ -161,4 +165,21 @@ lib LibLvgl
   # Reference: [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
   # Crystal caller: `Lvgl::Event` callback trampoline.
   fun lv_event_get_user_data(e : Pointer(LvEventT)) : Void*
+
+  {% if flag?(:lvgl_use_test) %}
+    # Create a dummy display for LVGL tests.
+    #
+    # Reference: `lib/lvgl/src/others/test/lv_test_display.h`
+    fun lv_test_display_create(hor_res : Int32, ver_res : Int32) : Pointer(LvDisplayT)
+
+    # Create all test input devices (mouse/keypad/encoder).
+    #
+    # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
+    fun lv_test_indev_create_all : Void
+
+    # Delete all test input devices created by `lv_test_indev_create_all`.
+    #
+    # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
+    fun lv_test_indev_delete_all : Void
+  {% end %}
 end

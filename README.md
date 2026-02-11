@@ -101,6 +101,48 @@ Lvgl::Runtime.shutdown
 If your app prefers explicit bring-up, calling `Lvgl::Runtime.start` before
 creating objects is still safe and idempotent.
 
+
+## Backend Adapter Profiles
+
+The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend/`:
+
+- `HeadlessTestBackend` (default for specs/CI)
+- `SdlBackend` (placeholder profile)
+- `WaylandBackend` (placeholder profile)
+
+`LVGL_BACKEND` selects the profile (`headless` by default).
+
+### Headless test backend (Debian-first)
+
+This repository is pinned to LVGL shard version **9.4.0**, and the CI headless path uses the
+**9.4 test-module APIs** from the source headers:
+
+- `lib/lvgl/src/others/test/lv_test_display.h` (`lv_test_display_create`)
+- `lib/lvgl/src/others/test/lv_test_indev.h` (`lv_test_indev_create_all`, `lv_test_indev_delete_all`)
+
+Docs cross-reference used during implementation:
+
+- 9.4 auxiliary test module index: https://docs.lvgl.io/9.4/details/auxiliary-modules/test/index.html
+- master test docs (newer branch, not the pinned API baseline):
+  https://docs.lvgl.io/master/details/auxiliary-modules/test/index.html
+
+To run headless runtime specs in CI-like Debian environments, enable LVGL test symbols in the
+shared library and enable Crystal's matching compile-time flag:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential clang lld pkg-config
+
+shards install
+./scripts/build_lvgl_headless_test.sh
+crystal spec -Dlvgl_use_test
+```
+
+If `-DLV_USE_TEST=1` in the shared LVGL build and `-Dlvgl_use_test` in Crystal compilation are not both set,
+runtime-dependent specs are skipped with a clear reason from `spec/support/lvgl_harness.cr`.
+
+SDL and Wayland backends are follow-up runtime profiles and currently placeholders.
+
 ## Development
 
 Run specs:
