@@ -4,6 +4,14 @@ lib LibLvgl
   # [`lv_obj.h`](lib/lvgl/src/core/lv_obj.h).
   type LvObjT = Void
 
+  # Opaque LVGL event descriptor type from
+  # [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  type LvEventT = Void
+
+  # Opaque LVGL event-callback descriptor type from
+  # [`lv_obj_event.h`](lib/lvgl/src/core/lv_obj_event.h).
+  type LvEventDscT = Void
+
   # LVGL coordinate type (`lv_coord_t`) used for object geometry.
   #
   # Coordinates are interpreted in LVGL's object-local coordinate system and are
@@ -14,6 +22,14 @@ lib LibLvgl
   # LVGL alignment selector (`lv_align_t`) used by positioning helpers.
   # See [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
   alias LvAlignT = Int32
+
+  # LVGL event code enum (`lv_event_code_t`) used for filtering and dispatch.
+  # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  alias LvEventCodeT = Int32
+
+  # LVGL event callback signature (`lv_event_cb_t`).
+  # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  alias LvEventCbT = Pointer(LvEventT) ->
 
   # C declaration provenance: `lib/lvgl/src/lv_init.h` (`lv_init`, `lv_deinit`) and
   # `lib/lvgl/src/tick/lv_tick.h` + `lib/lvgl/src/misc/lv_timer.h`
@@ -106,4 +122,43 @@ lib LibLvgl
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
   # Crystal caller: TODO.
   fun lv_obj_align_to(obj : Pointer(LvObjT), base : Pointer(LvObjT), align : LvAlignT, x_ofs : LvCoordT, y_ofs : LvCoordT) : Void
+
+  # Register an event callback on an object.
+  #
+  # `filter` can be one specific `lv_event_code_t` or `LV_EVENT_ALL`.
+  # Returns a descriptor that can later be removed with `lv_obj_remove_event_dsc`.
+  # Reference: [`lv_obj_event.h`](lib/lvgl/src/core/lv_obj_event.h).
+  # Crystal caller: `Lvgl::Event`.
+  fun lv_obj_add_event_cb(obj : Pointer(LvObjT), event_cb : LvEventCbT, filter : LvEventCodeT, user_data : Void*) : Pointer(LvEventDscT)
+
+  # Remove one previously registered event descriptor.
+  #
+  # Returns `true` if the descriptor was found and removed.
+  # Reference: [`lv_obj_event.h`](lib/lvgl/src/core/lv_obj_event.h).
+  # Crystal caller: `Lvgl::Event`.
+  fun lv_obj_remove_event_dsc(obj : Pointer(LvObjT), dsc : Pointer(LvEventDscT)) : Bool
+
+  # Return the event code for an incoming event descriptor.
+  #
+  # Reference: [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  # Crystal caller: `Lvgl::Event` message mapping.
+  fun lv_event_get_code(e : Pointer(LvEventT)) : LvEventCodeT
+
+  # Return the original target object for an incoming event descriptor.
+  #
+  # Reference: [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  # Crystal caller: `Lvgl::Event` message mapping.
+  fun lv_event_get_target(e : Pointer(LvEventT)) : Pointer(LvObjT)
+
+  # Return the current target object (while bubbling/trickling) for an event.
+  #
+  # Reference: [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  # Crystal caller: `Lvgl::Event` message mapping.
+  fun lv_event_get_current_target(e : Pointer(LvEventT)) : Pointer(LvObjT)
+
+  # Return the registration `user_data` pointer attached to this callback.
+  #
+  # Reference: [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
+  # Crystal caller: `Lvgl::Event` callback trampoline.
+  fun lv_event_get_user_data(e : Pointer(LvEventT)) : Void*
 end
