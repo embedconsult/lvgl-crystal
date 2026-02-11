@@ -1,0 +1,53 @@
+stages:
+  - verify
+  - build
+  - docs
+
+variables:
+  CRYSTAL_CACHE_DIR: "$CI_PROJECT_DIR/.cache/crystal"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - lib/
+    - .cache/crystal/
+
+default:
+  image: crystallang/crystal:latest
+  before_script:
+    - shards install
+
+verify:
+  stage: verify
+  script:
+    - crystal tool format --check
+    - crystal spec
+
+build_binary:
+  stage: build
+  script:
+    - shards build
+  artifacts:
+    name: "lvgl-crystal-$CI_COMMIT_REF_SLUG"
+    paths:
+      - bin/
+    expire_in: 1 week
+
+build_docs:
+  stage: docs
+  script:
+    - crystal docs -o docs
+  artifacts:
+    paths:
+      - docs/
+    expire_in: 1 week
+
+pages:
+  stage: docs
+  script:
+    - crystal docs -o public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'

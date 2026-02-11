@@ -97,6 +97,19 @@ Format Crystal code:
 crystal tool format
 ```
 
+
+Generate API documentation locally:
+
+```bash
+crystal docs
+```
+
+
+## CI/CD
+
+- **GitHub Actions** validates formatting/specs, builds binary artifacts, and publishes docs to GitHub Pages from `main`.
+- **GitLab CI/CD** validates formatting/specs, stores binary artifacts, and publishes docs using the `pages` job from the default branch.
+
 ## Contributing
 
 1. Create a feature branch.
