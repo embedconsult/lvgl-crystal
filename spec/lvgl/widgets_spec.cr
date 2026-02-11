@@ -1,11 +1,11 @@
 require "../spec_helper"
 
 describe Lvgl::Widgets::Label do
-  it "requires runtime initialization before create" do
+  it "requires runtime initialization before .new" do
     Lvgl::Runtime.deinit
 
     expect_raises(Exception, /Lvgl::Runtime\.init/) do
-      Lvgl::Widgets::Label.create(nil)
+      Lvgl::Widgets::Label.new(nil)
     end
   end
 
@@ -13,11 +13,11 @@ describe Lvgl::Widgets::Label do
 end
 
 describe Lvgl::Widgets::Button do
-  it "requires runtime initialization before create" do
+  it "requires runtime initialization before .new" do
     Lvgl::Runtime.deinit
 
     expect_raises(Exception, /Lvgl::Runtime\.init/) do
-      Lvgl::Widgets::Button.create(nil)
+      Lvgl::Widgets::Button.new(nil)
     end
   end
 

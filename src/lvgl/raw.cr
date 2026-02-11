@@ -15,53 +15,60 @@ lib LibLvgl
   # See [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
   alias LvAlignT = Int32
 
-  # :nodoc:
-  #
   # C declaration provenance: `lib/lvgl/src/lv_init.h` (`lv_init`, `lv_deinit`) and
   # `lib/lvgl/src/tick/lv_tick.h` + `lib/lvgl/src/misc/lv_timer.h`
   # (`lv_tick_inc`, `lv_timer_handler`).
 
   # Initialize the global LVGL runtime state.
+  # Crystal caller: `Lvgl::Runtime`.
   fun lv_init : Void
 
   # Advance LVGL's monotonic tick source by `tick_period` milliseconds.
+  # Crystal caller: `Lvgl::Runtime`.
   fun lv_tick_inc(tick_period : UInt32) : Void
 
   # Run due LVGL timers and return milliseconds until the next recommended call.
+  # Crystal caller: `Lvgl::Runtime`.
   fun lv_timer_handler : UInt32
 
   # Tear down LVGL global state.
   #
   # This symbol is present in LVGL 9.4's shared object build distributed with this
   # repository (`lib/lvgl/build/crystal/liblvgl.so`).
+  # Crystal caller: `Lvgl::Runtime`.
   fun lv_deinit : Void
 
   # Returns the active screen object for the default display.
   #
   # Reference: [`lv_display.h`](lib/lvgl/src/display/lv_display.h).
+  # Crystal caller: `Lvgl::Object`.
   fun lv_screen_active : Pointer(LvObjT)
 
   # Legacy v8 API name kept in LVGL's API map.
   #
   # Reference mapping: [`lv_api_map_v8.h`](lib/lvgl/src/lv_api_map_v8.h).
+  # Crystal caller: TODO.
   fun lv_scr_act = lv_screen_active : Pointer(LvObjT)
 
   # Create a base object.
   #
   # `parent` is the parent object. If `NULL`, LVGL creates a new screen object.
   # Reference: [`lv_obj.h`](lib/lvgl/src/core/lv_obj.h).
+  # Crystal caller: `Lvgl::Object`.
   fun lv_obj_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
 
   # Create a label widget object.
   #
   # `parent` is the parent object. If `NULL`, LVGL creates a new screen object.
   # Reference: [`lv_label.h`](lib/lvgl/src/widgets/label/lv_label.h).
+  # Crystal caller: `Lvgl::Widgets::Label`.
   fun lv_label_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
 
   # Set label text from a UTF-8 C string.
   #
   # LVGL copies the bytes into an internal, dynamically allocated buffer.
   # Reference: [`lv_label.h`](lib/lvgl/src/widgets/label/lv_label.h).
+  # Crystal caller: `Lvgl::Widgets::Label`.
   fun lv_label_set_text(obj : Pointer(LvObjT), text : UInt8*) : Void
 
   # Create a button widget object.
@@ -69,17 +76,20 @@ lib LibLvgl
   # Symbol name follows LVGL 9 exports (`lv_button_create`) from
   # `lib/lvgl/build/crystal/liblvgl.so`.
   # Reference: [`lv_button.h`](lib/lvgl/src/widgets/button/lv_button.h).
+  # Crystal caller: `Lvgl::Widgets::Button`.
   fun lv_button_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
 
   # Set object width and height in LVGL coordinate units.
   #
   # `w` and `h` are `lv_coord_t` values interpreted by LVGL layout/size rules.
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
+  # Crystal caller: `Lvgl::Object`.
   fun lv_obj_set_size(obj : Pointer(LvObjT), w : LvCoordT, h : LvCoordT) : Void
 
   # Align object to the center of its parent.
   #
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
+  # Crystal caller: `Lvgl::Object`.
   fun lv_obj_center(obj : Pointer(LvObjT)) : Void
 
   # Align object to a position inside its parent with optional x/y offsets.
@@ -87,11 +97,13 @@ lib LibLvgl
   # `align` is an `lv_align_t` value, and `x_ofs` / `y_ofs` are coordinate offsets
   # from the selected anchor.
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
+  # Crystal caller: TODO.
   fun lv_obj_align(obj : Pointer(LvObjT), align : LvAlignT, x_ofs : LvCoordT, y_ofs : LvCoordT) : Void
 
   # Align object relative to another base object.
   #
   # `base` is the reference object used for anchor calculation.
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
+  # Crystal caller: TODO.
   fun lv_obj_align_to(obj : Pointer(LvObjT), base : Pointer(LvObjT), align : LvAlignT, x_ofs : LvCoordT, y_ofs : LvCoordT) : Void
 end

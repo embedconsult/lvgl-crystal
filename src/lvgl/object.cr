@@ -20,9 +20,9 @@ require "./runtime"
 #
 # Lvgl::Runtime.init
 #
-# panel = Lvgl::Object.create(nil) # child of current active screen
-# panel.set_size(240, 120)         # LVGL coordinate units (`lv_coord_t`)
-# panel.center                     # center in parent
+# panel = Lvgl::Object.new(nil) # child of current active screen
+# panel.set_size(240, 120)      # LVGL coordinate units (`lv_coord_t`)
+# panel.center                  # center in parent
 #
 # # ... run your LVGL loop ...
 #
@@ -41,7 +41,7 @@ class Lvgl::Object
   # wrapped at the Crystal layer.
   getter raw : Pointer(LibLvgl::LvObjT)
 
-  private def initialize(@raw : Pointer(LibLvgl::LvObjT))
+  protected def initialize(@raw : Pointer(LibLvgl::LvObjT))
   end
 
   # Create a base LVGL object.
@@ -53,11 +53,11 @@ class Lvgl::Object
   # - Returns: A wrapped `Lvgl::Object` for the newly-created `lv_obj_t`.
   #
   # This method requires that `Lvgl::Runtime.init` has already been called.
-  def self.create(parent : Object?) : Object
+  def self.new(parent : Object?) : Object
     ensure_runtime_initialized!
 
     parent_ptr = parent ? parent.to_unsafe : lv_screen_active_ptr
-    new(LibLvgl.lv_obj_create(parent_ptr))
+    from_raw(LibLvgl.lv_obj_create(parent_ptr))
   end
 
   # Return a wrapper around LVGL's current active screen object.
@@ -66,7 +66,7 @@ class Lvgl::Object
   def self.screen_active : Object
     ensure_runtime_initialized!
 
-    new(lv_screen_active_ptr)
+    from_raw(lv_screen_active_ptr)
   end
 
   # Set object width and height in LVGL coordinate units (`lv_coord_t`).
@@ -96,11 +96,20 @@ class Lvgl::Object
     @raw
   end
 
+  # :nodoc:
+  # Internal constructor used by higher-level widget wrappers that receive
+  # already-created LVGL `lv_obj_t*` pointers from widget-specific constructors.
+  def self.from_raw(raw : Pointer(LibLvgl::LvObjT)) : Object
+    allocate.tap do |instance|
+      instance.initialize(raw)
+    end
+  end
+
   private def self.lv_screen_active_ptr : Pointer(LibLvgl::LvObjT)
     LibLvgl.lv_screen_active
   end
 
-  private def self.ensure_runtime_initialized! : Nil
+  protected def self.ensure_runtime_initialized! : Nil
     return if Lvgl::Runtime.initialized?
 
     raise "Lvgl::Runtime.init must be called before creating Lvgl::Object instances"
