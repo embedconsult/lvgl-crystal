@@ -166,20 +166,18 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Event` callback trampoline.
   fun lv_event_get_user_data(e : Pointer(LvEventT)) : Void*
 
-  {% if flag?(:lvgl_use_test) %}
-    # Create a dummy display for LVGL tests.
-    #
-    # Reference: `lib/lvgl/src/others/test/lv_test_display.h`
-    fun lv_test_display_create(hor_res : Int32, ver_res : Int32) : Pointer(LvDisplayT)
+  # Create a dummy display for LVGL tests.
+  #
+  # Reference: `lib/lvgl/src/others/test/lv_test_display.h`
+  fun lv_test_display_create(hor_res : Int32, ver_res : Int32) : Pointer(LvDisplayT)
 
-    # Create all test input devices (mouse/keypad/encoder).
-    #
-    # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
-    fun lv_test_indev_create_all : Void
+  # Create all test input devices (mouse/keypad/encoder).
+  #
+  # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
+  fun lv_test_indev_create_all : Void
 
-    # Delete all test input devices created by `lv_test_indev_create_all`.
-    #
-    # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
-    fun lv_test_indev_delete_all : Void
-  {% end %}
+  # Delete all test input devices created by `lv_test_indev_create_all`.
+  #
+  # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
+  fun lv_test_indev_delete_all : Void
 end

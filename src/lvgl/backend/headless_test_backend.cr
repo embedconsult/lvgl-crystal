@@ -1,6 +1,7 @@
 require "./adapter"
 require "../runtime"
 require "../raw"
+require "compiler/crystal/loader"
 
 module Lvgl::Backend
   # Headless LVGL backend intended for CI test runs.
@@ -16,48 +17,64 @@ module Lvgl::Backend
   #
   # Build requirements:
   # - LVGL shared lib must be compiled with `-DLV_USE_TEST=1`.
-  # - Crystal compile should include `-Dlvgl_use_test` to enable these bindings.
   class HeadlessTestBackend
     include Adapter
 
     @display : Pointer(LibLvgl::LvDisplayT) = Pointer(LibLvgl::LvDisplayT).null
+    @test_symbols_available : Bool?
 
     def key : String
       "headless"
     end
 
     def available? : Bool
-      {% if flag?(:lvgl_use_test) %}
-        true
-      {% else %}
+      @test_symbols_available ||= begin
+        loader = ::Crystal::Loader.new([test_lib_dir])
+
+        if loader.load_file?(test_lib_path)
+          TEST_SYMBOLS.all? { |symbol| loader.find_symbol?(symbol) }
+        else
+          false
+        end
+      rescue
         false
-      {% end %}
+      end
     end
 
     def unavailable_reason : String?
       return nil if available?
 
-      "Headless test backend requires LVGL test-module symbols; run `./scripts/build_lvgl_headless_test.sh` then `crystal spec -Dlvgl_use_test`."
+      "Headless test backend requires LVGL test-module symbols; run `./scripts/build_lvgl_headless_test.sh` to rebuild liblvgl with LV_USE_TEST enabled."
     end
 
     def setup! : Nil
       raise unavailable_reason || "headless backend unavailable" unless available?
 
       Lvgl::Runtime.start
-      {% if flag?(:lvgl_use_test) %}
-        @display = LibLvgl.lv_test_display_create(480, 320)
-        LibLvgl.lv_test_indev_create_all
-      {% end %}
+      @display = LibLvgl.lv_test_display_create(480, 320)
+      LibLvgl.lv_test_indev_create_all
     end
 
     def teardown! : Nil
       return unless available?
       return if @display.null?
 
-      {% if flag?(:lvgl_use_test) %}
-        LibLvgl.lv_test_indev_delete_all
-      {% end %}
+      LibLvgl.lv_test_indev_delete_all
       @display = Pointer(LibLvgl::LvDisplayT).null
+    end
+
+    private TEST_SYMBOLS = {
+      "lv_test_display_create",
+      "lv_test_indev_create_all",
+      "lv_test_indev_delete_all",
+    }
+
+    private def test_lib_path : String
+      Path[__DIR__, "../../../lib/lvgl/build/crystal/liblvgl.so"].expand.to_s
+    end
+
+    private def test_lib_dir : String
+      File.dirname(test_lib_path)
     end
   end
 end
