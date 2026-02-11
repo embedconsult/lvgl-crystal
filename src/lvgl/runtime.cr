@@ -24,26 +24,27 @@ require "./raw"
 #   tick that matches your scheduler resolution).
 # - In the UI loop, call `timer_handler`, then sleep roughly the returned number
 #   of milliseconds (bounded to a small maximum to keep responsiveness).
-# - On shutdown, stop input/display drivers first, then call `deinit` once.
+# - On shutdown, stop input/display drivers first, then call `shutdown` once.
 #
 # Example pseudo-flow:
 #
 # ```text
-# app start -> Runtime.init
+# app start -> Runtime.start
 # timer fiber: every 1 ms -> Runtime.tick_inc(1)
 # ui fiber: loop { wait = Runtime.timer_handler; sleep(wait.milliseconds) }
-# app stop -> Runtime.deinit
+# app stop -> Runtime.shutdown
 # ```
 module Lvgl::Runtime
-  @@initialized = false
+  @@state_lock = Mutex.new
+  @@initialized = Atomic(Int32).new(0)
 
-  # Returns whether this process has successfully called `Runtime.init` and has
-  # not yet called `Runtime.deinit`.
+  # Returns whether this process has successfully called `Runtime.start` and has
+  # not yet called `Runtime.shutdown`.
   #
   # This flag is useful when higher-level wrappers need to guard object creation
   # so LVGL APIs are not called before global initialization.
   def self.initialized? : Bool
-    @@initialized
+    @@initialized.get == 1
   end
 
   # Source credit:
@@ -51,19 +52,25 @@ module Lvgl::Runtime
   # - Function: `lv_init`
   # - LVGL docs: https://docs.lvgl.io/9.4/API/lv_init.html
   #
-  # Initializes LVGL global state.
+  # Initializes LVGL global state and Crystal-side runtime resources.
   #
-  # - Call once before creating LVGL objects, displays, input devices, themes, or styles.
+  # - This is the preferred API for app code.
+  # - Call before creating LVGL objects, displays, input devices, themes, or styles.
   # - Must execute on the same synchronized execution context used for later LVGL calls.
-  # - Re-initialization without `deinit` is undefined and should be avoided.
+  # - Re-initialization without `shutdown` is undefined and should be avoided.
   #
   # This wrapper is idempotent: if the runtime is already initialized,
-  # calling `init` again is a no-op.
-  def self.init : Nil
-    return if @@initialized
+  # calling `start` again is a no-op.
+  #
+  # The transition is guarded by a global lock/atomic state so concurrent fibers
+  # cannot initialize LVGL twice.
+  def self.start : Nil
+    @@state_lock.synchronize do
+      return if initialized?
 
-    LibLvgl.lv_init
-    @@initialized = true
+      LibLvgl.lv_init
+      @@initialized.set(1)
+    end
   end
 
   # Source credit:
@@ -102,15 +109,21 @@ module Lvgl::Runtime
   # Deinitializes LVGL global state.
   #
   # - Shut down display/input backend threads and callbacks before calling this.
-  # - Do not call other LVGL APIs after deinit unless you initialize again.
-  # - In managed app lifecycles, pair one successful `init` with one final `deinit`.
+  # - Do not call other LVGL APIs after shutdown unless you start again.
+  # - In managed app lifecycles, pair one successful `start` with one final `shutdown`.
   #
   # This wrapper is idempotent: if LVGL is already deinitialized, this method is
   # a no-op.
-  def self.deinit : Nil
-    return unless @@initialized
+  #
+  # Calls `lv_deinit` when LVGL is currently initialized, otherwise no-ops.
+  # Prefer explicit shutdown in app lifecycle code rather than relying on
+  # process teardown.
+  def self.shutdown : Nil
+    @@state_lock.synchronize do
+      return unless initialized?
 
-    LibLvgl.lv_deinit
-    @@initialized = false
+      LibLvgl.lv_deinit
+      @@initialized.set(0)
+    end
   end
 end

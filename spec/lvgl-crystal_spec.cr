@@ -17,9 +17,19 @@ end
 
 describe "Lvgl::Runtime" do
   it "wraps the same lifecycle API" do
-    Lvgl::Runtime.init
+    Lvgl::Runtime.start
     Lvgl::Runtime.tick_inc(1_u32)
     Lvgl::Runtime.timer_handler.should be_a(UInt32)
-    Lvgl::Runtime.deinit
+    Lvgl::Runtime.shutdown
+  end
+
+  it "keeps start and shutdown idempotent" do
+    Lvgl::Runtime.start
+    Lvgl::Runtime.start
+    Lvgl::Runtime.initialized?.should be_true
+
+    Lvgl::Runtime.shutdown
+    Lvgl::Runtime.shutdown
+    Lvgl::Runtime.initialized?.should be_false
   end
 end
