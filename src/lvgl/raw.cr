@@ -1,4 +1,4 @@
-@[Link(ldflags: "/workspace/lvgl-crystal/lib/lvgl/build/crystal/liblvgl.so -Wl,-rpath,/workspace/lvgl-crystal/lib/lvgl/build/crystal")]
+@[Link("lvgl", ldflags: "-L#{__DIR__}/../../lib/lvgl/build/crystal -Wl,-rpath,#{__DIR__}/../../lib/lvgl/build/crystal")]
 lib LibLvgl
   # :nodoc:
   #
