@@ -17,6 +17,22 @@ module Lvgl
     Main = 0x000000
   end
 
+  # LVGL color format values used by snapshot helpers.
+  #
+  # Source: `lib/lvgl/src/misc/lv_color.h` (`lv_color_format_t`).
+  enum ColorFormat : UInt32
+    # `LV_COLOR_FORMAT_ARGB8888` in LVGL (`lv_color_format_t`).
+    Argb8888 = 0x10
+  end
+
+  # LVGL generic result enum values for utility and snapshot APIs.
+  #
+  # Source: `lib/lvgl/src/misc/lv_types.h` (`lv_result_t`).
+  enum Result : UInt32
+    Ok      = 0
+    Invalid = 1
+  end
+
   # Lightweight wrapper over LVGL `lv_color_t` values.
   struct Color
     # Create a wrapper around an existing LVGL color value.

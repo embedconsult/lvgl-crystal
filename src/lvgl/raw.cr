@@ -16,6 +16,10 @@ lib LibLvgl
   # [`lv_display.h`](lib/lvgl/src/display/lv_display.h).
   type LvDisplayT = Void
 
+  # Opaque LVGL draw buffer type used by snapshot APIs.
+  # [`lv_draw_buf.h`](lib/lvgl/src/draw/lv_draw_buf.h).
+  type LvDrawBufT = Void
+
   # LVGL coordinate type (`lv_coord_t`) used for object geometry.
   #
   # Coordinates are interpreted in LVGL's object-local coordinate system and are
@@ -219,4 +223,19 @@ lib LibLvgl
   #
   # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
   fun lv_test_indev_delete_all : Void
+
+  # Snapshot an object tree into a newly allocated draw buffer.
+  #
+  # Reference: `lib/lvgl/src/others/snapshot/lv_snapshot.h`
+  fun lv_snapshot_take(obj : Pointer(LvObjT), cf : UInt32) : Pointer(LvDrawBufT)
+
+  # Save a draw buffer to an image file.
+  #
+  # Reference: `lib/lvgl/src/misc/lv_utils.h`
+  fun lv_draw_buf_save_to_file(draw_buf : Pointer(LvDrawBufT), path : UInt8*) : UInt32
+
+  # Free a draw buffer previously allocated by LVGL APIs.
+  #
+  # Reference: `lib/lvgl/src/draw/lv_draw_buf.h`
+  fun lv_draw_buf_destroy(draw_buf : Pointer(LvDrawBufT)) : Void
 end
