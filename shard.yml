@@ -6,8 +6,8 @@ authors:
   - Jason Kridner <jkridner@beagleboard.org>
 
 targets:
-  lvgl-crystal:
-    main: src/lvgl-crystal.cr
+  lvgl:
+    main: src/lvgl.cr
 
 dependencies:
   lvgl:

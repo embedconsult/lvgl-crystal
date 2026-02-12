@@ -1,9 +1,9 @@
 #
 # Based on LVGL examples/get_started/lv_example_get_started_2.c
 #
-require "../../lvgl-crystal"
+require "../../lvgl"
 
-class ExampleGetStarted2 < Lvgl::Crystal::Applet
+class ExampleGetStarted2 < Lvgl::Applet
   @@cnt = 0
 
   def btn_event_handler(e : Lvgl::Event::Message)
@@ -32,11 +32,5 @@ class ExampleGetStarted2 < Lvgl::Crystal::Applet
     label = Lvgl::Widgets::Label.new(btn) # Add a label to the button
     label.set_text("Button")              # Set the label's text
     label.center
-  end
-
-  def loop(screen, message)
-  end
-
-  def cleanup(screen, message)
   end
 end

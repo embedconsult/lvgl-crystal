@@ -1,4 +1,3 @@
 require "spec"
-require "../src/lvgl-crystal"
-
+require "../src/lvgl"
 require "./support/lvgl_harness"
