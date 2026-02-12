@@ -61,6 +61,16 @@ module Lvgl::Event
     def code? : Code?
       Code.from_value?(@code_raw)
     end
+
+    # Returns the original LVGL event target wrapped as `Lvgl::Object`.
+    def target? : Lvgl::Object?
+      Lvgl::Object.wrap(@target_raw)
+    end
+
+    # Returns the current bubbling/trickling target wrapped as `Lvgl::Object`.
+    def current_target? : Lvgl::Object?
+      Lvgl::Object.wrap(@current_target_raw)
+    end
   end
 
   # Internal registry payload retained for each active LVGL callback registration.
@@ -190,5 +200,19 @@ class Lvgl::Object
   # See `Lvgl::Event.on` for channel buffering semantics and lifecycle details.
   def on_event(filter : Lvgl::Event::Code = Lvgl::Event::Code::All, capacity : Int32 = 32) : Lvgl::Event::Subscription
     Lvgl::Event.on(self, filter: filter, capacity: capacity)
+  end
+
+  # Block-based helper that drains the subscription channel on a spawned fiber.
+  def on_event(filter : Lvgl::Event::Code = Lvgl::Event::Code::All, capacity : Int32 = 32, &block : Lvgl::Event::Message -> Nil) : Lvgl::Event::Subscription
+    subscription = on_event(filter: filter, capacity: capacity)
+    spawn name: "Lvgl::Object#on_event" do
+      loop do
+        message = subscription.channel.receive?
+        break unless message
+
+        block.call(message)
+      end
+    end
+    subscription
   end
 end
