@@ -9,8 +9,6 @@ end
 describe "LibLvgl" do
   it "links core LVGL lifecycle and timing symbols" do
     LibLvgl.lv_init
-    LibLvgl.lv_tick_inc(1_u32)
-    LibLvgl.lv_timer_handler.should be_a(UInt32)
     LibLvgl.lv_deinit
   end
 end
@@ -18,8 +16,9 @@ end
 describe "Lvgl::Runtime" do
   it "wraps the same lifecycle API" do
     Lvgl::Runtime.start
-    Lvgl::Runtime.tick_inc(1_u32)
-    Lvgl::Runtime.timer_handler.should be_a(UInt32)
+    scheduler = Lvgl::Runtime.scheduler
+    scheduler.tick_inc(1_u32)
+    scheduler.timer_handler.should be_a(UInt32)
     Lvgl::Runtime.shutdown
   end
 

@@ -1,4 +1,5 @@
 require "./raw"
+require "./scheduler"
 
 # High-level lifecycle wrapper for the minimal LVGL event-loop API needed by
 # Crystal examples.
@@ -37,6 +38,7 @@ require "./raw"
 module Lvgl::Runtime
   @@state_lock = Mutex.new
   @@initialized = Atomic(Int32).new(0)
+  @@scheduler : Lvgl::Scheduler? = nil
 
   # Returns whether this process has successfully called `Runtime.start` and has
   # not yet called `Runtime.shutdown`.
@@ -84,7 +86,7 @@ module Lvgl::Runtime
   # - LVGL timers/animations derive elapsed-time behavior from this clock.
   # - Call frequency can be lower, but animation smoothness and timer precision will follow it.
   def self.tick_inc(ms : UInt32) : Nil
-    LibLvgl.lv_tick_inc(ms)
+    scheduler.tick_inc(ms)
   end
 
   # Source credit:
@@ -98,7 +100,17 @@ module Lvgl::Runtime
   # - Run this frequently from the same synchronized LVGL execution context.
   # - Typical UI loops sleep for the returned time (often clamped to a max bound).
   def self.timer_handler : UInt32
-    LibLvgl.lv_timer_handler
+    scheduler.timer_handler
+  end
+
+  # Returns the process-global scheduler used by runtime-level helpers.
+  #
+  # Higher-level app code may also create and own dedicated `Lvgl::Scheduler`
+  # instances directly.
+  def self.scheduler : Lvgl::Scheduler
+    @@state_lock.synchronize do
+      @@scheduler ||= Lvgl::Scheduler.new
+    end
   end
 
   # Source credit:
