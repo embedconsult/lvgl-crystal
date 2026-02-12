@@ -30,6 +30,14 @@ lib LibLvgl
   # LVGL event code enum (`lv_event_code_t`) used for filtering and dispatch.
   # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
   alias LvEventCodeT = Int32
+  alias LvPartT = UInt32
+  alias LvStyleSelectorT = UInt32
+
+  struct LvColorT
+    blue : UInt8
+    green : UInt8
+    red : UInt8
+  end
 
   # LVGL event callback signature (`lv_event_cb_t`).
   # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
@@ -106,6 +114,13 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Object`.
   fun lv_obj_set_size(obj : Pointer(LvObjT), w : LvCoordT, h : LvCoordT) : Void
 
+  # Set object position in parent content coordinates.
+  #
+  # `x` and `y` are `lv_coord_t` values.
+  # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
+  # Crystal caller: `Lvgl::Object`.
+  fun lv_obj_set_pos(obj : Pointer(LvObjT), x : LvCoordT, y : LvCoordT) : Void
+
   # Align object to the center of its parent.
   #
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
@@ -126,6 +141,30 @@ lib LibLvgl
   # Reference: [`lv_obj_pos.h`](lib/lvgl/src/core/lv_obj_pos.h).
   # Crystal caller: TODO.
   fun lv_obj_align_to(obj : Pointer(LvObjT), base : Pointer(LvObjT), align : LvAlignT, x_ofs : LvCoordT, y_ofs : LvCoordT) : Void
+
+  # Return the child object at `idx` from the object's tree children.
+  #
+  # Reference: [`lv_obj_tree.h`](lib/lvgl/src/core/lv_obj_tree.h).
+  # Crystal caller: `Lvgl::Object#[]`.
+  fun lv_obj_get_child(obj : Pointer(LvObjT), idx : Int32) : Pointer(LvObjT)
+
+  # Convert a 24-bit RGB hex value into LVGL's native `lv_color_t`.
+  #
+  # Reference: [`lv_color.h`](lib/lvgl/src/misc/lv_color.h).
+  # Crystal caller: `Lvgl::Color.hex`.
+  fun lv_color_hex(c : UInt32) : LvColorT
+
+  # Set object background color for the given style selector.
+  #
+  # Reference: [`lv_obj_style_gen.h`](lib/lvgl/src/core/lv_obj_style_gen.h).
+  # Crystal caller: `Lvgl::Object#set_style_bg_color`.
+  fun lv_obj_set_style_bg_color(obj : Pointer(LvObjT), value : LvColorT, selector : LvStyleSelectorT) : Void
+
+  # Set object text color for the given style selector.
+  #
+  # Reference: [`lv_obj_style_gen.h`](lib/lvgl/src/core/lv_obj_style_gen.h).
+  # Crystal caller: `Lvgl::Object#set_style_text_color`.
+  fun lv_obj_set_style_text_color(obj : Pointer(LvObjT), value : LvColorT, selector : LvStyleSelectorT) : Void
 
   # Register an event callback on an object.
   #

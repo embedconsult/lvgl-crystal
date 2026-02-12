@@ -179,6 +179,23 @@ class Lvgl::Object
     LibLvgl.lv_obj_set_size(@raw, width, height)
   end
 
+  # Convenience tuple writer for object size (`{width, height}`).
+  def size=(value : Tuple(Int32, Int32)) : Tuple(Int32, Int32)
+    set_size(value[0], value[1])
+    value
+  end
+
+  # Set this object's top-left position relative to its aligned parent space.
+  def set_pos(x : Int32, y : Int32) : Nil
+    LibLvgl.lv_obj_set_pos(@raw, x, y)
+  end
+
+  # Convenience tuple writer for object position (`{x, y}`).
+  def pos=(value : Tuple(Int32, Int32)) : Tuple(Int32, Int32)
+    set_pos(value[0], value[1])
+    value
+  end
+
   # Center this object in its current parent.
   #
   # ## What it does
@@ -193,6 +210,55 @@ class Lvgl::Object
     LibLvgl.lv_obj_center(@raw)
   end
 
+  # Align this object within its parent using an LVGL alignment selector.
+  def align(align : Lvgl::Align, offset : Tuple(Int32, Int32) = {0, 0}) : Nil
+    LibLvgl.lv_obj_align(@raw, align.to_i, offset[0], offset[1])
+  end
+
+  # Keyword-friendly overload for `align(..., offset: {x, y})` usage.
+  def align(align : Lvgl::Align, *, offset : Tuple(Int32, Int32) = {0, 0}) : Nil
+    align(align, offset)
+  end
+
+  # Returns a wrapped child object by index using LVGL's object tree order.
+  def [](index : Int32) : Lvgl::Object
+    child = LibLvgl.lv_obj_get_child(@raw, index)
+    raise IndexError.new("#{index}") if child.null?
+
+    self.class.allocate_with(raw: child, parent: self)
+  end
+
+  # Set background color style for this object and selector part/state.
+  def set_style_bg_color(color : Lvgl::Color, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
+    LibLvgl.lv_obj_set_style_bg_color(@raw, color.to_unsafe, selector.to_i.to_u32)
+  end
+
+  # Keyword-friendly overload for `set_style_bg_color(..., selector: ...)`.
+  def set_style_bg_color(color : Lvgl::Color, *, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
+    set_style_bg_color(color, selector)
+  end
+
+  # Set text color style for this object and selector part/state.
+  def set_style_text_color(color : Lvgl::Color, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
+    LibLvgl.lv_obj_set_style_text_color(@raw, color.to_unsafe, selector.to_i.to_u32)
+  end
+
+  # Keyword-friendly overload for `set_style_text_color(..., selector: ...)`.
+  def set_style_text_color(color : Lvgl::Color, *, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
+    set_style_text_color(color, selector)
+  end
+
+  # Convenience text setter for objects known to be labels at runtime.
+  def set_text(text : String) : Nil
+    LibLvgl.lv_label_set_text(@raw, text)
+  end
+
+  # Property-style alias for `set_text`.
+  def text=(value : String) : String
+    set_text(value)
+    value
+  end
+
   # Expose the wrapped pointer for FFI compatibility.
   #
   # ## What it does
@@ -205,6 +271,13 @@ class Lvgl::Object
   # - https://crystal-lang.org/reference/latest/syntax_and_semantics/c_bindings/index.html
   def to_unsafe : Pointer(LibLvgl::LvObjT)
     @raw
+  end
+
+  # Wrap a raw LVGL object pointer, returning `nil` for null pointers.
+  def self.wrap(raw : Pointer(LibLvgl::LvObjT), parent : Object? = nil) : Object?
+    return nil if raw.null?
+
+    allocate_with(raw: raw, parent: parent)
   end
 
   # Shared constructor helper for classes that create LVGL objects.

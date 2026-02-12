@@ -45,7 +45,13 @@ module Lvgl::Widgets
     # ## LVGL docs
     # - https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_set_text
     def set_text(text : String) : Nil
-      LibLvgl.lv_label_set_text(@raw, text)
+      super(text)
+    end
+
+    # Property-style alias for `set_text`.
+    def text=(value : String) : String
+      set_text(value)
+      value
     end
   end
 end
