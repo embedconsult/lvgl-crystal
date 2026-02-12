@@ -1,9 +1,9 @@
 require "signal"
 require "log"
-require "annotations"
-require "compiler/crystal/macros"
+require "time"
 require "./lvgl/raw"
 require "./lvgl/runtime"
+require "./lvgl/scheduler"
 require "./lvgl/backend"
 require "./lvgl/object"
 require "./lvgl/event"
@@ -69,12 +69,11 @@ module Lvgl
   # Below is just a hack that should be cleaned up using Lvgl::Scheduler and
   # Lvgl::Backend.
   def self.main : Int32
+    scheduler = Runtime.scheduler
     sigs = Channel(Signal).new(1)
     Signal::INT.trap do
       sigs.send(Signal::INT)
     end
-    Log.debug { "Running #{APPLETS.size} applets" }
-    return 0 if APPLETS.empty?
 
     # For now, instantiate one of every applet
     # TODO: add "busybox-style" symlink invocation
@@ -89,17 +88,23 @@ module Lvgl
         applet.setup(@@screen)
       end
 
-      # Call each `loop` on every "tick" until terminated
+      # Call each `loop` on every timer_handler event until terminated
+      #
+      # TODO: understand if timer tick and UI should be on the same fiber
       loop do
         Fiber.yield
         select
-        when signal = sigs.receive
-          puts "Got SIGINT, terminating..."
-          break
-        when message = @@messages.receive
+        when timeout(1.millisecond)
+          scheduler.tick_inc(1)
+        when wait = scheduler.timer_handler
+          sleep(wait.milliseconds)
+          scheduler.drain_scheduled_work
           @@applets.each do |applet|
             applet.loop(@@screen, message)
           end
+        when signal = sigs.receive
+          puts "Got SIGINT, terminating..."
+          break
         end
       end
 
@@ -109,20 +114,12 @@ module Lvgl
         applet.cleanup(@@screen)
       end
     end
+    Runtime.shutdown
     0
-  end
-
-  # TODO: replace this with something tied into Lvgl::Scheduler, Lvgl::Runtime or whereever it really goes
-  def self.temp_message_generator
-    spawn name: "Lvgl.temp_message_generator" do
-      loop do
-        sleep(1.millisecond)
-        @@messages.send(Message.new)
-      end
-    end
   end
 end
 
 Log.setup_from_env
-Lvgl.temp_message_generator # TODO: remove
+Log.debug { "Running #{Lvgl::APPLETS.size} applets" }
+exit 0 if Lvgl::APPLETS.empty?
 Lvgl.main

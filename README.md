@@ -46,10 +46,10 @@ This repository is intended as a practical starting point for:
 
 ## Usage
 
-Run the app entry point:
+Run an app entry point:
 
 ```bash
-crystal run src/lvgl-crystal.cr
+crystal run src/examples/get_started/lv_example_get_started_1.cr
 ```
 
 Build the default shard target:
@@ -64,7 +64,9 @@ As you add demos, keep examples organized by topic:
 
 ```text
 src/
-  lvgl-crystal.cr
+  lvgl.cr
+  lvgl/
+    widgets/
   examples/
     basics/
     widgets/
@@ -83,7 +85,10 @@ sudo apt-get install -y build-essential pkg-config libsdl2-dev
 For framebuffer or DRM/KMS targets, install the corresponding development
 packages and grant the required runtime permissions.
 
-## Runtime Ownership Model
+## Internal Runtime Ownership Model
+
+If you follow the Applet pattern and don't make LVGL calls outside of the provided fibers, then
+you should adhere to these requirements by default.
 
 - Use a **single-owner fiber** model for LVGL calls whenever possible.
 - `Lvgl::Object`/widget constructors auto-start runtime on first use (`Lvgl::Runtime.start`, idempotent).
