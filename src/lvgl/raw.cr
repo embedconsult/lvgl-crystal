@@ -44,11 +44,11 @@ lib LibLvgl
   fun lv_init : Void
 
   # Advance LVGL's monotonic tick source by `tick_period` milliseconds.
-  # Crystal caller: `Lvgl::Runtime`.
+  # Crystal caller: `Lvgl::Scheduler`.
   fun lv_tick_inc(tick_period : UInt32) : Void
 
   # Run due LVGL timers and return milliseconds until the next recommended call.
-  # Crystal caller: `Lvgl::Runtime`.
+  # Crystal caller: `Lvgl::Scheduler`.
   fun lv_timer_handler : UInt32
 
   # Tear down LVGL global state.

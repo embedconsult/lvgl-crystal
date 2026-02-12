@@ -102,6 +102,42 @@ If your app prefers explicit bring-up, calling `Lvgl::Runtime.start` before
 creating objects is still safe and idempotent.
 
 
+### LVGL Scheduler Concurrency Contract
+
+`Lvgl::Scheduler` centralizes `lv_tick_inc` and `lv_timer_handler` behind one
+UI event-loop helper.
+
+- Only the **UI fiber** may call LVGL APIs or mutate LVGL objects/widgets.
+- Background fibers must marshal UI changes with `scheduler.schedule { ... }`.
+- The UI fiber periodically runs `scheduler.step` (or `drain_scheduled_work`,
+  `tick_inc`, and `timer_handler` explicitly).
+
+Minimal pattern:
+
+```crystal
+scheduler = Lvgl::Scheduler.new(
+  tick_period_ms: Lvgl::Scheduler::DEFAULT_TICK_PERIOD_MS,
+  max_sleep_ms: Lvgl::Scheduler::DEFAULT_MAX_SLEEP_MS,
+)
+
+# background fiber
+spawn do
+  scheduler.schedule do
+    # safe: executed later on the UI fiber
+    label.set_text("Updated from worker")
+  end
+end
+
+# UI fiber loop
+loop do
+  sleep scheduler.step.milliseconds
+end
+```
+
+If this ownership rule is violated and multiple fibers touch LVGL directly,
+LVGL global/object state can race and produce undefined behavior including UI
+corruption and hard crashes.
+
 ## Backend Adapter Profiles
 
 The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend/`:
