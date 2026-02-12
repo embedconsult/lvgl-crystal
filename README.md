@@ -46,11 +46,60 @@ This repository is intended as a practical starting point for:
 
 ## Usage
 
-Run an app entry point:
+### Environment assumptions (Linux and macOS)
+
+- `LVGL_BACKEND=headless` is the only backend wired in this repository today.
+- Headless execution requires LVGL test-module symbols to exist in
+  `lib/lvgl/build/crystal/liblvgl.so` (built with `-DLV_USE_TEST=1`).
+- Runtime on Linux and macOS currently assumes this test backend path (no native
+  SDL/Wayland/Cocoa backend wiring in this repo yet).
+
+On Linux (Debian/Ubuntu), build prerequisites:
 
 ```bash
-crystal run src/examples/get_started/lv_example_get_started_1.cr
+sudo apt-get update
+sudo apt-get install -y build-essential clang lld pkg-config
 ```
+
+On macOS (Homebrew), install equivalent toolchain prerequisites:
+
+```bash
+brew install crystal llvm lld pkg-config
+```
+
+### Run the get-started examples
+
+Use `LVGL_APPLET_MAX_TICKS` so runs are non-interactive and exit automatically.
+
+```bash
+LVGL_BACKEND=headless LVGL_APPLET_MAX_TICKS=1500 \
+  crystal run src/examples/get_started/lv_example_get_started_1.cr
+```
+
+```bash
+LVGL_BACKEND=headless LVGL_APPLET_MAX_TICKS=1500 \
+  crystal run src/examples/get_started/lv_example_get_started_2.cr
+```
+
+### Generate reference images for documentation
+
+```bash
+LVGL_BACKEND=headless crystal run scripts/generate_get_started_images.cr -- all
+```
+
+Or run individually:
+
+```bash
+LVGL_BACKEND=headless crystal run scripts/generate_get_started_images.cr -- 1
+LVGL_BACKEND=headless crystal run scripts/generate_get_started_images.cr -- 2
+```
+
+Generated artifacts:
+
+- `docs/images/lv_example_get_started_1.png`
+- `docs/images/lv_example_get_started_2.png`
+
+These generated images are intentionally not committed to the repository.
 
 Build the default shard target:
 

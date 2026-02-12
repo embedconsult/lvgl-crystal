@@ -8,6 +8,7 @@ require "./lvgl/scheduler"
 require "./lvgl/backend"
 require "./lvgl/object"
 require "./lvgl/event"
+require "./lvgl/snapshot"
 require "./lvgl/widgets/label"
 require "./lvgl/widgets/button"
 
@@ -78,6 +79,7 @@ module Lvgl
   def self.main : Int32
     backend = Backend.from_env
     raise backend.unavailable_reason || "LVGL backend unavailable" unless backend.available?
+    max_ticks = ENV["LVGL_APPLET_MAX_TICKS"]?.try(&.to_u64?)
 
     # TODO: Add busybox-style symlink dispatch so one executable can select and run
     # a single applet by invocation name.
@@ -96,6 +98,11 @@ module Lvgl
       tick_ms = 0_u64
 
       until interrupted
+        if max_ticks && tick_ms >= max_ticks
+          interrupted = true
+          next
+        end
+
         select
         when sigs.receive
           interrupted = true
@@ -129,6 +136,7 @@ Log.setup_from_env
 at_exit do
   next if Lvgl::Applet.registry.empty?
   next if PROGRAM_NAME.downcase.includes?("spec")
+  next if ENV["LVGL_NO_AUTORUN"]? == "1"
 
   Lvgl.main
 end
