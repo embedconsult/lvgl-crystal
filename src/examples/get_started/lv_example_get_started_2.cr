@@ -22,7 +22,7 @@ class ExampleGetStarted2 < Lvgl::Applet
   # Create a button with a label and react on click event.
   #
   def setup(screen)
-    btn = Lvgl::Button.new(screen)              # Add a button to the current screen
+    btn = Lvgl::Widgets::Button.new(screen)     # Add a button to the current screen
     btn.pos = {10, 10}                          # Set its position
     btn.size = {120, 50}                        # Set its size
     btn.on_event(Lvgl::Event::Code::All) do |e| # Assign a callback to the button
