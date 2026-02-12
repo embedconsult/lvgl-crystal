@@ -14,7 +14,7 @@ class ExampleGetStarted2 < Lvgl::Applet
 
       # Get the first child of the button, which is the label, and change its text
       label = btn[0]
-      label.text = "Button: #{Counter.cnt}"
+      label.text = "Button: #{@@cnt}"
     end
   end
 
