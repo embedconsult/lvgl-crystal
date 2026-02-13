@@ -182,6 +182,17 @@ If this ownership rule is violated and multiple fibers touch LVGL directly,
 LVGL global/object state can race and produce undefined behavior including UI
 corruption and hard crashes.
 
+## Documentation style
+
+- API documentation conventions are described in
+  [`DOCUMENTATION_STYLE_GUIDE.md`](DOCUMENTATION_STYLE_GUIDE.md).
+- Prefer thorough, self-contained API docs so users can understand wrappers without leaving this repo.
+- Apply this guide to comments in `src/lvgl/*.cr` and `src/lvgl/widgets/*.cr`.
+- Optional docs lint check:
+  ```bash
+  crystal run scripts/check_public_docs.cr
+  ```
+
 ## Binding ownership
 
 - Raw C bindings are declared in `src/lvgl/raw.cr` under `LibLvgl`.

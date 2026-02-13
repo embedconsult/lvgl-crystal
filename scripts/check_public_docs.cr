@@ -1,0 +1,56 @@
+#!/usr/bin/env crystal
+
+files = Dir.glob("src/lvgl/*.cr") + Dir.glob("src/lvgl/widgets/*.cr")
+errors = [] of String
+
+files.each do |file|
+  lines = File.read_lines(file)
+
+  lines.each_with_index do |line, idx|
+    stripped = line.lstrip
+    next unless stripped.starts_with?("# Source:")
+
+    unless stripped.includes?("[") && stripped.includes?("](")
+      errors << "#{file}:#{idx + 1} Source reference must use a Markdown link"
+    end
+  end
+
+  lines.each_with_index do |line, idx|
+    stripped = line.lstrip
+
+    declaration = stripped.match(/^(class|module|struct|enum)\s+([A-Z][\w:]*)/)
+    method = stripped.match(/^def\s+(?:self\.)?([a-zA-Z_\[\]=][\w!?=\[\]]*)/)
+
+    next unless declaration || method
+    next if stripped.starts_with?("private ") || stripped.starts_with?("protected ")
+
+    name = declaration ? declaration.not_nil![2] : method.not_nil![1]
+    next if name == "initialize"
+    next if declaration && name.includes?("::")
+
+    has_doc = false
+    j = idx - 1
+    while j >= 0
+      prev = lines[j]
+      break if prev.strip.empty?
+      if prev.lstrip.starts_with?("#")
+        has_doc = true
+        j -= 1
+        next
+      end
+      break
+    end
+
+    unless has_doc
+      errors << "#{file}:#{idx + 1} missing docs for #{name}"
+    end
+  end
+end
+
+if errors.empty?
+  puts "Documentation check passed"
+  exit 0
+end
+
+errors.each { |error| puts error }
+exit 1

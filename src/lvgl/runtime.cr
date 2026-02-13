@@ -1,14 +1,16 @@
 require "./raw"
 require "./scheduler"
 
-# High-level lifecycle wrapper for the minimal LVGL event-loop API needed by
-# Crystal examples.
+# High-level lifecycle wrapper for LVGL runtime startup, ticks, and shutdown.
 #
-# ![LVGL data flow diagram (LVGL docs)](https://docs.lvgl.io/9.4/_images/intro_data_flow.png)
+# ## Summary
+# Provides idempotent process-level runtime lifecycle methods and scheduler access.
 #
-# *Image credit:* LVGL project docs, "Data flow" diagram, version 9.4.
+# ## Links
+# - [LVGL init API](https://docs.lvgl.io/9.4/API/lv_init.html)
+# - [LVGL timer API](https://docs.lvgl.io/9.4/API/misc/lv_timer.html)
 #
-# ## Concurrency preconditions
+# ## Notes
 #
 # - LVGL keeps mutable global state and is **not** generally safe for unrestricted
 #   concurrent calls.
@@ -27,13 +29,23 @@ require "./scheduler"
 #   of milliseconds (bounded to a small maximum to keep responsiveness).
 # - On shutdown, stop input/display drivers first, then call `shutdown` once.
 #
-# Example pseudo-flow:
+# ## Example
+# ```
+# Lvgl::Runtime.start
 #
-# ```text
-# app start -> Runtime.start
-# timer fiber: every 1 ms -> Runtime.tick_inc(1)
-# ui fiber: loop { wait = Runtime.timer_handler; sleep(wait.milliseconds) }
-# app stop -> Runtime.shutdown
+# spawn do
+#   loop do
+#     Lvgl::Runtime.tick_inc(1_u32)
+#     sleep 1.millisecond
+#   end
+# end
+#
+# loop do
+#   wait_ms = Lvgl::Runtime.timer_handler
+#   sleep(wait_ms > 0 ? wait_ms.milliseconds : 1.millisecond)
+# end
+#
+# Lvgl::Runtime.shutdown
 # ```
 module Lvgl::Runtime
   @@state_lock = Mutex.new

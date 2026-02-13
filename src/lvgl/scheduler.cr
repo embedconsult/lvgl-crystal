@@ -4,7 +4,10 @@ require "./raw"
 
 # Minimal LVGL event-loop helper.
 #
-# ## Concurrency contract
+# ## Summary
+# Coordinates tick progression, timer handling, and queued UI work.
+#
+# ## Notes
 #
 # - Exactly one fiber (the "UI fiber") owns LVGL calls and LVGL object mutation.
 # - Non-UI fibers must never call LVGL APIs directly and must never mutate
@@ -93,6 +96,7 @@ class Lvgl::Scheduler
     wait_ms > @max_sleep_ms ? @max_sleep_ms : wait_ms
   end
 
+  # Close the scheduler queue and reject new scheduled work.
   def close : Nil
     return if closed?
 
@@ -100,6 +104,7 @@ class Lvgl::Scheduler
     @queue.close
   end
 
+  # Returns whether this scheduler has been closed.
   def closed? : Bool
     @closed.get == CLOSED_FLAG
   end

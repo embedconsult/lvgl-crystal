@@ -3,51 +3,32 @@ require "./runtime"
 
 # Canonical Crystal wrapper around LVGL's base object pointer (`lv_obj_t *`).
 #
-# This class is the shared foundation for widget wrappers (for example,
-# `Lvgl::Widgets::Label` and `Lvgl::Widgets::Button`) and for generic object
-# tree operations.
+# ## Summary
+# `Lvgl::Object` is the foundation for wrapper types such as
+# `Lvgl::Widgets::Label` and `Lvgl::Widgets::Button`.
 #
-# ## What this class is responsible for
+# Responsibilities:
+# - Holds the raw LVGL pointer for one object instance.
+# - Stores wrapper-level parent metadata used during construction.
+# - Ensures `Lvgl::Runtime.start` has run before object creation paths.
+# - Provides shared object APIs (`set_size`, `set_pos`, `center`, `align`, `to_unsafe`).
 #
-# - Holding the raw LVGL pointer for one object instance.
-# - Tracking the wrapper's parent relationship used when this object is created.
-# - Starting LVGL runtime exactly once as object wrappers are constructed.
-# - Exposing common object operations (`set_size`, `center`, `to_unsafe`).
-# - Providing reusable constructor helpers for subclasses that need custom
-#   `lv_*_create(...)` entry points.
-#
-# ## Ownership model
-#
-# LVGL owns object lifetime in C. This wrapper does not free objects directly.
-# The wrapper behaves as a lightweight handle to a pointer managed by LVGL's
-# object tree and runtime lifecycle.
-#
-# ## Runtime and threading expectations
-#
-# LVGL APIs assume a coordinated execution context. `Lvgl::Object` constructors
-# call `Lvgl::Runtime.start` automatically (idempotent), so callers do not need
-# to start runtime manually before creating the first object.
-#
-# Keep object manipulation on the same synchronized UI context used for other
-# LVGL calls.
-#
+# ## Notes
+# - LVGL owns C-side object lifetime; this wrapper does not free `lv_obj_t`.
+# - Object mutation should stay on the synchronized LVGL/UI execution context.
 #
 # ## Example
-#
 # ```
-# # Runtime auto-starts on first object creation.
 # root = Lvgl::Object.new(nil)
 # label = Lvgl::Widgets::Label.new(root)
 # label.set_text("Hello")
-#
-# # Prefer explicit teardown when your app exits.
 # Lvgl::Runtime.shutdown
 # ```
-# ## Authority links (for attribution)
 #
-# - LVGL object overview: https://docs.lvgl.io/9.4/overview/object.html
-# - `lv_obj.h` API family: https://docs.lvgl.io/9.4/API/core/lv_obj.html
-# - Positioning/sizing APIs: https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html
+# ## Links
+# - [LVGL object overview](https://docs.lvgl.io/9.4/overview/object.html)
+# - [LVGL object API](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
+# - [LVGL object header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/core/lv_obj.h)
 class Lvgl::Object
   @@state_lock = Mutex.new
   @@instance_count = Atomic(Int32).new(0)
@@ -62,67 +43,67 @@ class Lvgl::Object
 
   # Raw pointer accessor for the wrapped `lv_obj_t *`.
   #
-  # ## What it does
+  # ## Summary
   # Returns the currently stored LVGL pointer for this wrapper instance.
   #
   # ## Usage notes
   # - Primarily useful for low-level integration and diagnostics.
   # - Normal app code should prefer wrapper methods over raw pointer operations.
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/API/core/lv_obj.html
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
   def raw : Pointer(LibLvgl::LvObjT)
     @raw
   end
 
   # Raw pointer writer used by constructor helpers.
   #
-  # ## What it does
+  # ## Summary
   # Assigns the LVGL pointer stored in this wrapper.
   #
   # ## Usage notes
   # - Intended for internal construction paths (`allocate_with`).
   # - External code should not typically mutate object identity after creation.
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/API/core/lv_obj.html
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
   def raw=(value : Pointer(LibLvgl::LvObjT)) : Pointer(LibLvgl::LvObjT)
     @raw = value
   end
 
   # Parent-wrapper accessor.
   #
-  # ## What it does
+  # ## Summary
   # Returns the parent wrapper that was used during construction, when known.
   #
   # ## Usage notes
   # - `nil` is expected for wrappers representing active screen roots.
   # - This is metadata for wrapper-level composition and debugging.
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/overview/object.html
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/overview/object.html)
   def parent : Object?
     @parent
   end
 
   # Parent-wrapper writer used by constructor helpers.
   #
-  # ## What it does
+  # ## Summary
   # Stores parent metadata on this wrapper instance.
   #
   # ## Usage notes
   # - This does not reparent the LVGL object in C.
   # - Reparenting in LVGL would require explicit LVGL API calls.
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/overview/object.html
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/overview/object.html)
   def parent=(value : Object?) : Object?
     @parent = value
   end
 
   # Create a generic LVGL base object (`lv_obj_create`).
   #
-  # ## What it does
+  # ## Summary
   # Creates a new LVGL object and returns a wrapper for it.
   #
   # ## Parameters
@@ -133,8 +114,8 @@ class Lvgl::Object
   # ## Runtime behavior
   # Ensures `Lvgl::Runtime.start` has been called (idempotent).
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/API/core/lv_obj.html#c.lv_obj_create
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj.html#c.lv_obj_create)
   def self.new(parent : Object?) : Object
     build_with_parent(parent) do |parent_ptr|
       LibLvgl.lv_obj_create(parent_ptr)
@@ -143,7 +124,7 @@ class Lvgl::Object
 
   # Wrap the current active screen object.
   #
-  # ## What it does
+  # ## Summary
   # Returns an `Lvgl::Object` handle for LVGL's current active screen pointer.
   #
   # ## Usage notes
@@ -153,8 +134,8 @@ class Lvgl::Object
   # ## Runtime behavior
   # Ensures `Lvgl::Runtime.start` has been called (idempotent).
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/API/display/lv_display.html#c.lv_screen_active
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/display/lv_display.html#c.lv_screen_active)
   def self.screen_active : Object
     Lvgl::Runtime.start
 
@@ -163,7 +144,7 @@ class Lvgl::Object
 
   # Set this object's width and height.
   #
-  # ## What it does
+  # ## Summary
   # Calls `lv_obj_set_size` with provided LVGL coordinate values.
   #
   # ## Parameters
@@ -173,8 +154,8 @@ class Lvgl::Object
   # ## Usage notes
   # LVGL layout and style rules can affect final rendered geometry.
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_size
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_size)
   def set_size(width : Int32, height : Int32) : Nil
     LibLvgl.lv_obj_set_size(@raw, width, height)
   end
@@ -185,12 +166,31 @@ class Lvgl::Object
     value
   end
 
-  # Set this object's top-left position relative to its aligned parent space.
+  # Set this object's top-left position relative to parent content coordinates.
+  #
+  # ## Summary
+  # Calls `lv_obj_set_pos` with LVGL coordinate values.
+  #
+  # ## Parameters
+  # - `x`: Horizontal offset in `lv_coord_t` units.
+  # - `y`: Vertical offset in `lv_coord_t` units.
+  #
+  # ## Results
+  # - Updates this object's LVGL position state.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_pos)
   def set_pos(x : Int32, y : Int32) : Nil
     LibLvgl.lv_obj_set_pos(@raw, x, y)
   end
 
   # Convenience tuple writer for object position (`{x, y}`).
+  #
+  # ## Parameters
+  # - `value`: Position tuple where `value[0]` is x and `value[1]` is y.
+  #
+  # ## Results
+  # - Returns: The original tuple, after applying `set_pos`.
   def pos=(value : Tuple(Int32, Int32)) : Tuple(Int32, Int32)
     set_pos(value[0], value[1])
     value
@@ -198,29 +198,52 @@ class Lvgl::Object
 
   # Center this object in its current parent.
   #
-  # ## What it does
+  # ## Summary
   # Calls `lv_obj_center` for the wrapped LVGL object pointer.
   #
   # ## Usage notes
   # Equivalent to LVGL's shorthand centering helper.
   #
-  # ## Authority
-  # - https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_center
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_center)
   def center : Nil
     LibLvgl.lv_obj_center(@raw)
   end
 
   # Align this object within its parent using an LVGL alignment selector.
+  #
+  # ## Parameters
+  # - `align`: Anchor selector from `Lvgl::Align`.
+  # - `offset`: Optional x/y coordinate offsets from the selected anchor.
+  #
+  # ## Results
+  # - Updates this object's LVGL alignment state.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_align)
   def align(align : Lvgl::Align, offset : Tuple(Int32, Int32) = {0, 0}) : Nil
     LibLvgl.lv_obj_align(@raw, align.to_i, offset[0], offset[1])
   end
 
   # Keyword-friendly overload for `align(..., offset: {x, y})` usage.
+  #
+  # ## Results
+  # - Delegates to `#align(align, offset)`.
   def align(align : Lvgl::Align, *, offset : Tuple(Int32, Int32) = {0, 0}) : Nil
     align(align, offset)
   end
 
   # Returns a wrapped child object by index using LVGL's object tree order.
+  #
+  # ## Parameters
+  # - `index`: Child index in LVGL tree ordering.
+  #
+  # ## Results
+  # - Returns: Wrapped child object when index exists.
+  # - Raises: `IndexError` when LVGL returns a null child pointer.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_tree.html#c.lv_obj_get_child)
   def [](index : Int32) : Lvgl::Object
     child = LibLvgl.lv_obj_get_child(@raw, index)
     raise IndexError.new("#{index}") if child.null?
@@ -229,31 +252,72 @@ class Lvgl::Object
   end
 
   # Set background color style for this object and selector part/state.
+  #
+  # ## Parameters
+  # - `color`: Background color value.
+  # - `selector`: Style selector/part mask; defaults to `Lvgl::Part::Main`.
+  #
+  # ## Results
+  # - Updates style state for the selected part/state.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen.html#c.lv_obj_set_style_bg_color)
   def set_style_bg_color(color : Lvgl::Color, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
     LibLvgl.lv_obj_set_style_bg_color(@raw, color.to_unsafe, selector.to_i.to_u32)
   end
 
   # Keyword-friendly overload for `set_style_bg_color(..., selector: ...)`.
+  #
+  # ## Results
+  # - Delegates to positional-argument overload.
   def set_style_bg_color(color : Lvgl::Color, *, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
     set_style_bg_color(color, selector)
   end
 
   # Set text color style for this object and selector part/state.
+  #
+  # ## Parameters
+  # - `color`: Text color value.
+  # - `selector`: Style selector/part mask; defaults to `Lvgl::Part::Main`.
+  #
+  # ## Results
+  # - Updates style state for the selected part/state.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen.html#c.lv_obj_set_style_text_color)
   def set_style_text_color(color : Lvgl::Color, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
     LibLvgl.lv_obj_set_style_text_color(@raw, color.to_unsafe, selector.to_i.to_u32)
   end
 
   # Keyword-friendly overload for `set_style_text_color(..., selector: ...)`.
+  #
+  # ## Results
+  # - Delegates to positional-argument overload.
   def set_style_text_color(color : Lvgl::Color, *, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
     set_style_text_color(color, selector)
   end
 
   # Convenience text setter for objects known to be labels at runtime.
+  #
+  # ## Parameters
+  # - `text`: UTF-8 string passed to LVGL label text API.
+  #
+  # ## Results
+  # - Replaces underlying label text through LVGL.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_set_text)
   def set_text(text : String) : Nil
     LibLvgl.lv_label_set_text(@raw, text)
   end
 
   # Property-style alias for `set_text`.
+  #
+  # ## Parameters
+  # - `value`: New label text.
+  #
+  # ## Results
+  # - Returns: The original assigned string value.
   def text=(value : String) : String
     set_text(value)
     value
@@ -261,14 +325,14 @@ class Lvgl::Object
 
   # Expose the wrapped pointer for FFI compatibility.
   #
-  # ## What it does
+  # ## Summary
   # Returns the raw pointer expected by Crystal's FFI interop conventions.
   #
   # ## Usage notes
   # Use this when calling an LVGL API that is not yet wrapped at higher level.
   #
-  # ## Authority
-  # - https://crystal-lang.org/reference/latest/syntax_and_semantics/c_bindings/index.html
+  # ## Links
+  # - [Crystal C bindings](https://crystal-lang.org/reference/latest/syntax_and_semantics/c_bindings/index.html)
   def to_unsafe : Pointer(LibLvgl::LvObjT)
     @raw
   end
@@ -282,7 +346,7 @@ class Lvgl::Object
 
   # Shared constructor helper for classes that create LVGL objects.
   #
-  # ## What it does
+  # ## Summary
   # Enforces runtime initialization, resolves a parent, invokes the provided
   # creator block with `parent_ptr`, and allocates a typed wrapper instance.
   #
@@ -303,7 +367,7 @@ class Lvgl::Object
 
   # Allocate and populate a wrapper instance without `initialize`.
   #
-  # ## What it does
+  # ## Summary
   # Creates an instance via `allocate`, assigns `raw` and `parent`, and returns
   # the correctly-typed wrapper (`self`).
   #
@@ -322,14 +386,14 @@ class Lvgl::Object
     self.class.decrement_instance_count!
   end
 
-  def self.increment_instance_count! : Nil
+  private def self.increment_instance_count! : Nil
     @@state_lock.synchronize do
       Lvgl::Runtime.start if @@instance_count.get == 0
       @@instance_count.add(1)
     end
   end
 
-  def self.decrement_instance_count! : Nil
+  private def self.decrement_instance_count! : Nil
     @@state_lock.synchronize do
       return if @@instance_count.get <= 0
 

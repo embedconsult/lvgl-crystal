@@ -7,10 +7,30 @@ require "./raw"
 require "./types"
 require "./object"
 
+# LVGL utility namespace.
 module Lvgl
+  # PNG snapshot helpers backed by LVGL draw buffers.
+  #
+  # ## Summary
+  # Exposes utility methods to save an object or active screen as PNG files.
+  #
+  # ## Links
+  # - [LVGL snapshot API](https://docs.lvgl.io/9.4/API/others/snapshot/lv_snapshot.html)
   module Snapshot
     private PNG_SIGNATURE = Bytes[137_u8, 80_u8, 78_u8, 71_u8, 13_u8, 10_u8, 26_u8, 10_u8]
 
+    # Save one object subtree to a PNG file.
+    #
+    # ## Summary
+    # Captures `obj` using LVGL snapshot APIs and writes PNG bytes to `path`.
+    #
+    # ## Parameters
+    # - `obj`: Root object to capture.
+    # - `path`: Output PNG path. Parent directories are created automatically.
+    # - `color_format`: LVGL snapshot format.
+    #
+    # ## Links
+    # - [lv_snapshot_take](https://docs.lvgl.io/9.4/API/others/snapshot/lv_snapshot.html)
     def self.save_object(obj : Lvgl::Object, path : String, color_format : Lvgl::ColorFormat = Lvgl::ColorFormat::Argb8888) : Nil
       draw_buf = LibLvgl.lv_snapshot_take(obj.raw, color_format.value)
       raise "Failed to snapshot active screen" if draw_buf.null?
@@ -23,6 +43,13 @@ module Lvgl
       end
     end
 
+    # Save the active display buffer to a PNG file.
+    #
+    # ## Summary
+    # Uses LVGL's active display draw buffer and encodes it as PNG at `path`.
+    #
+    # ## Parameters
+    # - `path`: Output PNG path. Parent directories are created automatically.
     def self.save_screen(path : String) : Nil
       display = LibLvgl.lv_display_get_default
       raise "No active LVGL display found" if display.null?
