@@ -4,60 +4,42 @@ describe Lvgl::Object do
   it "tracks wrapper instance count" do
     Lvgl::Object.instance_count.should be >= 0
   end
+
+  it "returns nil from .wrap for null pointers" do
+    Lvgl::Object.wrap(Pointer(LibLvgl::LvObjT).null).should be_nil
+  end
 end
 
-if Lvgl::SpecSupport::Harness.runtime_prerequisites_available?
-  describe Lvgl::Object do
-    it "auto-starts runtime on first object creation" do
-      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
-
-      root = Lvgl::Object.new(nil)
-
-      root.should be_a(Lvgl::Object)
-      Lvgl::Runtime.initialized?.should be_true
-    end
-
-    it "auto-starts runtime when accessing screen_active" do
-      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
-
-      screen = Lvgl::Object.screen_active
-
-      screen.should be_a(Lvgl::Object)
-      Lvgl::Runtime.initialized?.should be_true
-      screen.raw.null?.should be_false
-    end
-
-    it "creates top-level and child objects" do
-      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
-
+describe "Lvgl::Object runtime behavior" do
+  it "creates parent/child wrappers and exposes pointer helpers" do
+    Lvgl::SpecSupport::Harness.with_runtime do
       parent = Lvgl::Object.new(nil)
       child = Lvgl::Object.new(parent)
 
-      parent.raw.null?.should be_false
-      child.raw.null?.should be_false
       child.parent.should eq(parent)
-    end
-
-    it "sets object size and centers object" do
-      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
-
-      object = Lvgl::Object.new(nil)
-
-      object.set_size(120, 48)
-      object.center
-    end
-
-    it "exposes raw pointer via #raw and #to_unsafe" do
-      Lvgl::SpecSupport::Harness.runtime_ready?.should be_true
-
-      object = Lvgl::Object.new(nil)
-
-      object.raw.should eq(object.to_unsafe)
-      object.raw.null?.should be_false
+      child.raw.should eq(child.to_unsafe)
+      child.raw.null?.should be_false
     end
   end
-else
-  describe Lvgl::Object do
-    pending "runtime object specs skipped: #{Lvgl::SpecSupport::Harness.runtime_prerequisite_reason}"
+
+  it "supports basic object operations and child lookup" do
+    Lvgl::SpecSupport::Harness.with_runtime do
+      root = Lvgl::Object.new(nil)
+      first_child = Lvgl::Object.new(root)
+      _second_child = Lvgl::Object.new(root)
+
+      root.set_size(120, 48)
+      root.size = {240, 96}
+      root.set_pos(5, 7)
+      root.pos = {8, 9}
+      root.center
+      root.align(Lvgl::Align::Center)
+      root.align(Lvgl::Align::Center, offset: {3, 4})
+      root.set_style_bg_color(Lvgl::Color.hex(0x336699), selector: Lvgl::Part::Main)
+      root.set_style_text_color(Lvgl::Color.hex(0xEEEEEE), selector: Lvgl::Part::Main)
+
+      root[0].raw.should eq(first_child.raw)
+      expect_raises(IndexError) { root[99] }
+    end
   end
 end

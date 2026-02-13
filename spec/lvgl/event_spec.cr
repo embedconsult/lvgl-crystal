@@ -40,4 +40,17 @@ describe Lvgl::Object do
       object.on_event(capacity: -1)
     end
   end
+
+  it "supports subscribe and unsubscribe semantics" do
+    Lvgl::SpecSupport::Harness.with_runtime do
+      object = Lvgl::Object.new(nil)
+
+      subscription = object.on_event(filter: Lvgl::Event::Code::All, capacity: 4)
+
+      subscription.released?.should be_false
+      subscription.release.should be_true
+      subscription.released?.should be_true
+      subscription.release.should be_false
+    end
+  end
 end
