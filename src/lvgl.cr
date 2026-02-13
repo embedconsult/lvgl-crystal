@@ -134,7 +134,7 @@ module Lvgl
           wait_ms = Runtime.timer_handler
           scheduler.drain_scheduled_work
           message = Lvgl::Message.new(tick_ms)
-          applets.each { |applet| applet.loop(screen, message) }
+          applets.each(&.loop(screen, message))
 
           sleep(wait_ms > 0 ? wait_ms.milliseconds : 1.millisecond)
         end

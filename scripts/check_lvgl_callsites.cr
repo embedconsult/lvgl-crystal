@@ -35,7 +35,7 @@ duplicates = callsites
 
     Duplicate.new(symbol: symbol, locations: locations)
   end
-  .sort_by(&.symbol)
+  .sort_by!(&.symbol)
 
 if duplicates.empty?
   puts "No duplicate non-allowlisted LibLvgl callsites found in src/."
