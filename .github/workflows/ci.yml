@@ -23,7 +23,7 @@ jobs:
         run: crystal tool format --check
 
       - name: Run specs
-        run: crystal spec
+        run: LVGL_BACKEND=headless crystal spec
 
       - name: Build binary target
         run: shards build
