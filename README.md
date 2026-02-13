@@ -54,7 +54,8 @@ This repository is intended as a practical starting point for:
   `lib/lvgl/build/crystal/liblvgl.so` (built with `-DLV_USE_TEST=1`).
 - `LVGL_BACKEND=wayland` is wired when the loaded `liblvgl.so` provides native
   Wayland driver support (`-DLV_USE_WAYLAND=1`).
-- Native SDL/Cocoa backend wiring is still pending.
+- `LVGL_BACKEND=sdl` is wired when the loaded `liblvgl.so` provides native
+  SDL driver support (`-DLV_USE_SDL=1`).
 
 On Linux (Debian/Ubuntu), build prerequisites:
 
@@ -186,7 +187,7 @@ corruption and hard crashes.
 The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend/`:
 
 - `HeadlessTestBackend` (default for specs/CI)
-- `SdlBackend` (placeholder profile)
+- `SdlBackend` (native SDL window/profile when LVGL is built with SDL support)
 - `WaylandBackend` (native Wayland window/profile when LVGL is built with Wayland support)
 
 `LVGL_BACKEND` selects the profile (`headless` by default).
@@ -213,14 +214,16 @@ sudo apt-get update
 sudo apt-get install -y build-essential clang lld pkg-config
 
 shards install
-# ./scripts/build_lvgl_headless_test.sh (Now part of the default build)
+# ./scripts/build_lvgl_headless_test.sh (builds test + SDL support)
 crystal spec
 ```
 
 If test-module symbols are not available in the shared LVGL build (`-DLV_USE_TEST=1`),
 runtime-dependent specs are skipped with a clear reason from `spec/support/lvgl_harness.cr`.
 
-SDL is still a follow-up runtime profile and remains a placeholder.
+SDL is wired to LVGL's native SDL driver symbols and opens an SDL window when
+those symbols are present in `liblvgl.so`. SDL window size can be configured
+with `LVGL_SDL_WIDTH` and `LVGL_SDL_HEIGHT` (defaults: `800x480`).
 Wayland is wired to LVGL's native Wayland driver symbols and opens a
 Wayland window when those symbols are present in `liblvgl.so`.
 Wayland window size can be configured with `LVGL_WAYLAND_WIDTH` and
