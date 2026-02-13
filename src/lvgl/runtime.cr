@@ -71,7 +71,7 @@ module Lvgl::Runtime
     @@state_lock.synchronize do
       return if initialized?
 
-      Log.debug { "Calling LibLvgl.lv_init" }
+      Log.debug { "Calling lv_init" }
       LibLvgl.lv_init
       @@initialized.set(1)
     end
@@ -158,7 +158,7 @@ module Lvgl::Runtime
     @@state_lock.synchronize do
       return unless initialized?
 
-      Log.debug { "Calling LibLvgl.lv_deinit" }
+      Log.debug { "Calling lv_deinit" }
       LibLvgl.lv_deinit
       @@initialized.set(0)
       @@custom_timer_handler = nil
