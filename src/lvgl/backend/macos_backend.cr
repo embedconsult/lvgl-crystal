@@ -55,13 +55,13 @@ module Lvgl::Backend
     end
 
     private def restore_dimension_env : Nil
-      if (previous_width = @previous_sdl_width)
+      if previous_width = @previous_sdl_width
         ENV["LVGL_SDL_WIDTH"] = previous_width
       else
         ENV.delete("LVGL_SDL_WIDTH")
       end
 
-      if (previous_height = @previous_sdl_height)
+      if previous_height = @previous_sdl_height
         ENV["LVGL_SDL_HEIGHT"] = previous_height
       else
         ENV.delete("LVGL_SDL_HEIGHT")
