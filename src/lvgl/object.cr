@@ -320,8 +320,10 @@ class Lvgl::Object
   #
   # ## Links
   # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_set_text)
-  def text=(value : String) : Nil
+  # - [LVGL header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/widgets/label/lv_label.h)
+  def text=(value : String) : String
     LibLvgl.lv_label_set_text(@raw, value)
+    value
   end
 
   # Expose the wrapped pointer for FFI compatibility.

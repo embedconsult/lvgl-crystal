@@ -24,7 +24,15 @@ files.each do |file|
     next unless declaration || method
     next if stripped.starts_with?("private ") || stripped.starts_with?("protected ")
 
-    name = declaration ? declaration.not_nil![2] : method.not_nil![1]
+    if declaration.nil?
+      if method.nil?
+        name = nil
+      else
+        name = method[1]
+      end
+    else
+      name = declaration[2]
+    end
     next if name == "initialize"
     next if declaration && name.includes?("::")
 
