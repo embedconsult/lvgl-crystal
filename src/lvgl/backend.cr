@@ -5,7 +5,7 @@ require "./backend/wayland_backend"
 
 module Lvgl::Backend
   def self.from_env : Adapter
-    case ENV.fetch("LVGL_BACKEND", "headless").downcase
+    case ENV.fetch("LVGL_BACKEND", "sdl").downcase
     when "headless", "headless_test", "ci"
       Log.debug { "Using Headless backend" }
       HeadlessTestBackend.new
