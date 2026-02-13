@@ -37,6 +37,7 @@ lib LibLvgl
   alias LvPartT = UInt32
   alias LvStyleSelectorT = UInt32
 
+  # Raw LVGL color struct (`lv_color_t`).
   struct LvColorT
     blue : UInt8
     green : UInt8

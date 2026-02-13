@@ -6,13 +6,10 @@ require "./object"
 
 # Channel-oriented LVGL event bridge.
 #
-# This first pass intentionally keeps callback behavior fixed and predictable:
-# event callbacks only publish typed messages onto a `Channel`.
+# ## Summary
+# Registers LVGL callbacks and forwards events to typed Crystal channels.
 #
-# Crystal callers subscribe through `Lvgl::Object#on_event` (or `Lvgl::Event.on`)
-# and consume messages from the returned subscription channel.
-#
-# ## Lifecycle contract
+# ## Notes
 #
 # - Keep the returned `Subscription` alive while receiving events.
 # - Call `subscription.release` when done to:
@@ -21,10 +18,9 @@ require "./object"
 #   - remove Crystal-side retention for callback state.
 # - If you skip `release`, the callback state remains retained for process lifetime.
 #
-# ## Expansion path
+# ## Links
 #
-# Future iterations can add more event codes, typed payload extraction, and
-# higher-level stream combinators.
+# - [LVGL events API](https://docs.lvgl.io/9.4/API/misc/lv_event.html)
 module Lvgl::Event
   # Small initial subset of LVGL event codes for examples.
   #

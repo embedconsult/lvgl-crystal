@@ -1,9 +1,10 @@
 require "../object"
 
+# Widget wrappers for LVGL built-in components.
 module Lvgl::Widgets
   # Wrapper for LVGL's label widget (`lv_label_*`).
   class Label < Lvgl::Object
-    # ## What it does
+    # ## Summary
     # Creates a new LVGL label (`lv_label_create`) attached to `parent`.
     #
     # If `parent` is `nil`, LVGL uses the active screen as parent.
@@ -11,12 +12,9 @@ module Lvgl::Widgets
     # ## Parameters
     # - `parent`: Optional parent object in the LVGL object tree.
     #
-    # ## Source credit
-    # - Header: `lib/lvgl/src/widgets/label/lv_label.h` (`lv_label_create`)
-    # - Project attribution: LVGL project (https://github.com/lvgl/lvgl)
-    #
-    # ## LVGL docs
-    # - https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_create
+    # ## Links
+    # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_create)
+    # - [LVGL header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/widgets/label/lv_label.h)
     def self.new(parent : Lvgl::Object?) : self
       build_with_parent(parent) do |parent_ptr|
         LibLvgl.lv_label_create(parent_ptr)
