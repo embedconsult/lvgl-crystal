@@ -35,8 +35,15 @@ describe "Lvgl::Object runtime behavior" do
       root.center
       root.align(Lvgl::Align::Center)
       root.align(Lvgl::Align::Center, offset: {3, 4})
-      root.set_style_bg_color(Lvgl::Color.hex(0x336699), selector: Lvgl::Part::Main)
-      root.set_style_text_color(Lvgl::Color.hex(0xEEEEEE), selector: Lvgl::Part::Main)
+      root.set_style_bg_color(Lvgl::Color.hex(0x336699), selector: Lvgl.style_selector)
+      root.set_style_text_color(Lvgl::Color.hex(0xEEEEEE), selector: Lvgl.style_selector)
+      root.set_style_bg_opa(255_u8)
+      root.set_style_bg_grad_color(Lvgl::Color.hex(0x224466))
+      root.set_style_bg_grad_dir(Lvgl::GradDir::Ver)
+      root.set_style_border_color(Lvgl::Color.hex(0x111111))
+      root.set_style_border_width(2)
+      root.set_style_radius(8)
+      root.remove_style_all
 
       root[0].raw.should eq(first_child.raw)
       expect_raises(IndexError) { root[99] }

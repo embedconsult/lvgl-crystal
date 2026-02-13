@@ -1,42 +1,45 @@
 require "../../lvgl"
 
 # Create styles from scratch for buttons.
-#
-# A Crystal-friendly adaptation of LVGL's get-started style example.
 class ExampleGetStarted3 < Lvgl::Applet
-  @normal_color = Lvgl::Color.hex(0xd6d6d6)
-  @pressed_color = Lvgl::Color.hex(0xb5b5b5)
+  private def apply_base_button_style(button : Lvgl::Widgets::Button)
+    default_selector = Lvgl.style_selector
+    pressed_selector = Lvgl.style_selector(state: Lvgl::State::Pressed)
 
-  private def apply_base_style(button : Lvgl::Widgets::Button)
-    button.set_style_bg_color(@normal_color)
-    button.set_style_text_color(Lvgl::Color.hex(0x000000))
-  end
+    button.remove_style_all
+    button.set_style_radius(10, default_selector)
+    button.set_style_bg_opa(255_u8, default_selector)
+    button.set_style_bg_color(Lvgl::Color.hex(0xe0e0e0), default_selector)
+    button.set_style_bg_grad_color(Lvgl::Color.hex(0xb0b0b0), default_selector)
+    button.set_style_bg_grad_dir(Lvgl::GradDir::Ver, default_selector)
+    button.set_style_border_color(Lvgl::Color.hex(0x000000), default_selector)
+    button.set_style_border_width(2, default_selector)
+    button.set_style_text_color(Lvgl::Color.hex(0x000000), default_selector)
 
-  private def wire_pressed_feedback(button : Lvgl::Widgets::Button)
-    button.on_event(Lvgl::Event::Code::Pressed) { |_| button.set_style_bg_color(@pressed_color) }
-    button.on_event(Lvgl::Event::Code::Released) { |_| button.set_style_bg_color(@normal_color) }
+    button.set_style_bg_color(Lvgl::Color.hex(0xc9c9c9), pressed_selector)
+    button.set_style_bg_grad_color(Lvgl::Color.hex(0x9a9a9a), pressed_selector)
   end
 
   def setup(screen)
-    first = Lvgl::Widgets::Button.new(screen)
-    first.pos = {10, 10}
-    first.size = {120, 50}
-    apply_base_style(first)
-    wire_pressed_feedback(first)
+    btn = Lvgl::Widgets::Button.new(screen)
+    btn.pos = {10, 10}
+    btn.size = {120, 50}
+    apply_base_button_style(btn)
 
-    first_label = Lvgl::Widgets::Label.new(first)
-    first_label.text = "Button"
-    first_label.center
+    label = Lvgl::Widgets::Label.new(btn)
+    label.text = "Button"
+    label.center
 
-    second = Lvgl::Widgets::Button.new(screen)
-    second.pos = {10, 80}
-    second.size = {120, 50}
-    second.set_style_bg_color(Lvgl::Color.hex(0xff4d4f))
-    second.set_style_text_color(Lvgl::Color.hex(0x000000))
-    wire_pressed_feedback(second)
+    btn2 = Lvgl::Widgets::Button.new(screen)
+    btn2.pos = {10, 80}
+    btn2.size = {120, 50}
+    apply_base_button_style(btn2)
+    btn2.set_style_bg_color(Lvgl::Color.hex(0xe53935))
+    btn2.set_style_bg_grad_color(Lvgl::Color.hex(0xff8a80))
+    btn2.set_style_radius(1000)
 
-    second_label = Lvgl::Widgets::Label.new(second)
-    second_label.text = "Button 2"
-    second_label.center
+    label2 = Lvgl::Widgets::Label.new(btn2)
+    label2.text = "Button 2"
+    label2.center
   end
 end

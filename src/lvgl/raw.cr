@@ -192,6 +192,29 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Object#set_style_text_color`.
   fun lv_obj_set_style_text_color(obj : Pointer(LvObjT), value : LvColorT, selector : LvStyleSelectorT) : Void
 
+  # Remove all styles currently attached to an object.
+  #
+  # Crystal caller: `Lvgl::Object#remove_style_all`.
+  fun lv_obj_remove_style_all(obj : Pointer(LvObjT)) : Void
+
+  # Set the background opacity style value.
+  fun lv_obj_set_style_bg_opa(obj : Pointer(LvObjT), value : UInt8, selector : LvStyleSelectorT) : Void
+
+  # Set the background gradient secondary color style value.
+  fun lv_obj_set_style_bg_grad_color(obj : Pointer(LvObjT), value : LvColorT, selector : LvStyleSelectorT) : Void
+
+  # Set the background gradient direction style value.
+  fun lv_obj_set_style_bg_grad_dir(obj : Pointer(LvObjT), value : Int32, selector : LvStyleSelectorT) : Void
+
+  # Set the border color style value.
+  fun lv_obj_set_style_border_color(obj : Pointer(LvObjT), value : LvColorT, selector : LvStyleSelectorT) : Void
+
+  # Set the border width style value.
+  fun lv_obj_set_style_border_width(obj : Pointer(LvObjT), value : Int32, selector : LvStyleSelectorT) : Void
+
+  # Set the corner radius style value.
+  fun lv_obj_set_style_radius(obj : Pointer(LvObjT), value : Int32, selector : LvStyleSelectorT) : Void
+
   # Register an event callback on an object.
   #
   # `filter` can be one specific `lv_event_code_t` or `LV_EVENT_ALL`.

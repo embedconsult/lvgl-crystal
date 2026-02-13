@@ -264,15 +264,15 @@ class Lvgl::Object
   #
   # ## Links
   # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen.html#c.lv_obj_set_style_bg_color)
-  def set_style_bg_color(color : Lvgl::Color, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
-    LibLvgl.lv_obj_set_style_bg_color(@raw, color.to_unsafe, selector.to_i.to_u32)
+  def set_style_bg_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_color(@raw, color.to_unsafe, selector)
   end
 
   # Keyword-friendly overload for `set_style_bg_color(..., selector: ...)`.
   #
   # ## Results
   # - Delegates to positional-argument overload.
-  def set_style_bg_color(color : Lvgl::Color, *, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
+  def set_style_bg_color(color : Lvgl::Color, *, selector : UInt32 = Lvgl.style_selector) : Nil
     set_style_bg_color(color, selector)
   end
 
@@ -287,16 +287,51 @@ class Lvgl::Object
   #
   # ## Links
   # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen.html#c.lv_obj_set_style_text_color)
-  def set_style_text_color(color : Lvgl::Color, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
-    LibLvgl.lv_obj_set_style_text_color(@raw, color.to_unsafe, selector.to_i.to_u32)
+  def set_style_text_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_text_color(@raw, color.to_unsafe, selector)
   end
 
   # Keyword-friendly overload for `set_style_text_color(..., selector: ...)`.
   #
   # ## Results
   # - Delegates to positional-argument overload.
-  def set_style_text_color(color : Lvgl::Color, *, selector : Lvgl::Part = Lvgl::Part::Main) : Nil
+  def set_style_text_color(color : Lvgl::Color, *, selector : UInt32 = Lvgl.style_selector) : Nil
     set_style_text_color(color, selector)
+  end
+
+  # Remove all currently attached styles from this object.
+  def remove_style_all : Nil
+    LibLvgl.lv_obj_remove_style_all(@raw)
+  end
+
+  # Set background opacity for a selector.
+  def set_style_bg_opa(value : UInt8, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_opa(@raw, value, selector)
+  end
+
+  # Set gradient color for a selector.
+  def set_style_bg_grad_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_grad_color(@raw, color.to_unsafe, selector)
+  end
+
+  # Set gradient direction for a selector.
+  def set_style_bg_grad_dir(dir : Lvgl::GradDir, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_grad_dir(@raw, dir.to_i, selector)
+  end
+
+  # Set border color for a selector.
+  def set_style_border_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_border_color(@raw, color.to_unsafe, selector)
+  end
+
+  # Set border width for a selector.
+  def set_style_border_width(value : Int32, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_border_width(@raw, value, selector)
+  end
+
+  # Set corner radius for a selector.
+  def set_style_radius(value : Int32, selector : UInt32 = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_radius(@raw, value, selector)
   end
 
   # Replaces the label text using LVGL's dynamic string API (`lv_label_set_text`).

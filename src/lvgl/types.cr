@@ -22,6 +22,24 @@ module Lvgl
     Main = 0x000000
   end
 
+  # LVGL object state flags used in style selectors.
+  enum State : UInt32
+    Default = 0x0000
+    Pressed = 0x0020
+  end
+
+  # LVGL background gradient direction values.
+  enum GradDir : Int32
+    None = 0
+    Ver  = 1
+    Hor  = 2
+  end
+
+  # Build a style selector bitmask from part and state.
+  def self.style_selector(part : Part = Part::Main, state : State = State::Default) : UInt32
+    part.to_i.to_u32 | state.to_i.to_u32
+  end
+
   # LVGL color format values used by snapshot helpers.
   #
   # Source: [lv_color.h (`lv_color_format_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_color.h).

@@ -9,6 +9,11 @@ describe Lvgl do
     Lvgl::Result::Invalid.value.should eq(0_u32)
     Lvgl::Result::Ok.value.should eq(1_u32)
   end
+
+  it "builds style selectors from part/state" do
+    Lvgl.style_selector.should eq(0_u32)
+    Lvgl.style_selector(state: Lvgl::State::Pressed).should eq(0x20_u32)
+  end
 end
 
 describe "LibLvgl" do
