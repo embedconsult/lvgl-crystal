@@ -38,26 +38,29 @@ require "./examples/**"
 #
 # ![ExampleGetStarted2](images/lv_example_get_started_2.png)
 #
+#
+# To build your initial window/screen, use the screen object provided to you in `setup`.
+#
+# `setup` runs once at the begining of the application. You define it and you have the `Lvgl`
+# API available to you.
+#
+# Here, we just print to the console that all of the examples are being run at once. This is
+# because we included them all at the top of this source file with `require "./examples/**"`.
+# That means that every example class was included in our application and will be invoked by
+# `Lvgl.main`.
+#
+# Browse the [example sources](examples/) for the example you'd like to run.
 class Examples < Lvgl::Applet
-  #
-  # To build your initial window/screen, use the screen object provided to you in `setup`.
-  #
-  # `setup` runs once at the begining of the application. You define it and you have the `Lvgl`
-  # API available to you.
-  #
-  # Here, we just print to the console that all of the examples are being run at once. This is
-  # because we included them all at the top of this source file with `require "./examples/**"`.
-  # That means that every example class was included in our application and will be invoked by
-  # `Lvgl.main`.
-  #
-  # Browse the [example sources](examples/) for the example you'd like to run.
+  # Called once to setup your applet
   def setup(screen)
     puts "Running all examples at once!"
   end
 
+  # Called repeatedly to allow you to update UI content
   def loop(screen, message)
   end
 
+  # Called once when the application is closing
   def cleanup(screen)
     puts "Cleaning up!"
   end

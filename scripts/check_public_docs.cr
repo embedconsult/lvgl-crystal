@@ -1,6 +1,6 @@
 #!/usr/bin/env crystal
 
-files = Dir.glob("src/lvgl/*.cr") + Dir.glob("src/lvgl/widgets/*.cr")
+files = Dir.glob("src/**.cr")
 errors = [] of String
 
 files.each do |file|
@@ -34,7 +34,7 @@ files.each do |file|
       name = declaration[2]
     end
     next if name == "initialize"
-    next if declaration && name.includes?("::")
+    next if declaration && !name.nil? && name.includes?("::")
 
     has_doc = false
     j = idx - 1
