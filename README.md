@@ -47,11 +47,13 @@ This repository is intended as a practical starting point for:
 
 ### Environment assumptions (Linux and macOS)
 
-- `LVGL_BACKEND=headless` is the only backend wired in this repository today.
+- `LVGL_BACKEND=headless` and `LVGL_BACKEND=wayland` are wired in this
+  repository today.
 - Headless execution requires LVGL test-module symbols to exist in
   `lib/lvgl/build/crystal/liblvgl.so` (built with `-DLV_USE_TEST=1`).
-- Runtime on Linux and macOS currently assumes this test backend path (no native
-  SDL/Wayland/Cocoa backend wiring in this repo yet).
+- Runtime on Linux and macOS currently assumes this test backend path (native
+  SDL/Cocoa backend wiring is still pending; Wayland profile currently reuses
+  the headless test runtime path).
 
 On Linux (Debian/Ubuntu), build prerequisites:
 
@@ -176,7 +178,7 @@ The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend
 
 - `HeadlessTestBackend` (default for specs/CI)
 - `SdlBackend` (placeholder profile)
-- `WaylandBackend` (placeholder profile)
+- `WaylandBackend` (wired profile that currently reuses the headless runtime path)
 
 `LVGL_BACKEND` selects the profile (`headless` by default).
 
@@ -209,7 +211,9 @@ crystal spec
 If test-module symbols are not available in the shared LVGL build (`-DLV_USE_TEST=1`),
 runtime-dependent specs are skipped with a clear reason from `spec/support/lvgl_harness.cr`.
 
-SDL and Wayland backends are follow-up runtime profiles and currently placeholders.
+SDL is still a follow-up runtime profile and remains a placeholder.
+Wayland is wired through the headless test runtime path until native Wayland
+driver integration is added.
 
 ## Development
 
