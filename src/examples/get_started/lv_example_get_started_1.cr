@@ -14,8 +14,7 @@
 # ## Backend assumptions
 # - Runs with the repository's `headless` backend by default
 #   (`LVGL_BACKEND=headless`) using LVGL test display/input symbols.
-# - `LVGL_BACKEND=wayland` is wired and currently reuses the repository's
-#   headless test runtime path for deterministic execution.
+# - `LVGL_BACKEND=wayland` uses LVGL's native Wayland backend when `liblvgl.so` is built with `-DLV_USE_WAYLAND=1`.
 # - `LVGL_BACKEND=sdl` remains a placeholder profile.
 require "../../lvgl"
 
