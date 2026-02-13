@@ -14,6 +14,13 @@ describe Lvgl do
     Lvgl.style_selector.to_unsafe.should eq(0_u32)
     Lvgl.style_selector(state: Lvgl::State::Pressed).to_unsafe.should eq(0x20_u32)
   end
+
+  it "exposes palette helpers and color darken" do
+    Lvgl::Palette::Grey.main.should be_a(Lvgl::Color)
+    Lvgl::Palette::Grey.lighten(3).should be_a(Lvgl::Color)
+    Lvgl::Palette::Red.darken(1).should be_a(Lvgl::Color)
+    Lvgl::Palette::Grey.main.darken(Lvgl::Opa::P20).should be_a(Lvgl::Color)
+  end
 end
 
 describe "LibLvgl" do

@@ -183,6 +183,18 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Color.hex`.
   fun lv_color_hex(c : UInt32) : LvColorT
 
+  # Return the main color of a built-in palette.
+  fun lv_palette_main(palette : Int32) : LvColorT
+
+  # Return a lightened color variant from a built-in palette.
+  fun lv_palette_lighten(palette : Int32, level : UInt8) : LvColorT
+
+  # Return a darkened color variant from a built-in palette.
+  fun lv_palette_darken(palette : Int32, level : UInt8) : LvColorT
+
+  # Darken any color by an opacity amount.
+  fun lv_color_darken(color : LvColorT, level : UInt8) : LvColorT
+
   # Set object background color for the given style selector.
   #
   # Reference: [`lv_obj_style_gen.h`](lib/lvgl/src/core/lv_obj_style_gen.h).

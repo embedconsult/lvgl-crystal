@@ -35,6 +35,31 @@ module Lvgl
     Hor  = 2
   end
 
+  # Common LVGL opacity presets.
+  enum Opa : UInt8
+    Transparent =   0
+    P20         =  51
+    Cover       = 255
+  end
+
+  # Built-in LVGL Material palettes.
+  enum Palette : Int32
+    Red  =  0
+    Grey = 18
+
+    def main : Lvgl::Color
+      Lvgl::Color.new(LibLvgl.lv_palette_main(to_i))
+    end
+
+    def lighten(level : Int) : Lvgl::Color
+      Lvgl::Color.new(LibLvgl.lv_palette_lighten(to_i, level.to_u8))
+    end
+
+    def darken(level : Int) : Lvgl::Color
+      Lvgl::Color.new(LibLvgl.lv_palette_darken(to_i, level.to_u8))
+    end
+  end
+
   # Lightweight wrapper over `lv_style_selector_t`.
   #
   # Selector values combine `Lvgl::Part` and `Lvgl::State` bitmasks.
@@ -78,6 +103,12 @@ module Lvgl
     # Build a color from a 24-bit hex RGB value (`0xRRGGBB`).
     def self.hex(value : Int) : self
       new(LibLvgl.lv_color_hex(value.to_u32))
+    end
+
+    # Return a darkened variant of this color.
+    def darken(level : Lvgl::Opa | UInt8) : self
+      value = level.is_a?(Lvgl::Opa) ? level.to_i.to_u8 : level
+      self.class.new(LibLvgl.lv_color_darken(@raw, value))
     end
 
     # Return the raw `lv_color_t` value for FFI calls.
