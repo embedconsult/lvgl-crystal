@@ -32,8 +32,8 @@ module Lvgl
   #
   # Source: `lib/lvgl/src/misc/lv_types.h` (`lv_result_t`).
   enum Result : UInt32
-    Ok      = 0
-    Invalid = 1
+    Invalid = 0
+    Ok      = 1
   end
 
   # Lightweight wrapper over LVGL `lv_color_t` values.

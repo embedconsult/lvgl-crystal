@@ -4,6 +4,11 @@ describe Lvgl do
   it "exposes a semantic version" do
     Lvgl::VERSION.should match(/\A\d+\.\d+\.\d+\z/)
   end
+
+  it "maps Lvgl::Result to LVGL's lv_result_t values" do
+    Lvgl::Result::Invalid.value.should eq(0_u32)
+    Lvgl::Result::Ok.value.should eq(1_u32)
+  end
 end
 
 describe "LibLvgl" do
