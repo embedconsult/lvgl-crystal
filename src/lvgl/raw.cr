@@ -212,6 +212,9 @@ lib LibLvgl
   # Set the border color style value.
   fun lv_obj_set_style_border_color(obj : Pointer(LvObjT), value : LvColorT, selector : LvStyleSelectorT) : Void
 
+  # Set the border opacity style value.
+  fun lv_obj_set_style_border_opa(obj : Pointer(LvObjT), value : UInt8, selector : LvStyleSelectorT) : Void
+
   # Set the border width style value.
   fun lv_obj_set_style_border_width(obj : Pointer(LvObjT), value : Int32, selector : LvStyleSelectorT) : Void
 

@@ -334,6 +334,11 @@ class Lvgl::Object
     LibLvgl.lv_obj_set_style_border_color(@raw, color.to_unsafe, selector.to_unsafe)
   end
 
+  # Set border opacity for a selector.
+  def set_style_border_opa(value : UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_border_opa(@raw, value, selector.to_unsafe)
+  end
+
   # Set border width for a selector.
   def set_style_border_width(value : Int32, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
     LibLvgl.lv_obj_set_style_border_width(@raw, value, selector.to_unsafe)

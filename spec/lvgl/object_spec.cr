@@ -41,6 +41,7 @@ describe "Lvgl::Object runtime behavior" do
       root.set_style_bg_grad_color(Lvgl::Color.hex(0x224466))
       root.set_style_bg_grad_dir(Lvgl::GradDir::Ver)
       root.set_style_border_color(Lvgl::Color.hex(0x111111))
+      root.set_style_border_opa(51_u8)
       root.set_style_border_width(2)
       root.set_style_radius(8)
       root.remove_style_all
