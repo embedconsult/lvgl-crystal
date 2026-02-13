@@ -14,8 +14,8 @@
 # ## Backend assumptions
 # - Runs with the repository's `headless` backend by default
 #   (`LVGL_BACKEND=headless`) using LVGL test display/input symbols.
-# - Interactive desktop backends (`sdl`, `wayland`) are placeholder profiles in
-#   this repository and are not wired yet.
+# - `LVGL_BACKEND=wayland` uses LVGL's native Wayland backend when `liblvgl.so` is built with `LV_USE_WAYLAND=1`.
+# - `LVGL_BACKEND=sdl` remains a placeholder profile.
 require "../../lvgl"
 
 class ExampleGetStarted2 < Lvgl::Applet

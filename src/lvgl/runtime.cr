@@ -39,6 +39,7 @@ module Lvgl::Runtime
   @@state_lock = Mutex.new
   @@initialized = Atomic(Int32).new(0)
   @@scheduler : Lvgl::Scheduler? = nil
+  @@custom_timer_handler : (-> UInt32)? = nil
 
   # Returns whether this process has successfully called `Runtime.start` and has
   # not yet called `Runtime.shutdown`.
@@ -100,6 +101,9 @@ module Lvgl::Runtime
   # - Run this frequently from the same synchronized LVGL execution context.
   # - Typical UI loops sleep for the returned time (often clamped to a max bound).
   def self.timer_handler : UInt32
+    handler = @@state_lock.synchronize { @@custom_timer_handler }
+    return handler.call if handler
+
     scheduler.timer_handler
   end
 
@@ -110,6 +114,23 @@ module Lvgl::Runtime
   def self.scheduler : Lvgl::Scheduler
     @@state_lock.synchronize do
       @@scheduler ||= Lvgl::Scheduler.new
+    end
+  end
+
+  # Installs a backend-specific timer handler used by `Runtime.timer_handler`.
+  #
+  # Backends such as Wayland can wrap LVGL timer processing to integrate
+  # platform event dispatch.
+  def self.install_timer_handler(&block : -> UInt32) : Nil
+    @@state_lock.synchronize do
+      @@custom_timer_handler = block
+    end
+  end
+
+  # Restores default runtime timer handling (`lv_timer_handler`).
+  def self.reset_timer_handler : Nil
+    @@state_lock.synchronize do
+      @@custom_timer_handler = nil
     end
   end
 
@@ -136,6 +157,7 @@ module Lvgl::Runtime
 
       LibLvgl.lv_deinit
       @@initialized.set(0)
+      @@custom_timer_handler = nil
     end
   end
 end
