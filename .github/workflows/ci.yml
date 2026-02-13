@@ -29,7 +29,7 @@ jobs:
         run: shards build
 
       - name: Build API docs
-        run: crystal docs -o docs
+        run: crystal docs
 
       - name: Build example images for API docs
         run: crystal run scripts/generate_example_images.cr

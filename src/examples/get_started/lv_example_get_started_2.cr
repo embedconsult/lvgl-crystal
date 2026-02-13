@@ -1,23 +1,8 @@
-# `lv_example_get_started_2` Crystal port.
-#
-# ## LVGL documentation
-# - LVGL get-started example 2 (C):
-#   https://docs.lvgl.io/9.4/get-started/quick-overview.html
-#
-# ## Crystal/Applet deviations from the C example
-# - Uses `Lvgl::Applet#setup` for object creation and an instance method event
-#   handler (`#btn_event_handler`) rather than a free C callback function.
-# - Uses Crystal wrapper types for events and objects (`Lvgl::Event::Message`,
-#   `Lvgl::Widgets::Button`, `Lvgl::Widgets::Label`) instead of raw pointers.
-# - App lifecycle and the timer loop are managed by `Lvgl.main`.
-#
-# ## Backend assumptions
-# - Runs with the repository's `headless` backend by default
-#   (`LVGL_BACKEND=headless`) using LVGL test display/input symbols.
-# - `LVGL_BACKEND=wayland` uses LVGL's native Wayland backend when `liblvgl.so` is built with `-DLV_USE_WAYLAND=1`.
-# - `LVGL_BACKEND=sdl` remains a placeholder profile.
 require "../../lvgl"
 
+#
+# A button with a lable and react on click event
+#
 class ExampleGetStarted2 < Lvgl::Applet
   @@cnt = 0
 
