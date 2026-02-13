@@ -9,12 +9,12 @@ class ExampleGetStarted3 < Lvgl::Applet
 
     button.remove_style_all
     button.set_style_radius(10)
-    button.set_style_bg_opa(Lvgl::Opa::Cover.to_i.to_u8)
+    button.set_style_bg_opa(Lvgl::Opa::Cover)
     button.set_style_bg_color(grey_bg)
     button.set_style_bg_grad_color(grey_bg_grad)
     button.set_style_bg_grad_dir(Lvgl::GradDir::Ver)
     button.set_style_border_color(Lvgl::Color.hex(0x000000))
-    button.set_style_border_opa(Lvgl::Opa::P20.to_i.to_u8)
+    button.set_style_border_opa(Lvgl::Opa::P20)
     button.set_style_border_width(2)
     button.set_style_text_color(Lvgl::Color.hex(0x000000))
 

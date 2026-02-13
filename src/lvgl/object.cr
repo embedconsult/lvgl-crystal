@@ -315,8 +315,9 @@ class Lvgl::Object
   end
 
   # Set background opacity for a selector.
-  def set_style_bg_opa(value : UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_bg_opa(@raw, value, selector.to_unsafe)
+  def set_style_bg_opa(value : Lvgl::Opa | UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    opacity = value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
+    LibLvgl.lv_obj_set_style_bg_opa(@raw, opacity, selector.to_unsafe)
   end
 
   # Set gradient color for a selector.
@@ -335,8 +336,9 @@ class Lvgl::Object
   end
 
   # Set border opacity for a selector.
-  def set_style_border_opa(value : UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_border_opa(@raw, value, selector.to_unsafe)
+  def set_style_border_opa(value : Lvgl::Opa | UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    opacity = value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
+    LibLvgl.lv_obj_set_style_border_opa(@raw, opacity, selector.to_unsafe)
   end
 
   # Set border width for a selector.
