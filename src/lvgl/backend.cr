@@ -1,5 +1,6 @@
 require "./backend/adapter"
 require "./backend/headless_test_backend"
+require "./backend/macos_backend"
 require "./backend/sdl_backend"
 require "./backend/wayland_backend"
 
@@ -21,8 +22,9 @@ module Lvgl::Backend
   # Selects a backend adapter using `LVGL_BACKEND`.
   #
   # ## Summary
-  # Supports `headless`, `sdl`, and `wayland` values. Unknown values fall back
-  # to `HeadlessTestBackend`.
+  # Supports `headless`, `macos`, `sdl`, and `wayland` values.
+  # If `LVGL_BACKEND` is unset, defaults to `macos` on Darwin and `sdl`
+  # elsewhere. Unknown values fall back to `HeadlessTestBackend`.
   #
   # ## Results
   # - Returns: A concrete `Lvgl::Backend::Adapter` implementation.
@@ -31,13 +33,18 @@ module Lvgl::Backend
   # - [Backend adapter source](https://github.com/embedconsult/lvgl-crystal/blob/main/src/lvgl/backend/adapter.cr)
   # - `Lvgl::Backend::Adapter`
   def self.from_env : Adapter
-    case ENV.fetch("LVGL_BACKEND", "sdl").downcase
+    default_backend_key = {% if flag?(:darwin) %}"macos"{% else %}"sdl"{% end %}
+
+    case ENV.fetch("LVGL_BACKEND", default_backend_key).downcase
     when "headless", "headless_test", "ci"
       Log.debug { "Using Headless backend" }
       HeadlessTestBackend.new
     when "sdl"
       Log.debug { "Using SDL backend" }
       SdlBackend.new
+    when "macos", "darwin", "osx"
+      Log.debug { "Using macOS backend" }
+      MacosBackend.new
     when "wayland"
       Log.debug { "Using Wayland backend" }
       WaylandBackend.new

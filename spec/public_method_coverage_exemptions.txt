@@ -19,6 +19,9 @@ src/lvgl/backend/headless_test_backend.cr#teardown! | Backend teardown relies on
 src/lvgl/backend/sdl_backend.cr#setup! | SDL backend setup requires native SDL/LVGL runtime integration.
 src/lvgl/backend/sdl_backend.cr#teardown! | SDL backend teardown requires native SDL/LVGL runtime integration.
 
+src/lvgl/backend/macos_backend.cr#setup! | macOS backend setup requires native SDL/LVGL runtime integration.
+src/lvgl/backend/macos_backend.cr#teardown! | macOS backend teardown requires native SDL/LVGL runtime integration.
+
 src/lvgl/backend/wayland_backend.cr#setup! | Wayland backend setup requires native Wayland/LVGL runtime integration.
 src/lvgl/backend/wayland_backend.cr#teardown! | Wayland backend teardown requires native Wayland/LVGL runtime integration.
 

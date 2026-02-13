@@ -47,15 +47,18 @@ This repository is intended as a practical starting point for:
 
 ### Environment assumptions (Linux and macOS)
 
-- `LVGL_BACKEND=headless` is wired and 
-  Runtime defaults to the headless test backend path unless
-  you explicitly select a platform backend via `LVGL_BACKEND`.
+- `LVGL_BACKEND=headless` is wired and recommended for CI/spec environments.
 - Headless execution requires LVGL test-module symbols to exist in
   `lib/lvgl/build/crystal/liblvgl.so` (built with `-DLV_USE_TEST=1`).
+- Runtime defaults to `LVGL_BACKEND=macos` on macOS and
+  `LVGL_BACKEND=sdl` on other platforms when unset.
 - `LVGL_BACKEND=wayland` is wired when the loaded `liblvgl.so` provides native
   Wayland driver support (`-DLV_USE_WAYLAND=1`).
 - `LVGL_BACKEND=sdl` is wired when the loaded `liblvgl.so` provides native
   SDL driver support (`-DLV_USE_SDL=1`).
+- `LVGL_BACKEND=macos` is wired as a macOS profile over LVGL's SDL driver
+  symbols (`-DLV_USE_SDL=1`), with optional `LVGL_MACOS_WIDTH` and
+  `LVGL_MACOS_HEIGHT` overrides.
 
 On Linux (Debian/Ubuntu), build prerequisites:
 
@@ -68,7 +71,7 @@ sudo apt-get install -y build-essential clang lld pkg-config
 On macOS (MacPorts), install equivalent toolchain prerequisites:
 
 ```bash
-sudo port install crystal shards pkgconfig
+sudo port install crystal shards pkgconfig libsdl2
 ```
 
 ### Generate reference images for documentation
@@ -209,11 +212,12 @@ corruption and hard crashes.
 
 The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend/`:
 
-- `HeadlessTestBackend` (default for specs/CI)
+- `HeadlessTestBackend` (recommended for specs/CI)
+- `MacosBackend` (macOS profile using LVGL SDL driver symbols)
 - `SdlBackend` (native SDL window/profile when LVGL is built with SDL support)
 - `WaylandBackend` (native Wayland window/profile when LVGL is built with Wayland support)
 
-`LVGL_BACKEND` selects the profile (`headless` by default).
+`LVGL_BACKEND` selects the profile (`macos` by default on macOS, `sdl` elsewhere).
 
 ### Headless test backend (Debian-first)
 
@@ -247,6 +251,8 @@ runtime-dependent specs are skipped with a clear reason from `spec/support/lvgl_
 SDL is wired to LVGL's native SDL driver symbols and opens an SDL window when
 those symbols are present in `liblvgl.so`. SDL window size can be configured
 with `LVGL_SDL_WIDTH` and `LVGL_SDL_HEIGHT` (defaults: `800x480`).
+On macOS, `LVGL_BACKEND=macos` reuses those same SDL symbols and accepts
+`LVGL_MACOS_WIDTH` and `LVGL_MACOS_HEIGHT` (falls back to `LVGL_SDL_*`).
 Wayland is wired to LVGL's native Wayland driver symbols and opens a
 Wayland window when those symbols are present in `liblvgl.so`.
 Wayland window size can be configured with `LVGL_WAYLAND_WIDTH` and
