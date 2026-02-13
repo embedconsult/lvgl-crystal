@@ -26,7 +26,7 @@ class ExampleGetStarted3 < Lvgl::Applet
   def setup(screen)
     btn = Lvgl::Widgets::Button.new(screen)
     btn.remove_style_all
-    btn.pos = {10, 10}
+    btn.pos = {20, 20}
     btn.size = {120, 50}
     apply_base_button_style(btn)
 
@@ -36,7 +36,7 @@ class ExampleGetStarted3 < Lvgl::Applet
 
     btn2 = Lvgl::Widgets::Button.new(screen)
     btn2.remove_style_all
-    btn2.pos = {10, 80}
+    btn2.pos = {20, 90}
     btn2.size = {120, 50}
     apply_base_button_style(btn2)
     btn2.set_style_bg_color(Lvgl::Palette::Red.main)
