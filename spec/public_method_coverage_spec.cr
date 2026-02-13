@@ -12,6 +12,6 @@ describe "public method spec coverage" do
       error: error_output
     )
 
-    status.success?.should be_true, "\n#{output.to_s}#{error_output.to_s}"
+    status.success?.should be_true, "\n#{output}#{error_output}"
   end
 end

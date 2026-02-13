@@ -268,11 +268,14 @@ Generate API documentation locally:
 crystal docs
 ```
 
-
 ## CI/CD
 
 - **GitHub Actions** validates formatting/specs, builds binary artifacts, and publishes docs to GitHub Pages from `main`.
 - **GitLab CI/CD** validates formatting/specs, stores binary artifacts, and publishes docs using the `pages` job from the default branch.
+
+## TODO items
+
+- Add busybox-style symlink dispatch so one executable can select and run a single applet by invocation name.
 
 ## Contributing
 

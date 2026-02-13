@@ -98,8 +98,6 @@ module Lvgl
     raise backend.unavailable_reason || "LVGL backend unavailable" unless backend.available?
     max_ticks = ENV["LVGL_APPLET_MAX_TICKS"]?.try(&.to_u64?)
 
-    # TODO: Add busybox-style symlink dispatch so one executable can select and run
-    # a single applet by invocation name.
     applets = Applet.registry.map(&.new)
     return 0 if applets.empty?
 

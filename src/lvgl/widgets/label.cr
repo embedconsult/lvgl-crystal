@@ -22,36 +22,5 @@ module Lvgl::Widgets
         LibLvgl.lv_label_create(parent_ptr)
       end
     end
-
-    # ## What it does
-    # Replaces the label text using LVGL's dynamic string API (`lv_label_set_text`).
-    #
-    # The provided Crystal `String` is converted to a null-terminated C string and
-    # passed to LVGL. LVGL copies the bytes into a new internal buffer, so the
-    # caller can immediately let the original Crystal string go out of scope.
-    #
-    # Encoding assumptions:
-    # - LVGL expects text as `const char *`.
-    # - This wrapper passes Crystal strings as UTF-8 text.
-    #
-    # ## Parameters
-    # - `text`: New label content. Existing dynamic text is released by LVGL and
-    #   replaced with a freshly allocated copy of `text`.
-    #
-    # ## Source credit
-    # - Header: `lib/lvgl/src/widgets/label/lv_label.h` (`lv_label_set_text`)
-    # - Project attribution: LVGL project (https://github.com/lvgl/lvgl)
-    #
-    # ## LVGL docs
-    # - https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_set_text
-    def set_text(text : String) : Nil
-      super(text)
-    end
-
-    # Property-style alias for `set_text`.
-    def text=(value : String) : String
-      set_text(value)
-      value
-    end
   end
 end

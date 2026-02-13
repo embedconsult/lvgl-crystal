@@ -64,8 +64,6 @@ class Lvgl::Scheduler
     processed = 0
 
     loop do
-      task = nil
-
       select
       when received_task = @queue.receive
         task = received_task
@@ -73,7 +71,7 @@ class Lvgl::Scheduler
         break
       end
 
-      task.not_nil!.call
+      task.call unless task.nil?
       processed += 1
     end
 

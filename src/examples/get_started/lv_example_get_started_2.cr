@@ -31,7 +31,7 @@ class ExampleGetStarted2 < Lvgl::Applet
     end
 
     label = Lvgl::Widgets::Label.new(btn) # Add a label to the button
-    label.set_text("Button")              # Set the label's text
+    label.text = "Button"                 # Set the label's text
     label.center
   end
 end

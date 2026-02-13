@@ -11,8 +11,9 @@ describe Lvgl::Backend::WaylandBackend do
     if backend.available?
       backend.unavailable_reason.should be_nil
     else
-      backend.unavailable_reason.should_not be_nil
-      backend.unavailable_reason.not_nil!.should contain("LV_USE_WAYLAND=1")
+      reason = backend.unavailable_reason
+      reason.should_not be_nil
+      reason.should contain("LV_USE_WAYLAND=1") unless reason.nil?
     end
   end
 end

@@ -11,7 +11,7 @@ class ExampleGetStarted1 < Lvgl::Applet
 
     # Create a white label, set its text and align it to the center.
     label = Lvgl::Widgets::Label.new(screen)
-    label.set_text("Hello world")
+    label.text = "Hello world"
     label.set_style_text_color(Lvgl::Color.hex(0xffffff), selector: Lvgl::Part::Main)
     label.align(Lvgl::Align::Center, offset: {0, 0})
   end
