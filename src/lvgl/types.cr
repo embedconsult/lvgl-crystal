@@ -35,9 +35,21 @@ module Lvgl
     Hor  = 2
   end
 
+  # Lightweight wrapper over `lv_style_selector_t`.
+  #
+  # Selector values combine `Lvgl::Part` and `Lvgl::State` bitmasks.
+  struct StyleSelector
+    def initialize(@raw : UInt32)
+    end
+
+    def to_unsafe : UInt32
+      @raw
+    end
+  end
+
   # Build a style selector bitmask from part and state.
-  def self.style_selector(part : Part = Part::Main, state : State = State::Default) : UInt32
-    part.to_i.to_u32 | state.to_i.to_u32
+  def self.style_selector(part : Part = Part::Main, state : State = State::Default) : StyleSelector
+    StyleSelector.new(part.to_i.to_u32 | state.to_i.to_u32)
   end
 
   # LVGL color format values used by snapshot helpers.

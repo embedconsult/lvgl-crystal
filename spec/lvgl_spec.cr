@@ -11,8 +11,8 @@ describe Lvgl do
   end
 
   it "builds style selectors from part/state" do
-    Lvgl.style_selector.should eq(0_u32)
-    Lvgl.style_selector(state: Lvgl::State::Pressed).should eq(0x20_u32)
+    Lvgl.style_selector.to_unsafe.should eq(0_u32)
+    Lvgl.style_selector(state: Lvgl::State::Pressed).to_unsafe.should eq(0x20_u32)
   end
 end
 

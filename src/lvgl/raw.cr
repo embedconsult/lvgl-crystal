@@ -35,6 +35,9 @@ lib LibLvgl
   # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
   alias LvEventCodeT = Int32
   alias LvPartT = UInt32
+
+  # LVGL style selector type (`lv_style_selector_t`), a combined bitmask of
+  # `lv_part_t` and `lv_state_t`.
   alias LvStyleSelectorT = UInt32
 
   # Raw LVGL color struct (`lv_color_t`).

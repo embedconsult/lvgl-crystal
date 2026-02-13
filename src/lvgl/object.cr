@@ -257,22 +257,27 @@ class Lvgl::Object
   #
   # ## Parameters
   # - `color`: Background color value.
-  # - `selector`: Style selector/part mask; defaults to `Lvgl::Part::Main`.
+  # - `selector`: Style selector/part mask; defaults to main/default selector.
   #
   # ## Results
   # - Updates style state for the selected part/state.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen.html#c.lv_obj_set_style_bg_color)
-  def set_style_bg_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_bg_color(@raw, color.to_unsafe, selector)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen_h.html#_CPPv425lv_obj_set_style_bg_colorP8lv_obj_t10lv_color_t19lv_style_selector_t)
+  def set_style_bg_color(color : Lvgl::Color, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_color(@raw, color.to_unsafe, selector.to_unsafe)
+  end
+
+  # Compatibility overload for callers using part-only selectors.
+  def set_style_bg_color(color : Lvgl::Color, selector : Lvgl::Part) : Nil
+    set_style_bg_color(color, Lvgl.style_selector(part: selector))
   end
 
   # Keyword-friendly overload for `set_style_bg_color(..., selector: ...)`.
   #
   # ## Results
   # - Delegates to positional-argument overload.
-  def set_style_bg_color(color : Lvgl::Color, *, selector : UInt32 = Lvgl.style_selector) : Nil
+  def set_style_bg_color(color : Lvgl::Color, *, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
     set_style_bg_color(color, selector)
   end
 
@@ -280,22 +285,27 @@ class Lvgl::Object
   #
   # ## Parameters
   # - `color`: Text color value.
-  # - `selector`: Style selector/part mask; defaults to `Lvgl::Part::Main`.
+  # - `selector`: Style selector/part mask; defaults to main/default selector.
   #
   # ## Results
   # - Updates style state for the selected part/state.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen.html#c.lv_obj_set_style_text_color)
-  def set_style_text_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_text_color(@raw, color.to_unsafe, selector)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_style_gen_h.html#_CPPv427lv_obj_set_style_text_colorP8lv_obj_t10lv_color_t19lv_style_selector_t)
+  def set_style_text_color(color : Lvgl::Color, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_text_color(@raw, color.to_unsafe, selector.to_unsafe)
+  end
+
+  # Compatibility overload for callers using part-only selectors.
+  def set_style_text_color(color : Lvgl::Color, selector : Lvgl::Part) : Nil
+    set_style_text_color(color, Lvgl.style_selector(part: selector))
   end
 
   # Keyword-friendly overload for `set_style_text_color(..., selector: ...)`.
   #
   # ## Results
   # - Delegates to positional-argument overload.
-  def set_style_text_color(color : Lvgl::Color, *, selector : UInt32 = Lvgl.style_selector) : Nil
+  def set_style_text_color(color : Lvgl::Color, *, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
     set_style_text_color(color, selector)
   end
 
@@ -305,33 +315,33 @@ class Lvgl::Object
   end
 
   # Set background opacity for a selector.
-  def set_style_bg_opa(value : UInt8, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_bg_opa(@raw, value, selector)
+  def set_style_bg_opa(value : UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_opa(@raw, value, selector.to_unsafe)
   end
 
   # Set gradient color for a selector.
-  def set_style_bg_grad_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_bg_grad_color(@raw, color.to_unsafe, selector)
+  def set_style_bg_grad_color(color : Lvgl::Color, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_grad_color(@raw, color.to_unsafe, selector.to_unsafe)
   end
 
   # Set gradient direction for a selector.
-  def set_style_bg_grad_dir(dir : Lvgl::GradDir, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_bg_grad_dir(@raw, dir.to_i, selector)
+  def set_style_bg_grad_dir(dir : Lvgl::GradDir, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_bg_grad_dir(@raw, dir.to_i, selector.to_unsafe)
   end
 
   # Set border color for a selector.
-  def set_style_border_color(color : Lvgl::Color, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_border_color(@raw, color.to_unsafe, selector)
+  def set_style_border_color(color : Lvgl::Color, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_border_color(@raw, color.to_unsafe, selector.to_unsafe)
   end
 
   # Set border width for a selector.
-  def set_style_border_width(value : Int32, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_border_width(@raw, value, selector)
+  def set_style_border_width(value : Int32, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_border_width(@raw, value, selector.to_unsafe)
   end
 
   # Set corner radius for a selector.
-  def set_style_radius(value : Int32, selector : UInt32 = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_radius(@raw, value, selector)
+  def set_style_radius(value : Int32, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    LibLvgl.lv_obj_set_style_radius(@raw, value, selector.to_unsafe)
   end
 
   # Replaces the label text using LVGL's dynamic string API (`lv_label_set_text`).
