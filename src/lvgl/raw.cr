@@ -122,6 +122,17 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Widgets::Button`.
   fun lv_button_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
 
+  # Create a slider widget object.
+  #
+  # Symbol name follows LVGL 9 exports (`lv_slider_create`).
+  # Crystal caller: `Lvgl::Widgets::Slider`.
+  fun lv_slider_create(parent : Pointer(LvObjT)) : Pointer(LvObjT)
+
+  # Return the current integer value from a slider widget.
+  #
+  # Crystal caller: `Lvgl::Widgets::Slider#value`.
+  fun lv_slider_get_value(obj : Pointer(LvObjT)) : Int32
+
   # Set object width and height in LVGL coordinate units.
   #
   # `w` and `h` are `lv_coord_t` values interpreted by LVGL layout/size rules.

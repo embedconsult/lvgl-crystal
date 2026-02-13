@@ -4,6 +4,7 @@ require "./raw"
 module Lvgl
   alias Button = Widgets::Button
   alias Label = Widgets::Label
+  alias Slider = Widgets::Slider
 
   # LVGL alignment values used by `lv_obj_align`.
   #

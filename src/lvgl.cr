@@ -11,6 +11,7 @@ require "./lvgl/event"
 require "./lvgl/snapshot"
 require "./lvgl/widgets/label"
 require "./lvgl/widgets/button"
+require "./lvgl/widgets/slider"
 
 # Crystal bindings, runtime helpers, and applet entry pattern for LVGL examples.
 #
