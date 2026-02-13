@@ -1,11 +1,12 @@
 require "../../lvgl"
 
+# A button with a label and react on click event
 #
-# A button with a lable and react on click event
-#
+# ![ExampleGetStarted2](images/lv_example_get_started_2.png)
 class ExampleGetStarted2 < Lvgl::Applet
   @@cnt = 0
 
+  # Button click event handler
   def btn_event_handler(e : Lvgl::Event::Message)
     code = e.code?
     btn = e.target?
@@ -20,9 +21,7 @@ class ExampleGetStarted2 < Lvgl::Applet
     end
   end
 
-  #
   # Create a button with a label and react on click event.
-  #
   def setup(screen)
     btn = Lvgl::Widgets::Button.new(screen)     # Add a button to the current screen
     btn.pos = {10, 10}                          # Set its position

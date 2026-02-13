@@ -30,13 +30,13 @@ require "./examples/**"
 #
 # `ExampleGetStarted1`
 #
-# ![ExampleGetStarted1](../docs/images/lv_example_get_started_1.png)
+# ![ExampleGetStarted1](images/lv_example_get_started_1.png)
 #
 # ### A button with a label and react on click event
 #
 # `ExampleGetStarted2`
 #
-# ![ExampleGetStarted2](../docs/images/lv_example_get_started_2.png)
+# ![ExampleGetStarted2](images/lv_example_get_started_2.png)
 #
 class Examples < Lvgl::Applet
   #

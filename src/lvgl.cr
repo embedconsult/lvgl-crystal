@@ -40,19 +40,25 @@ module Lvgl
   # Subclasses override `setup`, `loop`, and optionally `cleanup`.
   class Applet
     macro inherited
+      # Allow `Lvgl::Applet` runners to know the base filename for the subclass.
       def source_basename
         Path[__FILE__].stem
       end
 
+      # Allow `Lvgl::Applet` runners to know the class name for the subclass.
+      #
+      # {{ @type.name.stringify }}
       def class_name
         {{ @type.name.stringify }}
       end
     end
 
+    # Allow `Applet` runners to know the base filename for the subclass.
     def source_basename
       Path[__FILE__].stem
     end
 
+    # Allow `Applet` runners to know the class name for the subclass.
     def class_name
       {{ @type.name.stringify }}
     end
