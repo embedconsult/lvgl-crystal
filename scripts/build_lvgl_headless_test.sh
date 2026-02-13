@@ -18,8 +18,11 @@ clang \
   -I"$LVGL_ROOT/src" \
   -DLV_CONF_SKIP=1 \
   -DLV_USE_TEST=1 \
+  -DLV_USE_SDL=1 \
   -DLV_USE_SNAPSHOT=1 \
+  $(pkg-config --cflags sdl2) \
   "${SOURCES[@]}" \
+  $(pkg-config --libs sdl2) \
   -o "$OUTPUT_LIB"
 
-echo "Built $OUTPUT_LIB with LV_USE_TEST=1 and LV_USE_SNAPSHOT=1"
+echo "Built $OUTPUT_LIB with LV_USE_TEST=1, LV_USE_SDL=1 and LV_USE_SNAPSHOT=1"
