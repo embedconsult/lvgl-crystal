@@ -33,8 +33,9 @@ Primary priorities:
 
 - Keep executable entry points in `src/`.
 - Place reusable helpers in `src/` under clear module namespaces.
-- Place example-specific logic under `src/examples/` grouped by topic.
-- Keep specs in `spec/` mirroring source structure where practical.
+- Place example-specific logic under `src/examples/` grouped by topic (for example `src/examples/get_started/` and `src/examples/widgets/`).
+- Keep reusable LVGL wrappers under `src/lvgl/` (for example `src/lvgl/object.cr` and `src/lvgl/widgets/button.cr`).
+- Keep specs in `spec/` mirroring source structure where practical (for example `src/lvgl/widgets/button.cr` -> `spec/lvgl/widgets/button_spec.cr`).
 
 ## LVGL / Debian Guidance
 
