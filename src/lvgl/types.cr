@@ -1,6 +1,9 @@
 require "./raw"
 
 module Lvgl
+  alias Button = Widgets::Button
+  alias Label = Widgets::Label
+
   # LVGL alignment values used by `lv_obj_align`.
   #
   # Source: `lib/lvgl/src/misc/lv_area.h` (`lv_align_t`).

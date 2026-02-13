@@ -18,9 +18,8 @@ This repository is intended as a practical starting point for:
 ## Requirements
 
 - Debian 12+ (or compatible Debian-based distro)
-- Crystal 1.10+ (or newer)
+- Crystal 1.19.1 (or newer) with Shards
 - Git
-- LVGL source and any display/input backends required for your target runtime
 
 ## Installation
 
@@ -59,45 +58,24 @@ On Linux (Debian/Ubuntu), build prerequisites:
 ```bash
 sudo apt-get update
 sudo apt-get install -y build-essential clang lld pkg-config
+# Install Crystal 1.19.1 and Shards
 ```
 
-On macOS (Homebrew), install equivalent toolchain prerequisites:
+On macOS (MacPorts), install equivalent toolchain prerequisites:
 
 ```bash
-brew install crystal llvm lld pkg-config
-```
-
-### Run the get-started examples
-
-Use `LVGL_APPLET_MAX_TICKS` so runs are non-interactive and exit automatically.
-
-```bash
-LVGL_BACKEND=headless LVGL_APPLET_MAX_TICKS=1500 \
-  crystal run src/examples/get_started/lv_example_get_started_1.cr
-```
-
-```bash
-LVGL_BACKEND=headless LVGL_APPLET_MAX_TICKS=1500 \
-  crystal run src/examples/get_started/lv_example_get_started_2.cr
+sudo port install crystal shards pkgconfig
 ```
 
 ### Generate reference images for documentation
 
 ```bash
-LVGL_BACKEND=headless crystal run scripts/generate_get_started_images.cr -- all
-```
-
-Or run individually:
-
-```bash
-LVGL_BACKEND=headless crystal run scripts/generate_get_started_images.cr -- 1
-LVGL_BACKEND=headless crystal run scripts/generate_get_started_images.cr -- 2
+LVGL_BACKEND=headless crystal run scripts/generate_example_images.cr -- all
 ```
 
 Generated artifacts:
 
-- `docs/images/lv_example_get_started_1.png`
-- `docs/images/lv_example_get_started_2.png`
+- `docs/images/*.png`
 
 These generated images are intentionally not committed to the repository.
 

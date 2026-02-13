@@ -31,6 +31,9 @@ jobs:
       - name: Build API docs
         run: crystal docs -o docs
 
+      - name: Build example images for API docs
+        run: crystal run scripts/generate_example_images.cr
+
       - name: Upload binary assets
         uses: actions/upload-artifact@v4
         with:

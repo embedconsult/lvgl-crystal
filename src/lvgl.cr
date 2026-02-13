@@ -33,21 +33,35 @@ require "./lvgl/widgets/button"
 # ```
 module Lvgl
   VERSION = "0.1.0"
+  APPLETS = {{ Applet.all_subclasses }}
 
   # Base class for beginner-friendly app entry points.
   #
   # Subclasses override `setup`, `loop`, and optionally `cleanup`.
   class Applet
-    @@registry = [] of Applet.class
+    macro inherited
+      def source_basename
+        Path[__FILE__].stem
+      end
 
-    # Automatically register each concrete applet subclass when loaded.
-    def self.inherited(subclass)
-      @@registry << subclass
+      def class_name
+        {{ @type.name.stringify }}
+      end
     end
 
-    # Returns all discovered applet subclasses.
+    def source_basename
+      Path[__FILE__].stem
+    end
+
+    def class_name
+      {{ @type.name.stringify }}
+    end
+
+    # Returns all applet subclasses using compile-time macro.
     def self.registry : Array(Applet.class)
-      @@registry
+      APPLETS.compact_map do |subclass|
+        subclass.as?(Applet.class)
+      end
     end
 
     # One-time applet initialization hook.
@@ -62,9 +76,6 @@ module Lvgl
     def cleanup(screen : Lvgl::Object = Lvgl::Object.screen_active)
     end
   end
-
-  alias Button = Widgets::Button
-  alias Label = Widgets::Label
 
   # Runtime loop message passed to `Applet#loop`.
   struct Message
@@ -89,7 +100,10 @@ module Lvgl
     backend.setup!
     begin
       screen = Lvgl::Object.screen_active
-      applets.each(&.setup(screen))
+      applets.each do |applet|
+        Log.debug { "Calling #{applet.class_name} (#{applet.source_basename}) `setup` method" }
+        applet.setup(screen)
+      end
 
       scheduler = Runtime.scheduler
       interrupted = false
@@ -119,7 +133,10 @@ module Lvgl
         end
       end
 
-      applets.each(&.cleanup(screen))
+      applets.each do |applet|
+        Log.debug { "Calling #{applet.class_name} (#{applet.source_basename}) `cleanup` method" }
+        applet.setup(screen)
+      end
     ensure
       backend.teardown!
       Runtime.shutdown
@@ -131,6 +148,7 @@ end
 
 # Configure logging from environment variables (if set).
 Log.setup_from_env
+Log.debug { "Applets found: #{Lvgl::Applet.registry}" }
 
 # Run applets automatically when this file is used as an executable entry point.
 at_exit do
