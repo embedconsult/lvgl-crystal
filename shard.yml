@@ -6,8 +6,8 @@ authors:
   - Jason Kridner <jkridner@beagleboard.org>
 
 targets:
-  lvgl:
-    main: src/lvgl.cr
+  lvgl-examples:
+    main: src/examples.cr
 
 dependencies:
   lvgl:
