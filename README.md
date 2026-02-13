@@ -47,13 +47,14 @@ This repository is intended as a practical starting point for:
 
 ### Environment assumptions (Linux and macOS)
 
-- `LVGL_BACKEND=headless` and `LVGL_BACKEND=wayland` are wired in this
-  repository today.
+- `LVGL_BACKEND=headless` is wired and used by default in this repository.
+- `LVGL_BACKEND=wayland` is wired when the Crystal app is built with
+  `-Dlvgl_wayland` and `liblvgl.so` is built with native Wayland driver
+  support (`LV_USE_WAYLAND=1`).
 - Headless execution requires LVGL test-module symbols to exist in
   `lib/lvgl/build/crystal/liblvgl.so` (built with `-DLV_USE_TEST=1`).
-- Runtime on Linux and macOS currently assumes this test backend path (native
-  SDL/Cocoa backend wiring is still pending; Wayland profile currently reuses
-  the headless test runtime path).
+- Runtime on Linux and macOS defaults to the headless test backend path unless
+  you explicitly select a platform backend via `LVGL_BACKEND`.
 
 On Linux (Debian/Ubuntu), build prerequisites:
 
@@ -109,6 +110,14 @@ Typical Linux dependencies you may need (adjust for your backend):
 ```bash
 sudo apt-get update
 sudo apt-get install -y build-essential pkg-config libsdl2-dev
+```
+
+For native Wayland backend builds (`LVGL_BACKEND=wayland`), include Wayland
+client development libraries when building LVGL:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libwayland-dev wayland-protocols libxkbcommon-dev
 ```
 
 For framebuffer or DRM/KMS targets, install the corresponding development
@@ -178,7 +187,7 @@ The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend
 
 - `HeadlessTestBackend` (default for specs/CI)
 - `SdlBackend` (placeholder profile)
-- `WaylandBackend` (wired profile that currently reuses the headless runtime path)
+- `WaylandBackend` (native Wayland window/profile when LVGL is built with Wayland support)
 
 `LVGL_BACKEND` selects the profile (`headless` by default).
 
@@ -212,8 +221,11 @@ If test-module symbols are not available in the shared LVGL build (`-DLV_USE_TES
 runtime-dependent specs are skipped with a clear reason from `spec/support/lvgl_harness.cr`.
 
 SDL is still a follow-up runtime profile and remains a placeholder.
-Wayland is wired through the headless test runtime path until native Wayland
-driver integration is added.
+Wayland is wired to LVGL's native Wayland driver symbols and opens a real
+Wayland window when built with `-Dlvgl_wayland` and those symbols are present
+in `liblvgl.so`.
+Wayland window size can be configured with `LVGL_WAYLAND_WIDTH` and
+`LVGL_WAYLAND_HEIGHT` (defaults: `800x480`).
 
 ## Development
 

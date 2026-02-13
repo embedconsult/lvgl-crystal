@@ -224,6 +224,43 @@ lib LibLvgl
   # Reference: `lib/lvgl/src/others/test/lv_test_indev.h`
   fun lv_test_indev_delete_all : Void
 
+  {% if flag?(:lvgl_wayland) %}
+    # Wayland display-close callback type.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wl_window.h`
+    alias LvWaylandDisplayCloseFT = Pointer(LvDisplayT) -> Bool
+
+    # Initialize LVGL's Wayland backend context.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wayland_private.h`
+    fun lv_wayland_init : Void
+
+    # Deinitialize LVGL's Wayland backend context.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wayland_private.h`
+    fun lv_wayland_deinit : Void
+
+    # Create a Wayland-backed LVGL window/display.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wl_window.h`
+    fun lv_wayland_window_create(hor_res : UInt32, ver_res : UInt32, title : UInt8*, close_cb : LvWaylandDisplayCloseFT) : Pointer(LvDisplayT)
+
+    # Programmatically close a Wayland-backed LVGL window/display.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wl_window.h`
+    fun lv_wayland_window_close(disp : Pointer(LvDisplayT)) : Void
+
+    # Return whether a Wayland-backed LVGL window is still open.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wl_window.h`
+    fun lv_wayland_window_is_open(disp : Pointer(LvDisplayT)) : Bool
+
+    # Wayland-aware timer handler wrapper for LVGL's run loop.
+    #
+    # Reference: `lib/lvgl/src/drivers/wayland/lv_wayland.h`
+    fun lv_wayland_timer_handler : UInt32
+  {% end %}
+
   # Snapshot an object tree into a newly allocated draw buffer.
   #
   # Reference: `lib/lvgl/src/others/snapshot/lv_snapshot.h`
