@@ -82,6 +82,16 @@ lib LibLvgl
   # Crystal caller: TODO.
   fun lv_scr_act = lv_screen_active : Pointer(LvObjT)
 
+  # Returns the default display handle.
+  #
+  # Reference: [`lv_display.h`](lib/lvgl/src/display/lv_display.h).
+  fun lv_display_get_default : Pointer(LvDisplayT)
+
+  # Returns the active draw buffer for a display.
+  #
+  # Reference: [`lv_display.h`](lib/lvgl/src/display/lv_display.h).
+  fun lv_display_get_buf_active(disp : Pointer(LvDisplayT)) : Pointer(LvDrawBufT)
+
   # Create a base object.
   #
   # `parent` is the parent object. If `NULL`, LVGL creates a new screen object.

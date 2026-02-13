@@ -26,6 +26,7 @@ module Lvgl
   enum ColorFormat : UInt32
     # `LV_COLOR_FORMAT_ARGB8888` in LVGL (`lv_color_format_t`).
     Argb8888 = 0x10
+    Xrgb8888 = 0x11
   end
 
   # LVGL generic result enum values for utility and snapshot APIs.

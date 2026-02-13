@@ -23,7 +23,7 @@ Lvgl::Applet.registry.each do |applet_class|
   with_headless_backend do |screen|
     applet.setup(screen)
     Lvgl::Runtime.scheduler.timer_handler
-    Lvgl::Snapshot.save_object(screen[0], "docs/images/#{applet.source_basename}.png")
+    Lvgl::Snapshot.save_screen("docs/images/#{applet.source_basename}.png")
     puts "Generated docs/images/#{applet.source_basename}.png"
   end
 end

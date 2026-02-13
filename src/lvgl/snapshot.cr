@@ -23,8 +23,15 @@ module Lvgl
       end
     end
 
-    def self.save_screen(path : String, color_format : Lvgl::ColorFormat = Lvgl::ColorFormat::Argb8888) : Nil
-      save_object(Lvgl::Object.screen_active, path, color_format)
+    def self.save_screen(path : String) : Nil
+      display = LibLvgl.lv_display_get_default
+      raise "No active LVGL display found" if display.null?
+
+      draw_buf = LibLvgl.lv_display_get_buf_active(display)
+      raise "Active LVGL display buffer is unavailable" if draw_buf.null?
+
+      FileUtils.mkdir_p(File.dirname(path))
+      save_draw_buffer_as_png(draw_buf, path)
     end
 
     private def self.save_draw_buffer_as_png(draw_buf : Pointer(LibLvgl::LvDrawBufT), path : String) : Nil
@@ -34,7 +41,9 @@ module Lvgl
       header_word_3 = draw_buf_data.as(UInt32*)[2]
 
       color_format = (header_word_1 >> 8) & 0xFF
-      raise "Unsupported draw buffer color format #{color_format}; expected ARGB8888" unless color_format == Lvgl::ColorFormat::Argb8888.value
+      unless color_format == Lvgl::ColorFormat::Argb8888.value || color_format == Lvgl::ColorFormat::Xrgb8888.value
+        raise "Unsupported draw buffer color format #{color_format}; expected ARGB8888 or XRGB8888"
+      end
 
       width = (header_word_2 & 0xFFFF).to_i
       height = (header_word_2 >> 16).to_i
@@ -63,7 +72,7 @@ module Lvgl
           b = pixel[0]
           g = pixel[1]
           r = pixel[2]
-          a = pixel[3]
+          a = color_format == Lvgl::ColorFormat::Xrgb8888.value ? 255_u8 : pixel[3]
           raw_scanlines.write_byte(r)
           raw_scanlines.write_byte(g)
           raw_scanlines.write_byte(b)
