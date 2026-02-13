@@ -182,6 +182,18 @@ If this ownership rule is violated and multiple fibers touch LVGL directly,
 LVGL global/object state can race and produce undefined behavior including UI
 corruption and hard crashes.
 
+## Binding ownership
+
+- Raw C bindings are declared in `src/lvgl/raw.cr` under `LibLvgl`.
+- Canonical object wrappers live in `src/lvgl/object.cr` and widget wrappers
+  live in `src/lvgl/widgets/*`.
+- New `LibLvgl.lv_*` usage should be introduced through one canonical Crystal
+  method and reused from that method rather than adding direct raw calls in
+  multiple files.
+- When you need a new symbol, add the wrapper at the closest ownership layer
+  (`Lvgl::Object`, `Lvgl::Widgets::*`, backend adapter, or runtime helper),
+  then call that wrapper from higher-level code.
+
 ## Backend Adapter Profiles
 
 The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend/`:
@@ -235,6 +247,12 @@ Run specs:
 
 ```bash
 crystal spec
+```
+
+Run the direct `LibLvgl` callsite duplicate check:
+
+```bash
+crystal run scripts/check_lvgl_callsites.cr
 ```
 
 Format Crystal code:

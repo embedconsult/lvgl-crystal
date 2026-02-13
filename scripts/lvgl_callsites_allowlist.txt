@@ -1,0 +1,4 @@
+# One symbol per line.
+# Add only when duplicate direct callsites are intentional and documented.
+# Example:
+# LibLvgl.lv_example_symbol

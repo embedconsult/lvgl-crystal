@@ -44,6 +44,12 @@ When adding LVGL-related examples:
 - Mention required Debian packages in README updates.
 - Keep platform-specific flags isolated and documented.
 
+## LVGL Binding Wrappers
+
+- Treat each `LibLvgl.lv_*` symbol as having one canonical Crystal wrapper method.
+- Reuse that wrapper from other files instead of calling `LibLvgl` directly from multiple places.
+- If a new raw LVGL call is required, add/extend the canonical wrapper first, then use it.
+
 ## Change Checklist
 
 Before finishing a task, run:
