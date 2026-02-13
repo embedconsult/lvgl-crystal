@@ -88,7 +88,7 @@ module Lvgl
       io.write(data)
 
       crc = Digest::CRC32.checksum(type_bytes)
-      crc = Digest::CRC32.update(data, crc)
+      crc = Digest::CRC32.update(data, crc) unless data.empty?
       io.write_bytes(crc, IO::ByteFormat::BigEndian)
     end
   end
