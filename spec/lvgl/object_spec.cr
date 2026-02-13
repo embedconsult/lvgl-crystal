@@ -42,4 +42,19 @@ describe "Lvgl::Object runtime behavior" do
       expect_raises(IndexError) { root[99] }
     end
   end
+
+  it "wraps Lvgl::Object.screen_active when runtime is available" do
+    unless Lvgl::SpecSupport::Harness.runtime_ready?
+      puts "Skipping runtime-dependent screen_active check: #{Lvgl::SpecSupport::Harness.runtime_skip_reason}"
+      next
+    end
+
+    begin
+      screen = Lvgl::Object.screen_active
+      screen.parent.should be_nil
+      screen.raw.null?.should be_false
+    ensure
+      Lvgl::SpecSupport::Harness.safe_cleanup
+    end
+  end
 end

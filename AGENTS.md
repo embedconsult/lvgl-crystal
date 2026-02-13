@@ -64,3 +64,12 @@ For any user-facing change:
 - Update `README.md` if setup, build, or run steps changed.
 - Provide minimal copy-paste commands.
 - Keep instructions Debian-first unless asked otherwise.
+
+## Public Method Coverage Policy
+
+All newly introduced public methods in `src/lvgl.cr` and `src/lvgl/**/*.cr` must have at least one corresponding reference in `spec/**/*.cr`.
+
+If a method cannot be meaningfully spec-covered in this environment, add an explicit entry with justification to `spec/public_method_coverage_exemptions.txt`.
+
+The CI/public-method coverage check (`scripts/check_public_method_spec_coverage.cr`) must pass before merging.
+

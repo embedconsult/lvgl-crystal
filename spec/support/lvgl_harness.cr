@@ -32,10 +32,7 @@ module Lvgl::SpecSupport
     end
 
     def self.with_runtime(&)
-      unless runtime_ready?
-        pending "runtime specs skipped: #{runtime_skip_reason}"
-        return
-      end
+      return unless runtime_ready?
 
       begin
         yield

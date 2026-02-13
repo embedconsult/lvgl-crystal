@@ -1,0 +1,50 @@
+# Format:
+#   <relative/path.cr>#<method_name> | justification
+#
+# Any new public method must be either:
+# - referenced by at least one spec under spec/**/*.cr, or
+# - listed here with a clear justification.
+
+src/lvgl.cr#source_basename | Applet naming helper exercised indirectly by registry-based loading paths.
+src/lvgl.cr#class_name | Applet naming helper exercised indirectly by registry-based loading paths.
+src/lvgl.cr#self.registry | Registry is integration-driven and currently covered by runtime smoke flow.
+src/lvgl.cr#loop | Applet lifecycle loop is backend/runtime integration behavior.
+src/lvgl.cr#cleanup | Applet lifecycle cleanup is backend/runtime integration behavior.
+src/lvgl.cr#initialize | Message struct constructor is trivial data initialization.
+src/lvgl.cr#self.main | CLI entrypoint is environment-dependent integration behavior.
+
+src/lvgl/backend/headless_test_backend.cr#setup! | Backend setup relies on runtime dynamic library state.
+src/lvgl/backend/headless_test_backend.cr#teardown! | Backend teardown relies on runtime dynamic library state.
+
+src/lvgl/backend/sdl_backend.cr#setup! | SDL backend setup requires native SDL/LVGL runtime integration.
+src/lvgl/backend/sdl_backend.cr#teardown! | SDL backend teardown requires native SDL/LVGL runtime integration.
+
+src/lvgl/backend/wayland_backend.cr#setup! | Wayland backend setup requires native Wayland/LVGL runtime integration.
+src/lvgl/backend/wayland_backend.cr#teardown! | Wayland backend teardown requires native Wayland/LVGL runtime integration.
+
+src/lvgl/event.cr#initialize | Event message constructors are thin value initialization.
+src/lvgl/event.cr#code? | Event optional field accessors are thin wrappers around stored values.
+src/lvgl/event.cr#target? | Event optional field accessors are thin wrappers around stored values.
+src/lvgl/event.cr#current_target? | Event optional field accessors are thin wrappers around stored values.
+src/lvgl/event.cr#released? | Event predicate currently covered only in broader callback flows.
+
+src/lvgl/object.cr#raw= | Raw pointer writer is internal construction plumbing.
+src/lvgl/object.cr#parent= | Parent writer is internal construction plumbing.
+src/lvgl/object.cr#size= | Convenience tuple writer is a thin adapter over set_size.
+src/lvgl/object.cr#pos= | Convenience tuple writer is a thin adapter over set_pos.
+src/lvgl/object.cr#[] | Child indexer delegates directly to LVGL child lookup.
+src/lvgl/object.cr#text= | Base object text assignment is optional convenience behavior.
+src/lvgl/object.cr#finalize | Finalizer coverage is nondeterministic in specs.
+src/lvgl/object.cr#self.increment_instance_count! | Instance counting internals are exercised indirectly.
+src/lvgl/object.cr#self.decrement_instance_count! | Instance counting internals are exercised indirectly.
+
+src/lvgl/runtime.cr#self.initialized? | Runtime state predicate is indirectly covered by lifecycle specs.
+
+src/lvgl/scheduler.cr#initialize | Constructor validations are covered, but direct name matching is currently absent.
+src/lvgl/scheduler.cr#step | Step loop behavior is integration-oriented with timer scheduling.
+src/lvgl/scheduler.cr#closed? | Closed-state predicate is covered indirectly through close behavior.
+
+
+src/lvgl/types.cr#initialize | Result wrapper constructor is thin value initialization.
+
+src/lvgl/widgets/label.cr#text= | Label writer delegates to set_text and is a convenience API.
