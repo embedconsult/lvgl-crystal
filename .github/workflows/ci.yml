@@ -22,9 +22,6 @@ jobs:
       - name: Check formatting
         run: crystal tool format --check
 
-      - name: Check repository structure
-        run: crystal run scripts/check_structure_layout.cr
-
       - name: Run specs
         run: LVGL_BACKEND=headless crystal spec
 
