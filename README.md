@@ -70,7 +70,7 @@ sudo port install crystal shards pkgconfig
 ### Generate reference images for documentation
 
 ```bash
-LVGL_BACKEND=headless crystal run scripts/generate_example_images.cr -- all
+LVGL_BACKEND=headless crystal run scripts/generate_example_images.cr
 ```
 
 Generated artifacts:

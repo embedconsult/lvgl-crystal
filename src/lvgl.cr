@@ -111,6 +111,7 @@ module Lvgl
       Signal::INT.trap { sigs.send(nil) }
       tick_ms = 0_u64
 
+      Log.debug { "Entering main `loop`" }
       until interrupted
         if max_ticks && tick_ms >= max_ticks
           interrupted = true
