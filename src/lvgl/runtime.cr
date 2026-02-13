@@ -71,6 +71,7 @@ module Lvgl::Runtime
     @@state_lock.synchronize do
       return if initialized?
 
+      Log.debug { "Calling LibLvgl.lv_init" }
       LibLvgl.lv_init
       @@initialized.set(1)
     end
@@ -122,6 +123,7 @@ module Lvgl::Runtime
   # Backends such as Wayland can wrap LVGL timer processing to integrate
   # platform event dispatch.
   def self.install_timer_handler(&block : -> UInt32) : Nil
+    Log.debug { "Installing custom timer handler" }
     @@state_lock.synchronize do
       @@custom_timer_handler = block
     end
@@ -129,6 +131,7 @@ module Lvgl::Runtime
 
   # Restores default runtime timer handling (`lv_timer_handler`).
   def self.reset_timer_handler : Nil
+    Log.debug { "Restoring timer handler" }
     @@state_lock.synchronize do
       @@custom_timer_handler = nil
     end
@@ -155,6 +158,7 @@ module Lvgl::Runtime
     @@state_lock.synchronize do
       return unless initialized?
 
+      Log.debug { "Calling LibLvgl.lv_deinit" }
       LibLvgl.lv_deinit
       @@initialized.set(0)
       @@custom_timer_handler = nil
