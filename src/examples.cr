@@ -1,3 +1,4 @@
+require "log"
 require "./examples/**"
 
 # An applet is an easy way to build an LVGL application in Crystal.
@@ -53,7 +54,7 @@ require "./examples/**"
 class Examples < Lvgl::Applet
   # Called once to setup your applet
   def setup(screen)
-    puts "Running all examples at once!"
+    Log.info { "Running all examples at once!" }
   end
 
   # Called repeatedly to allow you to update UI content
@@ -62,6 +63,6 @@ class Examples < Lvgl::Applet
 
   # Called once when the application is closing
   def cleanup(screen)
-    puts "Cleaning up!"
+    Log.info { "Cleaning up!" }
   end
 end
