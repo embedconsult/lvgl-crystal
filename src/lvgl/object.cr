@@ -393,6 +393,26 @@ class Lvgl::Object
     add_style(style, selector)
   end
 
+  # Add one or more states to this object.
+  def add_state(state : Lvgl::State) : Nil
+    LibLvgl.lv_obj_add_state(@raw, state.to_i.to_u32)
+  end
+
+  # Remove one or more states from this object.
+  def remove_state(state : Lvgl::State) : Nil
+    LibLvgl.lv_obj_remove_state(@raw, state.to_i.to_u32)
+  end
+
+  # Resolve one style property for this object and part in the current state.
+  def get_style_prop(part : Lvgl::Part, prop : Lvgl::StyleProp) : LibLvgl::LvStyleValueT
+    LibLvgl.lv_obj_get_style_prop(@raw, part.to_i.to_u32, prop.to_i.to_u8)
+  end
+
+  # Apply active color filter(s) to a resolved style value for this object/part.
+  def apply_style_color_filter(part : Lvgl::Part, value : LibLvgl::LvStyleValueT) : LibLvgl::LvStyleValueT
+    LibLvgl.lv_obj_style_apply_color_filter(@raw, part.to_i.to_u32, value)
+  end
+
   # Fluent style helper proxy.
   def style : StyleProxy
     @style_proxy ||= StyleProxy.new(self)

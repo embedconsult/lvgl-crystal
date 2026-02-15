@@ -24,7 +24,6 @@ class ExampleGetStarted3 < Lvgl::Applet
     @style_btn.text.color = Lvgl::Color.black
 
     # Create a style for the pressed state.
-    # Use a color filter to simply modify all colors in this state.
     @style_button_pressed = Lvgl::Style.new
     @style_button_pressed.color.filter(Lvgl::Opacity::P20) do |_style, color, opacity|
       color.darken(opacity)

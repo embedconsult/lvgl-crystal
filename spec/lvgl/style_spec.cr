@@ -49,10 +49,44 @@ describe Lvgl::Style do
       button.style.add(pressed, selector: Lvgl::State::Pressed)
       button.style.add(pressed, selector: Lvgl::Part::Main | Lvgl::State::Pressed)
       button.add_style(base, selector: Lvgl::State::Pressed)
+      button.add_state(Lvgl::State::Pressed)
+      button.remove_state(Lvgl::State::Pressed)
       button.style.radius(Lvgl::Radius::Circle, selector: 0)
       button.set_style_bg_grad_dir(Lvgl::GradientDirection::Vertical)
+      button.get_style_prop(Lvgl::Part::Main, Lvgl::StyleProp::BgColor)
 
       button.raw.null?.should be_false
+    end
+  end
+
+  it "applies pressed color filters when selector state is active" do
+    Lvgl::SpecSupport::Harness.with_runtime do
+      base = Lvgl::Style.new
+      base.background.color = Lvgl::Palette::Red.main
+      pressed = Lvgl::Style.new
+      pressed.color.filter(Lvgl::Opacity::P20) do |_style, color, opacity|
+        color.darken(opacity)
+      end
+
+      button = Lvgl::Button.new(nil)
+      button.style.remove_all
+      button.style.add(base)
+      button.style.add(pressed, selector: Lvgl::State::Pressed)
+
+      base_color = button.get_style_prop(Lvgl::Part::Main, Lvgl::StyleProp::BgColor)
+      default_filtered = button.apply_style_color_filter(Lvgl::Part::Main, base_color)
+
+      button.add_state(Lvgl::State::Pressed)
+      pressed_color = button.get_style_prop(Lvgl::Part::Main, Lvgl::StyleProp::BgColor)
+      pressed_filtered = button.apply_style_color_filter(Lvgl::Part::Main, pressed_color)
+      button.remove_state(Lvgl::State::Pressed)
+
+      default_raw = default_filtered.color
+      pressed_raw = pressed_filtered.color
+
+      {default_raw.red, default_raw.green, default_raw.blue}.should_not eq(
+        {pressed_raw.red, pressed_raw.green, pressed_raw.blue}
+      )
     end
   end
 

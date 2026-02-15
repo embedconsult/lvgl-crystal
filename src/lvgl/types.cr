@@ -85,6 +85,13 @@ module Lvgl
     Circle = 0x7fff
   end
 
+  # LVGL style property IDs (`lv_style_prop_t`).
+  #
+  # Source: [lv_style.h (`_lv_style_id_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style.h).
+  enum StyleProp : UInt8
+    BgColor = 28
+  end
+
   # Built-in LVGL Material palettes.
   enum Palette : Int32
     Red  =  0

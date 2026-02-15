@@ -6,6 +6,7 @@ class Lvgl::Style
 
   @@color_filter_lock = Mutex.new
   @@color_filter_handlers = {} of UInt64 => Tuple(Lvgl::Style, ColorFilterBlock)
+  @@color_filter_next_token = 1_u64
 
   class BackgroundScope
     def initialize(@style : Lvgl::Style)
@@ -199,10 +200,11 @@ class Lvgl::Style
       ->Style.color_filter_callback(Pointer(LibLvgl::LvColorFilterDscT), LibLvgl::LvColorT, UInt8)
     )
 
-    token = object_id.to_u64
-    @color_filter_token = token
-    @color_filter_dsc.user_data = Pointer(Void).new(token)
     @@color_filter_lock.synchronize do
+      token = @@color_filter_next_token
+      @@color_filter_next_token += 1_u64
+      @color_filter_token = token
+      @color_filter_dsc.user_data = Pointer(Void).new(token)
       @@color_filter_handlers[token] = {self, block}
     end
 

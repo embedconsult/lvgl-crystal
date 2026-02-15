@@ -52,6 +52,8 @@ lib LibLvgl
   # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
   alias LvEventCodeT = Int32
   alias LvPartT = UInt32
+  alias LvStateT = UInt32
+  alias LvStylePropT = UInt8
 
   # LVGL style selector type (`lv_style_selector_t`), a combined bitmask of
   # `lv_part_t` and `lv_state_t`.
@@ -62,6 +64,13 @@ lib LibLvgl
     blue : UInt8
     green : UInt8
     red : UInt8
+  end
+
+  # LVGL style value union (`lv_style_value_t`).
+  union LvStyleValueT
+    num : Int32
+    ptr : Void*
+    color : LvColorT
   end
 
   # LVGL event callback signature (`lv_event_cb_t`).
@@ -257,6 +266,12 @@ lib LibLvgl
   # Add a style descriptor to an object for one selector.
   fun lv_obj_add_style(obj : Pointer(LvObjT), style : Pointer(LvStyleT), selector : LvStyleSelectorT) : Void
 
+  # Add one or more states to an object.
+  fun lv_obj_add_state(obj : Pointer(LvObjT), state : LvStateT) : Void
+
+  # Remove one or more states from an object.
+  fun lv_obj_remove_state(obj : Pointer(LvObjT), state : LvStateT) : Void
+
   # Initialize a mutable style descriptor.
   fun lv_style_init(style : Pointer(LvStyleT)) : Void
 
@@ -298,6 +313,12 @@ lib LibLvgl
 
   # Set style color filter opacity.
   fun lv_style_set_color_filter_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Resolve one style property for an object/part with the current object state.
+  fun lv_obj_get_style_prop(obj : Pointer(LvObjT), part : LvPartT, prop : LvStylePropT) : LvStyleValueT
+
+  # Apply active color filter(s) to an already-resolved style value.
+  fun lv_obj_style_apply_color_filter(obj : Pointer(LvObjT), part : LvPartT, value : LvStyleValueT) : LvStyleValueT
 
   # Register an event callback on an object.
   #
