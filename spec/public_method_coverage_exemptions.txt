@@ -38,9 +38,6 @@ src/lvgl/object.cr#pos= | Convenience tuple writer is a thin adapter over set_po
 src/lvgl/object.cr#[] | Child indexer delegates directly to LVGL child lookup.
 src/lvgl/object.cr#text= | Base object text assignment is optional convenience behavior.
 src/lvgl/object.cr#finalize | Finalizer coverage is nondeterministic in specs.
-src/lvgl/style.cr#finalize | Finalizer coverage is nondeterministic in specs.
-src/lvgl/object.cr#self.increment_instance_count! | Instance counting internals are exercised indirectly.
-src/lvgl/object.cr#self.decrement_instance_count! | Instance counting internals are exercised indirectly.
 
 src/lvgl/runtime.cr#self.initialized? | Runtime state predicate is indirectly covered by lifecycle specs.
 
@@ -50,5 +47,3 @@ src/lvgl/scheduler.cr#closed? | Closed-state predicate is covered indirectly thr
 
 
 src/lvgl/types.cr#initialize | Result wrapper constructor is thin value initialization.
-
-src/lvgl/widgets/label.cr#text= | Label writer delegates to set_text and is a convenience API.

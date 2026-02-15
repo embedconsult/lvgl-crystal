@@ -19,6 +19,8 @@ lib LibLvgl
   # Opaque LVGL draw buffer type used by snapshot APIs.
   # [`lv_draw_buf.h`](lib/lvgl/src/draw/lv_draw_buf.h).
   type LvDrawBufT = Void
+  type LvAnimT = Void
+  type LvStyleTransitionDscT = Void
 
   # LVGL mutable style descriptor (`lv_style_t`).
   #
@@ -290,6 +292,33 @@ lib LibLvgl
   # Set style background gradient direction.
   fun lv_style_set_bg_grad_dir(style : Pointer(LvStyleT), value : Int32) : Void
 
+  # Set style background gradient start stop.
+  fun lv_style_set_bg_main_stop(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style background gradient end stop.
+  fun lv_style_set_bg_grad_stop(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style background main opacity.
+  fun lv_style_set_bg_main_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style background gradient opacity.
+  fun lv_style_set_bg_grad_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style background image source.
+  fun lv_style_set_bg_image_src(style : Pointer(LvStyleT), value : Void*) : Void
+
+  # Set style background image opacity.
+  fun lv_style_set_bg_image_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style background image recolor.
+  fun lv_style_set_bg_image_recolor(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style background image recolor opacity.
+  fun lv_style_set_bg_image_recolor_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style background image tiled flag.
+  fun lv_style_set_bg_image_tiled(style : Pointer(LvStyleT), value : Bool) : Void
+
   # Set style border color.
   fun lv_style_set_border_color(style : Pointer(LvStyleT), value : LvColorT) : Void
 
@@ -299,8 +328,101 @@ lib LibLvgl
   # Set style border width.
   fun lv_style_set_border_width(style : Pointer(LvStyleT), value : Int32) : Void
 
+  # Set style border sides mask.
+  fun lv_style_set_border_side(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style border post-render flag.
+  fun lv_style_set_border_post(style : Pointer(LvStyleT), value : Bool) : Void
+
+  # Set style outline width.
+  fun lv_style_set_outline_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style outline color.
+  fun lv_style_set_outline_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style outline opacity.
+  fun lv_style_set_outline_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style outline pad.
+  fun lv_style_set_outline_pad(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style shadow width.
+  fun lv_style_set_shadow_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style shadow x offset.
+  fun lv_style_set_shadow_offset_x(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style shadow y offset.
+  fun lv_style_set_shadow_offset_y(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style shadow spread.
+  fun lv_style_set_shadow_spread(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style shadow color.
+  fun lv_style_set_shadow_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style shadow opacity.
+  fun lv_style_set_shadow_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style line width.
+  fun lv_style_set_line_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style line dash width.
+  fun lv_style_set_line_dash_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style line dash gap.
+  fun lv_style_set_line_dash_gap(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style line rounded flag.
+  fun lv_style_set_line_rounded(style : Pointer(LvStyleT), value : Bool) : Void
+
+  # Set style line color.
+  fun lv_style_set_line_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style line opacity.
+  fun lv_style_set_line_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style arc width.
+  fun lv_style_set_arc_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style arc rounded flag.
+  fun lv_style_set_arc_rounded(style : Pointer(LvStyleT), value : Bool) : Void
+
+  # Set style arc color.
+  fun lv_style_set_arc_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style arc opacity.
+  fun lv_style_set_arc_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style arc image source.
+  fun lv_style_set_arc_image_src(style : Pointer(LvStyleT), value : Void*) : Void
+
   # Set style text color.
   fun lv_style_set_text_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style text opacity.
+  fun lv_style_set_text_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style text letter spacing.
+  fun lv_style_set_text_letter_space(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style text line spacing.
+  fun lv_style_set_text_line_space(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style text decoration flags.
+  fun lv_style_set_text_decor(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style text alignment.
+  fun lv_style_set_text_align(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set text outline stroke color.
+  fun lv_style_set_text_outline_stroke_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set text outline stroke width.
+  fun lv_style_set_text_outline_stroke_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set text outline stroke opacity.
+  fun lv_style_set_text_outline_stroke_opa(style : Pointer(LvStyleT), value : UInt8) : Void
 
   # Set style corner radius.
   fun lv_style_set_radius(style : Pointer(LvStyleT), value : Int32) : Void
@@ -313,6 +435,69 @@ lib LibLvgl
 
   # Set style color filter opacity.
   fun lv_style_set_color_filter_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style transition descriptor.
+  fun lv_style_set_transition(style : Pointer(LvStyleT), value : Pointer(LvStyleTransitionDscT)) : Void
+
+  # Set style animation descriptor.
+  fun lv_style_set_anim(style : Pointer(LvStyleT), value : Pointer(LvAnimT)) : Void
+
+  # Set style animation duration.
+  fun lv_style_set_anim_duration(style : Pointer(LvStyleT), value : UInt32) : Void
+
+  # Set style blend mode.
+  fun lv_style_set_blend_mode(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style layout ID.
+  fun lv_style_set_layout(style : Pointer(LvStyleT), value : UInt16) : Void
+
+  # Set style base direction.
+  fun lv_style_set_base_dir(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style flex flow.
+  fun lv_style_set_flex_flow(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style flex main placement.
+  fun lv_style_set_flex_main_place(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style flex cross placement.
+  fun lv_style_set_flex_cross_place(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style flex track placement.
+  fun lv_style_set_flex_track_place(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style flex grow factor.
+  fun lv_style_set_flex_grow(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style grid column descriptor array.
+  fun lv_style_set_grid_column_dsc_array(style : Pointer(LvStyleT), value : Int32*) : Void
+
+  # Set style grid column alignment.
+  fun lv_style_set_grid_column_align(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid row descriptor array.
+  fun lv_style_set_grid_row_dsc_array(style : Pointer(LvStyleT), value : Int32*) : Void
+
+  # Set style grid row alignment.
+  fun lv_style_set_grid_row_align(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid cell column position.
+  fun lv_style_set_grid_cell_column_pos(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid cell x alignment.
+  fun lv_style_set_grid_cell_x_align(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid cell column span.
+  fun lv_style_set_grid_cell_column_span(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid cell row position.
+  fun lv_style_set_grid_cell_row_pos(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid cell y alignment.
+  fun lv_style_set_grid_cell_y_align(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style grid cell row span.
+  fun lv_style_set_grid_cell_row_span(style : Pointer(LvStyleT), value : Int32) : Void
 
   # Resolve one style property for an object/part with the current object state.
   fun lv_obj_get_style_prop(obj : Pointer(LvObjT), part : LvPartT, prop : LvStylePropT) : LvStyleValueT

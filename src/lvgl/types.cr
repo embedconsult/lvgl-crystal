@@ -50,6 +50,99 @@ module Lvgl
     Hor  = 2
   end
 
+  # LVGL blending modes.
+  #
+  # Source: [lv_style.h (`lv_blend_mode_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style.h).
+  enum BlendMode : Int32
+    Normal      = 0
+    Additive    = 1
+    Subtractive = 2
+    Multiply    = 3
+    Difference  = 4
+  end
+
+  # LVGL text decoration flags.
+  #
+  # Source: [lv_style.h (`lv_text_decor_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style.h).
+  enum TextDecor : Int32
+    None          = 0x00
+    Underline     = 0x01
+    Strikethrough = 0x02
+  end
+
+  # LVGL text alignment values.
+  #
+  # Source: [lv_text.h (`lv_text_align_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_text.h).
+  enum TextAlign : Int32
+    Auto   = 0
+    Left   = 1
+    Center = 2
+    Right  = 3
+  end
+
+  # LVGL border side flags.
+  #
+  # Source: [lv_style.h (`lv_border_side_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style.h).
+  enum BorderSide : Int32
+    None     = 0x00
+    Bottom   = 0x01
+    Top      = 0x02
+    Left     = 0x04
+    Right    = 0x08
+    Full     = 0x0F
+    Internal = 0x10
+  end
+
+  # LVGL base direction values.
+  #
+  # Source: [lv_bidi.h (`lv_base_dir_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_bidi.h).
+  enum BaseDirection : Int32
+    Ltr     = 0x00
+    Rtl     = 0x01
+    Auto    = 0x02
+    Neutral = 0x20
+    Weak    = 0x21
+  end
+
+  # LVGL flex align values.
+  #
+  # Source: [lv_flex.h (`lv_flex_align_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/layouts/flex/lv_flex.h).
+  enum FlexAlign : Int32
+    Start        = 0
+    End          = 1
+    Center       = 2
+    SpaceEvenly  = 3
+    SpaceAround  = 4
+    SpaceBetween = 5
+  end
+
+  # LVGL flex flow values.
+  #
+  # Source: [lv_flex.h (`lv_flex_flow_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/layouts/flex/lv_flex.h).
+  enum FlexFlow : Int32
+    Row               = 0x00
+    Column            = 0x01
+    RowWrap           = 0x04
+    RowReverse        = 0x08
+    RowWrapReverse    = 0x0C
+    ColumnWrap        = 0x05
+    ColumnReverse     = 0x09
+    ColumnWrapReverse = 0x0D
+  end
+
+  # LVGL grid align values.
+  #
+  # Source: [lv_grid.h (`lv_grid_align_t`)](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/layouts/grid/lv_grid.h).
+  enum GridAlign : Int32
+    Start        = 0
+    Center       = 1
+    End          = 2
+    Stretch      = 3
+    SpaceEvenly  = 4
+    SpaceAround  = 5
+    SpaceBetween = 6
+  end
+
   # Crystal-friendly gradient direction aliases.
   enum GradientDirection : Int32
     None       = 0
