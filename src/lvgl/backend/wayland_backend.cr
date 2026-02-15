@@ -34,20 +34,30 @@ module Lvgl::Backend
     @wayland_window_is_open : WaylandWindowIsOpenProc?
     @wayland_timer_handler : WaylandTimerHandlerProc?
 
+    # Backend selection key used by `Lvgl::Backend.from_env`.
     def key : String
       "wayland"
     end
 
+    # Returns `true` when `liblvgl.so` exports required Wayland driver symbols
+    # and those symbols can be loaded via `dlopen`/`dlsym`.
+    #
+    # This is typically `false` when LVGL was not built with `LV_USE_WAYLAND=1`.
     def available? : Bool
       @wayland_symbols_available ||= load_wayland_symbols
     end
 
+    # Returns actionable guidance when Wayland symbols are unavailable.
     def unavailable_reason : String?
       return nil if available?
 
       "Wayland backend requires LVGL Wayland driver symbols in #{lvgl_lib_path}; rebuild or swap `liblvgl.so` with `LV_USE_WAYLAND=1` and required Wayland development libraries."
     end
 
+    # Starts LVGL runtime, initializes Wayland backend, creates a Wayland window
+    # display, and installs the Wayland timer handler as runtime timer hook.
+    #
+    # Raises when required symbols are unavailable or display creation fails.
     def setup! : Nil
       raise unavailable_reason || "Wayland backend unavailable" unless available?
 
@@ -61,6 +71,8 @@ module Lvgl::Backend
       end
     end
 
+    # Restores default runtime timer handling, closes active Wayland window (if
+    # still open), and deinitializes Wayland backend resources.
     def teardown! : Nil
       Lvgl::Runtime.reset_timer_handler
       return unless available?

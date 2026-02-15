@@ -23,10 +23,16 @@ module Lvgl::Backend
     @display : Pointer(LibLvgl::LvDisplayT) = Pointer(LibLvgl::LvDisplayT).null
     @test_symbols_available : Bool?
 
+    # Backend selection key used by `Lvgl::Backend.from_env`.
     def key : String
       "headless"
     end
 
+    # Returns `true` when the loaded `liblvgl.so` exports the required headless
+    # test symbols (`lv_test_display_create`, `lv_test_indev_create_all`,
+    # `lv_test_indev_delete_all`).
+    #
+    # This is `false` when LVGL was built without `LV_USE_TEST=1`.
     def available? : Bool
       @test_symbols_available ||= begin
         loader = ::Crystal::Loader.new([test_lib_dir])
@@ -41,12 +47,17 @@ module Lvgl::Backend
       end
     end
 
+    # Returns actionable guidance when headless test symbols are missing.
     def unavailable_reason : String?
       return nil if available?
 
       "Headless test backend requires LVGL test-module symbols; run `./scripts/build_lvgl_headless_test.sh` to rebuild liblvgl with LV_USE_TEST enabled."
     end
 
+    # Starts LVGL runtime, creates a test display, and creates test input
+    # devices (mouse/keypad/encoder).
+    #
+    # Raises when required symbols are unavailable.
     def setup! : Nil
       raise unavailable_reason || "headless backend unavailable" unless available?
 
@@ -55,6 +66,7 @@ module Lvgl::Backend
       LibLvgl.lv_test_indev_create_all
     end
 
+    # Deletes test input devices created by `setup!` and clears display handle.
     def teardown! : Nil
       return unless available?
       return if @display.null?

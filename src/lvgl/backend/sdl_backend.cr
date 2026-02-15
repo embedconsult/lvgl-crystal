@@ -33,20 +33,30 @@ module Lvgl::Backend
     @sdl_keyboard_create : SdlKeyboardCreateProc?
     @sdl_quit : SdlQuitProc?
 
+    # Backend selection key used by `Lvgl::Backend.from_env`.
     def key : String
       "sdl"
     end
 
+    # Returns `true` when `liblvgl.so` exports all required SDL driver symbols
+    # and those symbols can be loaded via `dlopen`/`dlsym`.
+    #
+    # This is typically `false` when LVGL was not built with `LV_USE_SDL=1`.
     def available? : Bool
       @sdl_symbols_available ||= load_sdl_symbols
     end
 
+    # Returns actionable guidance when SDL driver symbols are unavailable.
     def unavailable_reason : String?
       return nil if available?
 
       "SDL backend requires LVGL SDL driver symbols in #{lvgl_lib_path}; rebuild `liblvgl.so` with LV_USE_SDL=1 and SDL2 development libraries installed."
     end
 
+    # Starts LVGL runtime, creates an SDL-backed LVGL display window, sets the
+    # window title, and creates SDL mouse/mousewheel/keyboard input devices.
+    #
+    # Raises when symbol availability checks fail or window creation fails.
     def setup! : Nil
       raise unavailable_reason || "SDL backend unavailable" unless available?
 
@@ -60,6 +70,7 @@ module Lvgl::Backend
       sdl_keyboard_create.call
     end
 
+    # Shuts down SDL backend resources through LVGL's SDL driver quit hook.
     def teardown! : Nil
       return unless available?
 

@@ -5,7 +5,7 @@ require "weak_ref"
 #
 # ## Summary
 # `Lvgl::Style` exposes LVGL style properties through Crystal scopes with
-# assignment (`foo = ...`) and fluent chaining (`foo(...)`) patterns.
+# assignment (`foo =...`) and fluent chaining (`foo(...)`) patterns.
 #
 # The API is organized by LVGL intent:
 # - `background`
@@ -26,6 +26,27 @@ require "weak_ref"
 # - For pointer-backed string sources (for example background/arc image source),
 #   this wrapper retains passed strings for style lifetime so LVGL pointer
 #   properties remain valid.
+#
+# ## Example
+# ```
+# style = Lvgl::Style.new
+# style.radius(10)
+#
+# style.background
+#   .opacity(Lvgl::Opacity::Cover)
+#   .color(Lvgl::Palette::Grey.lighten(3))
+#   .gradient_color(Lvgl::Palette::Grey.main)
+#   .gradient_direction(Lvgl::GradientDirection::Vertical)
+#
+# style.border
+#   .width(2)
+#   .color(Lvgl::Color.black)
+#   .opacity(Lvgl::Opacity::P20)
+#
+# # Inside an applet setup method where `button` is a widget:
+# style.apply_to(button, selector: Lvgl::Part::Main | Lvgl::State::Default)
+# style.apply_to(button, selector: Lvgl::Part::Main | Lvgl::State::Pressed)
+# ```
 #
 # ## Links
 # - [LVGL style API (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
@@ -52,138 +73,174 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_bg_*`
   #
+  # ## Example
+  # ```
+  # style.background
+  #   .color(Lvgl::Palette::Grey.lighten(3))
+  #   .opacity(Lvgl::Opacity::Cover)
+  #   .gradient_color(Lvgl::Palette::Grey.main)
+  #   .gradient_direction(Lvgl::GradientDirection::Vertical)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: style bg properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class BackgroundScope
+    # Create a background-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets background fill opacity (0 = transparent, 255 = cover).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_bg_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
     end
 
+    # Sets primary background fill color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_bg_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets secondary background gradient color.
     def gradient_color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_bg_grad_color(value)
       value
     end
 
+    # Chaining form of `gradient_color=`. Applies the same property and returns the same scope instance for further chained calls.
     def gradient_color(value : Lvgl::Color) : self
       self.gradient_color = value
       self
     end
 
+    # Sets background gradient direction.
     def gradient_direction=(value : Lvgl::GradDir | Lvgl::GradientDirection) : Lvgl::GradDir | Lvgl::GradientDirection
       @style.set_bg_grad_dir(value)
       value
     end
 
+    # Chaining form of `gradient_direction=`. Applies the same property and returns the same scope instance for further chained calls.
     def gradient_direction(value : Lvgl::GradDir | Lvgl::GradientDirection) : self
       self.gradient_direction = value
       self
     end
 
+    # Sets main gradient stop position (typically 0..255).
     def gradient_main_stop=(value : Int32) : Int32
       @style.set_bg_main_stop(value)
       value
     end
 
+    # Chaining form of `gradient_main_stop=`. Applies the same property and returns the same scope instance for further chained calls.
     def gradient_main_stop(value : Int32) : self
       self.gradient_main_stop = value
       self
     end
 
+    # Sets secondary gradient stop position (typically 0..255).
     def gradient_stop=(value : Int32) : Int32
       @style.set_bg_grad_stop(value)
       value
     end
 
+    # Chaining form of `gradient_stop=`. Applies the same property and returns the same scope instance for further chained calls.
     def gradient_stop(value : Int32) : self
       self.gradient_stop = value
       self
     end
 
+    # Sets opacity of the main gradient color.
     def gradient_main_opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_bg_main_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `gradient_main_opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def gradient_main_opacity(value : Lvgl::Opa | UInt8) : self
       self.gradient_main_opacity = value
       self
     end
 
+    # Sets opacity of the secondary gradient color.
     def gradient_opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_bg_grad_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `gradient_opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def gradient_opacity(value : Lvgl::Opa | UInt8) : self
       self.gradient_opacity = value
       self
     end
 
+    # Sets background image source as raw pointer or string-backed pointer.
     def image_source=(value : String | Pointer(Void)) : String | Pointer(Void)
       @style.set_bg_image_src(value)
       value
     end
 
+    # Chaining form of `image_source=`. Applies the same property and returns the same scope instance for further chained calls.
     def image_source(value : String | Pointer(Void)) : self
       self.image_source = value
       self
     end
 
+    # Sets background image opacity (0..255).
     def image_opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_bg_image_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `image_opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def image_opacity(value : Lvgl::Opa | UInt8) : self
       self.image_opacity = value
       self
     end
 
+    # Sets background image recolor.
     def image_recolor=(value : Lvgl::Color) : Lvgl::Color
       @style.set_bg_image_recolor(value)
       value
     end
 
+    # Chaining form of `image_recolor=`. Applies the same property and returns the same scope instance for further chained calls.
     def image_recolor(value : Lvgl::Color) : self
       self.image_recolor = value
       self
     end
 
+    # Sets background image recolor opacity.
     def image_recolor_opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_bg_image_recolor_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `image_recolor_opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def image_recolor_opacity(value : Lvgl::Opa | UInt8) : self
       self.image_recolor_opacity = value
       self
     end
 
+    # Enables or disables background image tiling.
     def image_tiled=(value : Bool) : Bool
       @style.set_bg_image_tiled(value)
       value
     end
 
+    # Chaining form of `image_tiled=`. Applies the same property and returns the same scope instance for further chained calls.
     def image_tiled(value : Bool) : self
       self.image_tiled = value
       self
@@ -198,58 +255,78 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_border_*`
   #
+  # ## Example
+  # ```
+  # style.border
+  #   .width(2)
+  #   .color(Lvgl::Color.black)
+  #   .opacity(Lvgl::Opacity::P20)
+  #   .side(Lvgl::BorderSide::Full)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: border style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class BorderScope
+    # Create a border-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets border color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_border_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets border opacity (0..255).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_border_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
     end
 
+    # Sets border width in pixels.
     def width=(value : Int32) : Int32
       @style.set_border_width(value)
       value
     end
 
+    # Chaining form of `width=`. Applies the same property and returns the same scope instance for further chained calls.
     def width(value : Int32) : self
       self.width = value
       self
     end
 
+    # Sets border side mask.
     def side=(value : Lvgl::BorderSide) : Lvgl::BorderSide
       @style.set_border_side(value)
       value
     end
 
+    # Chaining form of `side=`. Applies the same property and returns the same scope instance for further chained calls.
     def side(value : Lvgl::BorderSide) : self
       self.side = value
       self
     end
 
+    # Sets whether border is drawn in post layer.
     def post=(value : Bool) : Bool
       @style.set_border_post(value)
       value
     end
 
+    # Chaining form of `post=`. Applies the same property and returns the same scope instance for further chained calls.
     def post(value : Bool) : self
       self.post = value
       self
@@ -264,48 +341,66 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_outline_*`
   #
+  # ## Example
+  # ```
+  # style.outline
+  #   .width(2)
+  #   .pad(3)
+  #   .color(Lvgl::Palette::Grey.main)
+  #   .opacity(Lvgl::Opacity::P20)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: outline style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class OutlineScope
+    # Create an outline-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets outline width in pixels.
     def width=(value : Int32) : Int32
       @style.set_outline_width(value)
       value
     end
 
+    # Chaining form of `width=`. Applies the same property and returns the same scope instance for further chained calls.
     def width(value : Int32) : self
       self.width = value
       self
     end
 
+    # Sets outline color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_outline_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets outline opacity (0..255).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_outline_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
     end
 
+    # Sets outline padding from object bounds.
     def pad=(value : Int32) : Int32
       @style.set_outline_pad(value)
       value
     end
 
+    # Chaining form of `pad=`. Applies the same property and returns the same scope instance for further chained calls.
     def pad(value : Int32) : self
       self.pad = value
       self
@@ -320,68 +415,92 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_shadow_*`
   #
+  # ## Example
+  # ```
+  # style.shadow
+  #   .width(16)
+  #   .offset_x(4)
+  #   .offset_y(6)
+  #   .spread(2)
+  #   .color(Lvgl::Color.black)
+  #   .opacity(Lvgl::Opacity::P20)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: shadow style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class ShadowScope
+    # Create a shadow-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets shadow blur width.
     def width=(value : Int32) : Int32
       @style.set_shadow_width(value)
       value
     end
 
+    # Chaining form of `width=`. Applies the same property and returns the same scope instance for further chained calls.
     def width(value : Int32) : self
       self.width = value
       self
     end
 
+    # Sets shadow horizontal offset.
     def offset_x=(value : Int32) : Int32
       @style.set_shadow_offset_x(value)
       value
     end
 
+    # Chaining form of `offset_x=`. Applies the same property and returns the same scope instance for further chained calls.
     def offset_x(value : Int32) : self
       self.offset_x = value
       self
     end
 
+    # Sets shadow vertical offset.
     def offset_y=(value : Int32) : Int32
       @style.set_shadow_offset_y(value)
       value
     end
 
+    # Chaining form of `offset_y=`. Applies the same property and returns the same scope instance for further chained calls.
     def offset_y(value : Int32) : self
       self.offset_y = value
       self
     end
 
+    # Sets shadow spread.
     def spread=(value : Int32) : Int32
       @style.set_shadow_spread(value)
       value
     end
 
+    # Chaining form of `spread=`. Applies the same property and returns the same scope instance for further chained calls.
     def spread(value : Int32) : self
       self.spread = value
       self
     end
 
+    # Sets shadow color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_shadow_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets shadow opacity (0..255).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_shadow_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
@@ -396,68 +515,92 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_line_*`
   #
+  # ## Example
+  # ```
+  # style.line
+  #   .width(3)
+  #   .dash_width(8)
+  #   .dash_gap(4)
+  #   .rounded(true)
+  #   .color(Lvgl::Color.black)
+  #   .opacity(Lvgl::Opacity::Cover)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: line style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class LineScope
+    # Create a line-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets line width in pixels.
     def width=(value : Int32) : Int32
       @style.set_line_width(value)
       value
     end
 
+    # Chaining form of `width=`. Applies the same property and returns the same scope instance for further chained calls.
     def width(value : Int32) : self
       self.width = value
       self
     end
 
+    # Sets line dash segment width.
     def dash_width=(value : Int32) : Int32
       @style.set_line_dash_width(value)
       value
     end
 
+    # Chaining form of `dash_width=`. Applies the same property and returns the same scope instance for further chained calls.
     def dash_width(value : Int32) : self
       self.dash_width = value
       self
     end
 
+    # Sets line dash gap width.
     def dash_gap=(value : Int32) : Int32
       @style.set_line_dash_gap(value)
       value
     end
 
+    # Chaining form of `dash_gap=`. Applies the same property and returns the same scope instance for further chained calls.
     def dash_gap(value : Int32) : self
       self.dash_gap = value
       self
     end
 
+    # Enables or disables rounded line ends.
     def rounded=(value : Bool) : Bool
       @style.set_line_rounded(value)
       value
     end
 
+    # Chaining form of `rounded=`. Applies the same property and returns the same scope instance for further chained calls.
     def rounded(value : Bool) : self
       self.rounded = value
       self
     end
 
+    # Sets line color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_line_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets line opacity (0..255).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_line_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
@@ -472,58 +615,78 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_arc_*`
   #
+  # ## Example
+  # ```
+  # style.arc
+  #   .width(4)
+  #   .rounded(true)
+  #   .color(Lvgl::Palette::Red.main)
+  #   .opacity(Lvgl::Opacity::Cover)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: arc style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class ArcScope
+    # Create an arc-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets arc width in pixels.
     def width=(value : Int32) : Int32
       @style.set_arc_width(value)
       value
     end
 
+    # Chaining form of `width=`. Applies the same property and returns the same scope instance for further chained calls.
     def width(value : Int32) : self
       self.width = value
       self
     end
 
+    # Enables or disables rounded arc ends.
     def rounded=(value : Bool) : Bool
       @style.set_arc_rounded(value)
       value
     end
 
+    # Chaining form of `rounded=`. Applies the same property and returns the same scope instance for further chained calls.
     def rounded(value : Bool) : self
       self.rounded = value
       self
     end
 
+    # Sets arc color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_arc_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets arc opacity (0..255).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_arc_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
     end
 
+    # Sets arc image source pointer.
     def image_source=(value : String | Pointer(Void)) : String | Pointer(Void)
       @style.set_arc_image_src(value)
       value
     end
 
+    # Chaining form of `image_source=`. Applies the same property and returns the same scope instance for further chained calls.
     def image_source(value : String | Pointer(Void)) : self
       self.image_source = value
       self
@@ -539,73 +702,102 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_text_*`
   #
+  # ## Example
+  # ```
+  # style.text
+  #   .color(Lvgl::Color.black)
+  #   .opacity(Lvgl::Opacity::Cover)
+  #   .letter_space(1)
+  #   .line_space(4)
+  #   .align(Lvgl::TextAlign::Center)
+  #
+  # style.text.outline
+  #   .width(1)
+  #   .color(Lvgl::Palette::Grey.main)
+  #   .opacity(Lvgl::Opacity::P20)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: text style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class TextScope
+    # Create a text-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets text color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_text_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets text opacity (0..255).
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_text_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
     end
 
+    # Sets letter spacing in pixels.
     def letter_space=(value : Int32) : Int32
       @style.set_text_letter_space(value)
       value
     end
 
+    # Chaining form of `letter_space=`. Applies the same property and returns the same scope instance for further chained calls.
     def letter_space(value : Int32) : self
       self.letter_space = value
       self
     end
 
+    # Sets line spacing in pixels.
     def line_space=(value : Int32) : Int32
       @style.set_text_line_space(value)
       value
     end
 
+    # Chaining form of `line_space=`. Applies the same property and returns the same scope instance for further chained calls.
     def line_space(value : Int32) : self
       self.line_space = value
       self
     end
 
+    # Sets text decoration flags.
     def decor=(value : Lvgl::TextDecor) : Lvgl::TextDecor
       @style.set_text_decor(value)
       value
     end
 
+    # Chaining form of `decor=`. Applies the same property and returns the same scope instance for further chained calls.
     def decor(value : Lvgl::TextDecor) : self
       self.decor = value
       self
     end
 
+    # Sets text alignment.
     def align=(value : Lvgl::TextAlign) : Lvgl::TextAlign
       @style.set_text_align(value)
       value
     end
 
+    # Chaining form of `align=`. Applies the same property and returns the same scope instance for further chained calls.
     def align(value : Lvgl::TextAlign) : self
       self.align = value
       self
     end
 
+    # Returns the text-outline scope bound to the same parent style.
     def outline : TextOutlineScope
       TextOutlineScope.new(@style)
     end
@@ -619,38 +811,53 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_text_outline_stroke_*`
   #
+  # ## Example
+  # ```
+  # style.text.outline
+  #   .width(2)
+  #   .color(Lvgl::Color.black)
+  #   .opacity(Lvgl::Opacity::P20)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: text outline style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class TextOutlineScope
+    # Create a text-outline-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets text outline stroke color.
     def color=(value : Lvgl::Color) : Lvgl::Color
       @style.set_text_outline_stroke_color(value)
       value
     end
 
+    # Chaining form of `color=`. Applies the same property and returns the same scope instance for further chained calls.
     def color(value : Lvgl::Color) : self
       self.color = value
       self
     end
 
+    # Sets text outline stroke width.
     def width=(value : Int32) : Int32
       @style.set_text_outline_stroke_width(value)
       value
     end
 
+    # Chaining form of `width=`. Applies the same property and returns the same scope instance for further chained calls.
     def width(value : Int32) : self
       self.width = value
       self
     end
 
+    # Sets text outline stroke opacity.
     def opacity=(value : Lvgl::Opa | UInt8) : UInt8
       @style.set_text_outline_stroke_opa(value)
       value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
     end
 
+    # Chaining form of `opacity=`. Applies the same property and returns the same scope instance for further chained calls.
     def opacity(value : Lvgl::Opa | UInt8) : self
       self.opacity = value
       self
@@ -667,28 +874,40 @@ class Lvgl::Style
   # - `lv_style_set_layout`
   # - `lv_style_set_base_dir`
   #
+  # ## Example
+  # ```
+  # style.layout
+  #   .id(1)
+  #   .base_direction(Lvgl::BaseDirection::Ltr)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: layout/base-dir style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class LayoutScope
+    # Create a layout-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets layout identifier.
     def id=(value : UInt16 | Int32) : UInt16 | Int32
       @style.set_layout(value)
       value
     end
 
+    # Chaining form of `id=`. Applies the same property and returns the same scope instance for further chained calls.
     def id(value : UInt16 | Int32) : self
       self.id = value
       self
     end
 
+    # Sets base text direction.
     def base_direction=(value : Lvgl::BaseDirection) : Lvgl::BaseDirection
       @style.set_base_dir(value)
       value
     end
 
+    # Chaining form of `base_direction=`. Applies the same property and returns the same scope instance for further chained calls.
     def base_direction(value : Lvgl::BaseDirection) : self
       self.base_direction = value
       self
@@ -703,59 +922,80 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_flex_*`
   #
+  # ## Example
+  # ```
+  # style.flex
+  #   .flow(Lvgl::FlexFlow::RowWrap)
+  #   .main_place(Lvgl::FlexAlign::SpaceBetween)
+  #   .cross_place(Lvgl::FlexAlign::Center)
+  #   .track_place(Lvgl::FlexAlign::Start)
+  #   .grow(1)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: flex style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL flex docs (9.4)](https://docs.lvgl.io/9.4/layouts/flex.html)
   # - [LVGL 9.4 flex header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/layouts/flex/lv_flex.h)
   class FlexScope
+    # Create a flex-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets flex flow mode.
     def flow=(value : Lvgl::FlexFlow) : Lvgl::FlexFlow
       @style.set_flex_flow(value)
       value
     end
 
+    # Chaining form of `flow=`. Applies the same property and returns the same scope instance for further chained calls.
     def flow(value : Lvgl::FlexFlow) : self
       self.flow = value
       self
     end
 
+    # Sets flex main-axis placement.
     def main_place=(value : Lvgl::FlexAlign) : Lvgl::FlexAlign
       @style.set_flex_main_place(value)
       value
     end
 
+    # Chaining form of `main_place=`. Applies the same property and returns the same scope instance for further chained calls.
     def main_place(value : Lvgl::FlexAlign) : self
       self.main_place = value
       self
     end
 
+    # Sets flex cross-axis placement.
     def cross_place=(value : Lvgl::FlexAlign) : Lvgl::FlexAlign
       @style.set_flex_cross_place(value)
       value
     end
 
+    # Chaining form of `cross_place=`. Applies the same property and returns the same scope instance for further chained calls.
     def cross_place(value : Lvgl::FlexAlign) : self
       self.cross_place = value
       self
     end
 
+    # Sets flex track placement.
     def track_place=(value : Lvgl::FlexAlign) : Lvgl::FlexAlign
       @style.set_flex_track_place(value)
       value
     end
 
+    # Chaining form of `track_place=`. Applies the same property and returns the same scope instance for further chained calls.
     def track_place(value : Lvgl::FlexAlign) : self
       self.track_place = value
       self
     end
 
+    # Sets flex grow factor.
     def grow=(value : UInt8 | Int32) : UInt8 | Int32
       @style.set_flex_grow(value)
       value
     end
 
+    # Chaining form of `grow=`. Applies the same property and returns the same scope instance for further chained calls.
     def grow(value : UInt8 | Int32) : self
       self.grow = value
       self
@@ -777,109 +1017,143 @@ class Lvgl::Style
   # ## LVGL mapping
   # - `lv_style_set_grid_*`
   #
+  # ## Example
+  # ```
+  # style.grid
+  #   .column_align(Lvgl::GridAlign::SpaceBetween)
+  #   .row_align(Lvgl::GridAlign::Center)
+  #   .cell_column_pos(0)
+  #   .cell_column_span(2)
+  #   .cell_x_align(Lvgl::GridAlign::Stretch)
+  #   .cell_row_pos(0)
+  #   .cell_row_span(1)
+  #   .cell_y_align(Lvgl::GridAlign::Center)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: grid style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL grid docs (9.4)](https://docs.lvgl.io/9.4/layouts/grid.html)
   # - [LVGL 9.4 grid header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/layouts/grid/lv_grid.h)
   class GridScope
+    # Create a grid-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets pointer to grid column descriptor array.
     def column_descriptors=(value : Pointer(Int32)) : Pointer(Int32)
       @style.set_grid_column_dsc_array(value)
       value
     end
 
+    # Chaining form of `column_descriptors=`. Applies the same property and returns the same scope instance for further chained calls.
     def column_descriptors(value : Pointer(Int32)) : self
       self.column_descriptors = value
       self
     end
 
+    # Sets pointer to grid row descriptor array.
     def row_descriptors=(value : Pointer(Int32)) : Pointer(Int32)
       @style.set_grid_row_dsc_array(value)
       value
     end
 
+    # Chaining form of `row_descriptors=`. Applies the same property and returns the same scope instance for further chained calls.
     def row_descriptors(value : Pointer(Int32)) : self
       self.row_descriptors = value
       self
     end
 
+    # Sets grid column track alignment.
     def column_align=(value : Lvgl::GridAlign) : Lvgl::GridAlign
       @style.set_grid_column_align(value)
       value
     end
 
+    # Chaining form of `column_align=`. Applies the same property and returns the same scope instance for further chained calls.
     def column_align(value : Lvgl::GridAlign) : self
       self.column_align = value
       self
     end
 
+    # Sets grid row track alignment.
     def row_align=(value : Lvgl::GridAlign) : Lvgl::GridAlign
       @style.set_grid_row_align(value)
       value
     end
 
+    # Chaining form of `row_align=`. Applies the same property and returns the same scope instance for further chained calls.
     def row_align(value : Lvgl::GridAlign) : self
       self.row_align = value
       self
     end
 
+    # Sets grid cell column start position.
     def cell_column_pos=(value : Int32) : Int32
       @style.set_grid_cell_column_pos(value)
       value
     end
 
+    # Chaining form of `cell_column_pos=`. Applies the same property and returns the same scope instance for further chained calls.
     def cell_column_pos(value : Int32) : self
       self.cell_column_pos = value
       self
     end
 
+    # Sets grid cell column span.
     def cell_column_span=(value : Int32) : Int32
       @style.set_grid_cell_column_span(value)
       value
     end
 
+    # Chaining form of `cell_column_span=`. Applies the same property and returns the same scope instance for further chained calls.
     def cell_column_span(value : Int32) : self
       self.cell_column_span = value
       self
     end
 
+    # Sets grid cell X alignment.
     def cell_x_align=(value : Lvgl::GridAlign) : Lvgl::GridAlign
       @style.set_grid_cell_x_align(value)
       value
     end
 
+    # Chaining form of `cell_x_align=`. Applies the same property and returns the same scope instance for further chained calls.
     def cell_x_align(value : Lvgl::GridAlign) : self
       self.cell_x_align = value
       self
     end
 
+    # Sets grid cell row start position.
     def cell_row_pos=(value : Int32) : Int32
       @style.set_grid_cell_row_pos(value)
       value
     end
 
+    # Chaining form of `cell_row_pos=`. Applies the same property and returns the same scope instance for further chained calls.
     def cell_row_pos(value : Int32) : self
       self.cell_row_pos = value
       self
     end
 
+    # Sets grid cell row span.
     def cell_row_span=(value : Int32) : Int32
       @style.set_grid_cell_row_span(value)
       value
     end
 
+    # Chaining form of `cell_row_span=`. Applies the same property and returns the same scope instance for further chained calls.
     def cell_row_span(value : Int32) : self
       self.cell_row_span = value
       self
     end
 
+    # Sets grid cell Y alignment.
     def cell_y_align=(value : Lvgl::GridAlign) : Lvgl::GridAlign
       @style.set_grid_cell_y_align(value)
       value
     end
 
+    # Chaining form of `cell_y_align=`. Applies the same property and returns the same scope instance for further chained calls.
     def cell_y_align(value : Lvgl::GridAlign) : self
       self.cell_y_align = value
       self
@@ -904,48 +1178,64 @@ class Lvgl::Style
   # - `lv_style_set_anim_duration`
   # - `lv_style_set_blend_mode`
   #
+  # ## Example
+  # ```
+  # style.transition
+  #   .duration(150)
+  #   .blend_mode(Lvgl::BlendMode::Normal)
+  # ```
+  #
   # ## Links
   # - [LVGL docs: transition/blend style properties (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_style_gen_h.html)
   # - [LVGL 9.4 header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_style_gen.h)
   class TransitionScope
+    # Create a transition-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
+    # Sets transition descriptor pointer.
     def descriptor=(value : Pointer(LibLvgl::LvStyleTransitionDscT)) : Pointer(LibLvgl::LvStyleTransitionDscT)
       @style.set_transition(value)
       value
     end
 
+    # Chaining form of `descriptor=`. Applies the same property and returns the same scope instance for further chained calls.
     def descriptor(value : Pointer(LibLvgl::LvStyleTransitionDscT)) : self
       self.descriptor = value
       self
     end
 
+    # Sets animation descriptor pointer.
     def animation=(value : Pointer(LibLvgl::LvAnimT)) : Pointer(LibLvgl::LvAnimT)
       @style.set_anim(value)
       value
     end
 
+    # Chaining form of `animation=`. Applies the same property and returns the same scope instance for further chained calls.
     def animation(value : Pointer(LibLvgl::LvAnimT)) : self
       self.animation = value
       self
     end
 
+    # Sets animation duration in milliseconds.
     def duration=(value : UInt32 | Int32) : UInt32 | Int32
       @style.set_anim_duration(value)
       value
     end
 
+    # Chaining form of `duration=`. Applies the same property and returns the same scope instance for further chained calls.
     def duration(value : UInt32 | Int32) : self
       self.duration = value
       self
     end
 
+    # Sets draw blend mode.
     def blend_mode=(value : Lvgl::BlendMode) : Lvgl::BlendMode
       @style.set_blend_mode(value)
       value
     end
 
+    # Chaining form of `blend_mode=`. Applies the same property and returns the same scope instance for further chained calls.
     def blend_mode(value : Lvgl::BlendMode) : self
       self.blend_mode = value
       self
@@ -966,10 +1256,18 @@ class Lvgl::Style
   #
   # It returns the resulting color used by LVGL.
   #
+  # ## Example
+  # ```
+  # style.color.filter(Lvgl::Opacity::P20) do |_style, color, opacity|
+  #   color.darken(opacity)
+  # end
+  # ```
+  #
   # ## Links
   # - [LVGL docs: color filter descriptor (9.4)](https://docs.lvgl.io/9.4/API/misc/lv_color_op_h.html)
   # - [LVGL 9.4 color-op header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/misc/lv_color_op.h)
   class ColorScope
+    # Create a color-filter-scope wrapper bound to one style instance.
     def initialize(@style : Lvgl::Style)
     end
 
@@ -1036,7 +1334,7 @@ class Lvgl::Style
     value
   end
 
-  # Fluent variant of `radius=`.
+  # Chaining form of `radius=`. Applies the same property and returns the same style instance for further chained calls.
   def radius(value : Int32 | Lvgl::Radius) : self
     self.radius = value
     self
@@ -1107,6 +1405,12 @@ class Lvgl::Style
   # ## Parameters
   # - `object`: target LVGL object wrapper
   # - `selector`: part/state selector (defaults to main/default)
+  #
+  # ## Example
+  # ```
+  # style.apply_to(button)
+  # style.apply_to(button, selector: Lvgl::Part::Main | Lvgl::State::Pressed)
+  # ```
   #
   # ## Links
   # - [LVGL docs: lv_obj_add_style (9.4)](https://docs.lvgl.io/9.4/API/core/lv_obj_style_h.html#_CPPv416lv_obj_add_styleP8lv_obj_tPK10lv_style_t19lv_style_selector_t)

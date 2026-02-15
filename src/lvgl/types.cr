@@ -149,6 +149,7 @@ module Lvgl
     Vertical   = 1
     Horizontal = 2
 
+    # Converts Crystal gradient direction aliases to LVGL gradient direction values.
     def to_grad_dir : Lvgl::GradDir
       case self
       when None
@@ -190,14 +191,17 @@ module Lvgl
     Red  =  0
     Grey = 18
 
+    # Returns the palette primary color.
     def main : Lvgl::Color
       Lvgl::Color.new(LibLvgl.lv_palette_main(to_i))
     end
 
+    # Returns a lightened color from this palette.
     def lighten(level : Int) : Lvgl::Color
       Lvgl::Color.new(LibLvgl.lv_palette_lighten(to_i, level.to_u8))
     end
 
+    # Returns a darkened color from this palette.
     def darken(level : Int) : Lvgl::Color
       Lvgl::Color.new(LibLvgl.lv_palette_darken(to_i, level.to_u8))
     end
@@ -207,9 +211,11 @@ module Lvgl
   #
   # Selector values combine `Lvgl::Part` and `Lvgl::State` bitmasks.
   struct StyleSelector
+    # Create a selector from an already combined LVGL part/state bitmask.
     def initialize(@raw : UInt32)
     end
 
+    # Returns the wrapped raw LVGL value for FFI calls.
     def to_unsafe : UInt32
       @raw
     end

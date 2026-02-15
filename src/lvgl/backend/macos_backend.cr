@@ -13,20 +13,31 @@ module Lvgl::Backend
     @previous_sdl_width : String?
     @previous_sdl_height : String?
 
+    # Backend selection key used by `Lvgl::Backend.from_env`.
     def key : String
       "macos"
     end
 
+    # Returns availability of the delegated SDL-backed backend.
+    #
+    # On this project, macOS backend is an SDL profile wrapper, so availability
+    # means the SDL driver symbols are present and loadable.
     def available? : Bool
       @sdl_backend.available?
     end
 
+    # Returns actionable guidance when delegated SDL symbols are unavailable.
     def unavailable_reason : String?
       return nil if available?
 
       "macOS backend reuses LVGL SDL driver symbols in #{lvgl_lib_path}; rebuild `liblvgl.so` with LV_USE_SDL=1 and SDL2 development libraries installed."
     end
 
+    # Applies optional macOS-specific width/height env overrides
+    # (`LVGL_MACOS_WIDTH`/`LVGL_MACOS_HEIGHT`) to SDL dimensions and delegates
+    # setup to `SdlBackend`.
+    #
+    # Restores previous env values if setup raises.
     def setup! : Nil
       apply_dimension_env_overrides
       @sdl_backend.setup!
@@ -35,6 +46,8 @@ module Lvgl::Backend
       raise ex
     end
 
+    # Delegates teardown to `SdlBackend` and restores any temporarily modified
+    # SDL dimension environment variables.
     def teardown! : Nil
       @sdl_backend.teardown!
     ensure

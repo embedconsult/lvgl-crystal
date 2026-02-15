@@ -32,24 +32,39 @@ require "./runtime"
 # - [LVGL object API](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
 # - [LVGL object header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/core/lv_obj.h)
 class Lvgl::Object
+  # Fluent style helper proxy bound to one `Lvgl::Object`.
+  #
+  # ## Summary
+  # Provides concise style operations (`add`, `remove_all`, `radius`) while
+  # preserving selector flexibility.
+  #
+  # ## Links
+  # - [LVGL docs: object style API (9.4)](https://docs.lvgl.io/9.4/API/core/lv_obj_style_h.html)
   class StyleProxy
     alias SelectorInput = Lvgl::StyleSelector | Lvgl::State | Lvgl::Part | Int32 | UInt32
 
+    # Create a style proxy bound to one target object.
+    #
+    # All proxy calls delegate immediately to methods on this `@object`.
     def initialize(@object : Lvgl::Object)
     end
 
+    # Removes all styles attached through the style proxy target object.
     def remove_all : Nil
       @object.remove_style_all
     end
 
+    # Adds one style to the style proxy target object with selector support.
     def add(style : Lvgl::Style, selector : SelectorInput = Lvgl.style_selector) : Nil
       @object.add_style(style, selector: selector)
     end
 
+    # Adds one style to the style proxy target object with selector support.
     def add(style : Lvgl::Style, *, selector : SelectorInput = Lvgl.style_selector) : Nil
       add(style, selector)
     end
 
+    # Sets style radius on the style proxy target object for the selector.
     def radius(value : Int32 | Lvgl::Radius, selector : SelectorInput = Lvgl.style_selector) : Nil
       radius_value = value.is_a?(Lvgl::Radius) ? value.to_i : value
       @object.set_style_radius(radius_value, normalize_selector(selector))
