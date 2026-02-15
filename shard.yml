@@ -12,7 +12,7 @@ targets:
 dependencies:
   lvgl:
     github: embedconsult/lvgl
-    version: 9.4.0-usetestnsnap
+    version: 9.4.0-20260215
 
 development_dependencies:
   ameba:
