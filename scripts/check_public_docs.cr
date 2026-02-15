@@ -1,9 +1,12 @@
 #!/usr/bin/env crystal
 
-files = Dir.glob("src/**.cr")
+require "log"
+
+files = Dir.glob("src/**/*.cr")
 errors = [] of String
 
 files.each do |file|
+  Log.debug { "Checking #{file}" }
   lines = File.read_lines(file)
 
   lines.each_with_index do |line, idx|
@@ -56,7 +59,7 @@ files.each do |file|
 end
 
 if errors.empty?
-  puts "Documentation check passed"
+  Log.info { "Documentation check passed" }
   exit 0
 end
 
