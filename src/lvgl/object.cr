@@ -78,7 +78,7 @@ class Lvgl::Object
 
   @raw : Pointer(LibLvgl::LvObjT) = Pointer(LibLvgl::LvObjT).null
   @parent : Object? = nil
-  @style_proxy : StyleProxy?
+  @retained_styles : Array(Lvgl::Style)?
 
   # Returns number of currently-live Crystal wrapper instances.
   def self.instance_count : Int32
@@ -359,6 +359,7 @@ class Lvgl::Object
   # Remove all currently attached styles from this object.
   def remove_style_all : Nil
     LibLvgl.lv_obj_remove_style_all(@raw)
+    @retained_styles.try &.clear
   end
 
   # Add one style descriptor to this object for one selector mask.
@@ -382,6 +383,7 @@ class Lvgl::Object
                         end
 
     LibLvgl.lv_obj_add_style(@raw, style.to_unsafe, resolved_selector.to_unsafe)
+    retained_styles << style unless retained_styles.includes?(style)
   end
 
   # Keyword-friendly overload for `add_style(..., selector: ...)`.
@@ -415,7 +417,7 @@ class Lvgl::Object
 
   # Fluent style helper proxy.
   def style : StyleProxy
-    @style_proxy ||= StyleProxy.new(self)
+    StyleProxy.new(self)
   end
 
   # Set background opacity for a selector.
@@ -543,7 +545,12 @@ class Lvgl::Object
 
   # Called by GC before wrapper memory is reclaimed.
   def finalize : Nil
+    @retained_styles.try &.clear
     self.class.decrement_instance_count!
+  end
+
+  private def retained_styles : Array(Lvgl::Style)
+    @retained_styles ||= [] of Lvgl::Style
   end
 
   private def self.increment_instance_count! : Nil

@@ -1,11 +1,12 @@
 require "./types"
+require "weak_ref"
 
 class Lvgl::Style
   private alias SelectorInput = Lvgl::StyleSelector | Lvgl::State | Lvgl::Part | Int32 | UInt32
   private alias ColorFilterBlock = Lvgl::Style, Lvgl::Color, UInt8 -> Lvgl::Color
 
   @@color_filter_lock = Mutex.new
-  @@color_filter_handlers = {} of UInt64 => Tuple(Lvgl::Style, ColorFilterBlock)
+  @@color_filter_handlers = {} of UInt64 => Tuple(WeakRef(Lvgl::Style), ColorFilterBlock)
   @@color_filter_next_token = 1_u64
 
   class BackgroundScope
@@ -117,11 +118,6 @@ class Lvgl::Style
   @color_filter_dsc : LibLvgl::LvColorFilterDscT = LibLvgl::LvColorFilterDscT.new
   @color_filter_token : UInt64?
 
-  @background : BackgroundScope?
-  @border : BorderScope?
-  @text : TextScope?
-  @color : ColorScope?
-
   def initialize
     Lvgl::Runtime.start
     initialize_raw_style
@@ -132,13 +128,6 @@ class Lvgl::Style
     clear_color_filter_handler
     reset_raw_style
     initialize_raw_style
-  end
-
-  def finalize : Nil
-    clear_color_filter_handler
-    return unless Lvgl::Runtime.initialized?
-
-    reset_raw_style
   end
 
   def to_unsafe : Pointer(LibLvgl::LvStyleT)
@@ -157,19 +146,19 @@ class Lvgl::Style
   end
 
   def background : BackgroundScope
-    @background ||= BackgroundScope.new(self)
+    BackgroundScope.new(self)
   end
 
   def border : BorderScope
-    @border ||= BorderScope.new(self)
+    BorderScope.new(self)
   end
 
   def text : TextScope
-    @text ||= TextScope.new(self)
+    TextScope.new(self)
   end
 
   def color : ColorScope
-    @color ||= ColorScope.new(self)
+    ColorScope.new(self)
   end
 
   def apply_to(object : Lvgl::Object, selector : SelectorInput = Lvgl.style_selector) : Nil
@@ -188,7 +177,15 @@ class Lvgl::Style
 
     return color unless handler
 
-    style, block = handler
+    style_ref, block = handler
+    style = style_ref.value
+    unless style
+      @@color_filter_lock.synchronize do
+        @@color_filter_handlers.delete(token)
+      end
+      return color
+    end
+
     block.call(style, Lvgl::Color.new(color), opacity).to_unsafe
   end
 
@@ -205,7 +202,7 @@ class Lvgl::Style
       @@color_filter_next_token += 1_u64
       @color_filter_token = token
       @color_filter_dsc.user_data = Pointer(Void).new(token)
-      @@color_filter_handlers[token] = {self, block}
+      @@color_filter_handlers[token] = {WeakRef.new(self), block}
     end
 
     LibLvgl.lv_style_set_color_filter_dsc(to_unsafe, pointerof(@color_filter_dsc))
