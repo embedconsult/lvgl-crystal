@@ -1,8 +1,6 @@
 require "../../lvgl"
 
 # Create a slider and write its value on a label.
-#
-# A Crystal-friendly adaptation of LVGL's get-started slider example.
 class ExampleGetStarted4 < Lvgl::Applet
   @value_label : Lvgl::Widgets::Label?
 
@@ -10,9 +8,10 @@ class ExampleGetStarted4 < Lvgl::Applet
     label = @value_label
     return unless label
 
-    label.text = slider.value.to_s
+    label.text = "#{slider.value}"
   end
 
+  # Create a slider and write its value on a label.
   def setup(screen)
     slider = Lvgl::Widgets::Slider.new(screen)
     slider.size = {200, 20}

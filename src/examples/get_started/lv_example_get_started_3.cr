@@ -2,49 +2,72 @@ require "../../lvgl"
 
 # Create styles from scratch for buttons.
 class ExampleGetStarted3 < Lvgl::Applet
-  private def apply_base_button_style(button : Lvgl::Widgets::Button)
-    grey_bg = Lvgl::Palette::Grey.lighten(3)
-    grey_bg_grad = Lvgl::Palette::Grey.main
-    pressed_selector = Lvgl.style_selector(state: Lvgl::State::Pressed)
+  @style_btn : Lvgl::Style
+  @style_button_pressed : Lvgl::Style
+  @style_button_red : Lvgl::Style
 
-    button.remove_style_all
-    button.set_style_radius(10)
-    button.set_style_bg_opa(Lvgl::Opa::Cover)
-    button.set_style_bg_color(grey_bg)
-    button.set_style_bg_grad_color(grey_bg_grad)
-    button.set_style_bg_grad_dir(Lvgl::GradDir::Ver)
-    button.set_style_border_color(Lvgl::Color.hex(0x000000))
-    button.set_style_border_opa(Lvgl::Opa::P20)
-    button.set_style_border_width(2)
-    button.set_style_text_color(Lvgl::Color.hex(0x000000))
+  # Create a simple button style
+  #
+  # This is done in `initialize` to be available for use in `setup`
+  def initialize
+    @style_btn = Lvgl::Style.new
+    @style_btn.radius = 10
+    @style_btn.background.opacity = Lvgl::Opacity::Cover
+    @style_btn.background.color = Lvgl::Palette::Grey.lighten(3)
+    @style_btn.background.gradient_color = Lvgl::Palette::Grey.main
+    @style_btn.background.gradient_direction = Lvgl::GradientDirection::Vertical
 
-    # Simulate LVGL's example darken filter for the pressed state.
-    button.set_style_bg_color(grey_bg.darken(Lvgl::Opa::P20), pressed_selector)
-    button.set_style_bg_grad_color(grey_bg_grad.darken(Lvgl::Opa::P20), pressed_selector)
+    @style_btn.border.color = Lvgl::Color.black
+    @style_btn.border.opacity = Lvgl::Opacity::P20
+    @style_btn.border.width = 2
+
+    @style_btn.text.color = Lvgl::Color.black
+
+    # Create a style for the pressed state.
+    # Use a color filter to simply modify all colors in this state.
+    @style_button_pressed = Lvgl::Style.new
+    @style_button_pressed.color.filter do |descriptor, color, opacity|
+      opacity = Lvgl::Opacity::P20
+      color.darken
+    end
+
+    # Create a red style. Change only some colors.
+    @style_button_red = Lvgl::Style.new
+    @style_button_red.background.color = Lvgl::Palette::Red.main
+    @style_button_red.background.gradient_color = Lvgl::Palette::Red.lighten(3)
   end
 
+  # Create styles from scratch for buttons.
   def setup(screen)
-    btn = Lvgl::Widgets::Button.new(screen)
-    btn.remove_style_all
-    btn.pos = {20, 20}
-    btn.size = {120, 50}
-    apply_base_button_style(btn)
+    # Styles are already initialized when an instance of this class is made
 
-    label = Lvgl::Widgets::Label.new(btn)
+    # Create a button and use the new styles.
+    btn = Lvgl::Button.new(screen)
+    # Remove the styles coming from the theme.
+    # Note that size and position are also stored as style properties.
+    # so lv_obj_remove_style_all will remove the set size and position too
+    btn.style.remove_all
+    btn.position = {10, 10}
+    btn.size = {120, 50}
+    btn.style.add(@style_btn)
+    btn.style.add(@style_button_pressed, selector: Lvgl::State::Pressed)
+
+    # Add a label to the button.
+    label = Lvgl::Button.new(btn)
     label.text = "Button"
     label.center
 
-    btn2 = Lvgl::Widgets::Button.new(screen)
-    btn2.remove_style_all
-    btn2.pos = {20, 90}
+    # Create another button and use the red style too.
+    btn2 = Lvgl::Button.new(screen)
+    btn2.style.remove_all                                 # Remove the styles coming from the theme.
+    btn2.position = {10, 80}
     btn2.size = {120, 50}
-    apply_base_button_style(btn2)
-    btn2.set_style_bg_color(Lvgl::Palette::Red.main)
-    btn2.set_style_bg_grad_color(Lvgl::Palette::Red.lighten(3))
-    btn2.set_style_radius(1000)
+    btn2.style.add(@style_btn)
+    btn2.style.add(@style_button_red)
+    btn2.style.add(@style_button_pressed, selector: Lvgl::State::Pressed)
+    btn2.style.radius(Lvgl::Radius::Circle, selector: 0)  # Add a local style too.
 
-    label2 = Lvgl::Widgets::Label.new(btn2)
-    label2.text = "Button 2"
-    label2.center
-  end
+    label = Lvgl::Label.new(btn2)
+    label.text = "Button 2"
+    label.center
 end
