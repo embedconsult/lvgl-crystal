@@ -20,6 +20,23 @@ lib LibLvgl
   # [`lv_draw_buf.h`](lib/lvgl/src/draw/lv_draw_buf.h).
   type LvDrawBufT = Void
 
+  # LVGL mutable style descriptor (`lv_style_t`).
+  #
+  # Layout reference: [`lv_style.h`](lib/lvgl/src/misc/lv_style.h).
+  struct LvStyleT
+    values_and_props : Void*
+    has_group : UInt32
+    prop_cnt : UInt8
+  end
+
+  # LVGL color filter descriptor (`lv_color_filter_dsc_t`).
+  #
+  # Layout reference: [`lv_color_op.h`](lib/lvgl/src/misc/lv_color_op.h).
+  struct LvColorFilterDscT
+    filter_cb : Void*
+    user_data : Void*
+  end
+
   # LVGL coordinate type (`lv_coord_t`) used for object geometry.
   #
   # Coordinates are interpreted in LVGL's object-local coordinate system and are
@@ -50,6 +67,10 @@ lib LibLvgl
   # LVGL event callback signature (`lv_event_cb_t`).
   # See [`lv_event.h`](lib/lvgl/src/misc/lv_event.h).
   alias LvEventCbT = Pointer(LvEventT) ->
+
+  # LVGL color filter callback signature (`lv_color_filter_cb_t`).
+  # See [`lv_color_op.h`](lib/lvgl/src/misc/lv_color_op.h).
+  alias LvColorFilterCbT = Pointer(LvColorFilterDscT), LvColorT, UInt8 -> LvColorT
 
   # C declaration provenance: `lib/lvgl/src/lv_init.h` (`lv_init`, `lv_deinit`) and
   # `lib/lvgl/src/tick/lv_tick.h` + `lib/lvgl/src/misc/lv_timer.h`
@@ -232,6 +253,51 @@ lib LibLvgl
 
   # Set the corner radius style value.
   fun lv_obj_set_style_radius(obj : Pointer(LvObjT), value : Int32, selector : LvStyleSelectorT) : Void
+
+  # Add a style descriptor to an object for one selector.
+  fun lv_obj_add_style(obj : Pointer(LvObjT), style : Pointer(LvStyleT), selector : LvStyleSelectorT) : Void
+
+  # Initialize a mutable style descriptor.
+  fun lv_style_init(style : Pointer(LvStyleT)) : Void
+
+  # Clear style properties and free dynamic style memory.
+  fun lv_style_reset(style : Pointer(LvStyleT)) : Void
+
+  # Set style background color.
+  fun lv_style_set_bg_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style background opacity.
+  fun lv_style_set_bg_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style background gradient secondary color.
+  fun lv_style_set_bg_grad_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style background gradient direction.
+  fun lv_style_set_bg_grad_dir(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style border color.
+  fun lv_style_set_border_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style border opacity.
+  fun lv_style_set_border_opa(style : Pointer(LvStyleT), value : UInt8) : Void
+
+  # Set style border width.
+  fun lv_style_set_border_width(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Set style text color.
+  fun lv_style_set_text_color(style : Pointer(LvStyleT), value : LvColorT) : Void
+
+  # Set style corner radius.
+  fun lv_style_set_radius(style : Pointer(LvStyleT), value : Int32) : Void
+
+  # Initialize a color filter descriptor.
+  fun lv_color_filter_dsc_init(dsc : Pointer(LvColorFilterDscT), cb : LvColorFilterCbT) : Void
+
+  # Set style color filter descriptor.
+  fun lv_style_set_color_filter_dsc(style : Pointer(LvStyleT), value : Pointer(LvColorFilterDscT)) : Void
+
+  # Set style color filter opacity.
+  fun lv_style_set_color_filter_opa(style : Pointer(LvStyleT), value : UInt8) : Void
 
   # Register an event callback on an object.
   #

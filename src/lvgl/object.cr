@@ -32,11 +32,53 @@ require "./runtime"
 # - [LVGL object API](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
 # - [LVGL object header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/core/lv_obj.h)
 class Lvgl::Object
+  class StyleProxy
+    alias SelectorInput = Lvgl::StyleSelector | Lvgl::State | Lvgl::Part | Int32 | UInt32
+
+    def initialize(@object : Lvgl::Object)
+    end
+
+    def remove_all : Nil
+      @object.remove_style_all
+    end
+
+    def add(style : Lvgl::Style, selector : SelectorInput = Lvgl.style_selector) : Nil
+      @object.add_style(style, selector: selector)
+    end
+
+    def add(style : Lvgl::Style, *, selector : SelectorInput = Lvgl.style_selector) : Nil
+      add(style, selector)
+    end
+
+    def radius(value : Int32 | Lvgl::Radius, selector : SelectorInput = Lvgl.style_selector) : Nil
+      radius_value = value.is_a?(Lvgl::Radius) ? value.to_i : value
+      @object.set_style_radius(radius_value, normalize_selector(selector))
+    end
+
+    private def normalize_selector(selector : SelectorInput) : Lvgl::StyleSelector
+      case selector
+      when Lvgl::StyleSelector
+        selector
+      when Lvgl::State
+        Lvgl.style_selector(state: selector)
+      when Lvgl::Part
+        Lvgl.style_selector(part: selector)
+      when Int32
+        Lvgl::StyleSelector.new(selector.to_u32)
+      when UInt32
+        Lvgl::StyleSelector.new(selector)
+      else
+        raise "Unsupported style selector input: #{selector.inspect}"
+      end
+    end
+  end
+
   @@state_lock = Mutex.new
   @@instance_count = Atomic(Int32).new(0)
 
   @raw : Pointer(LibLvgl::LvObjT) = Pointer(LibLvgl::LvObjT).null
   @parent : Object? = nil
+  @style_proxy : StyleProxy?
 
   # Returns number of currently-live Crystal wrapper instances.
   def self.instance_count : Int32
@@ -198,6 +240,11 @@ class Lvgl::Object
     value
   end
 
+  # Convenience tuple writer alias for object position (`{x, y}`).
+  def position=(value : Tuple(Int32, Int32)) : Tuple(Int32, Int32)
+    self.pos = value
+  end
+
   # Center this object in its current parent.
   #
   # ## Summary
@@ -314,6 +361,43 @@ class Lvgl::Object
     LibLvgl.lv_obj_remove_style_all(@raw)
   end
 
+  # Add one style descriptor to this object for one selector mask.
+  def add_style(
+    style : Lvgl::Style,
+    selector : Lvgl::StyleSelector | Lvgl::State | Lvgl::Part | Int32 | UInt32 = Lvgl.style_selector,
+  ) : Nil
+    resolved_selector = case selector
+                        when Lvgl::StyleSelector
+                          selector
+                        when Lvgl::State
+                          Lvgl.style_selector(state: selector)
+                        when Lvgl::Part
+                          Lvgl.style_selector(part: selector)
+                        when Int32
+                          Lvgl::StyleSelector.new(selector.to_u32)
+                        when UInt32
+                          Lvgl::StyleSelector.new(selector)
+                        else
+                          raise "Unsupported style selector input: #{selector.inspect}"
+                        end
+
+    LibLvgl.lv_obj_add_style(@raw, style.to_unsafe, resolved_selector.to_unsafe)
+  end
+
+  # Keyword-friendly overload for `add_style(..., selector: ...)`.
+  def add_style(
+    style : Lvgl::Style,
+    *,
+    selector : Lvgl::StyleSelector | Lvgl::State | Lvgl::Part | Int32 | UInt32 = Lvgl.style_selector,
+  ) : Nil
+    add_style(style, selector)
+  end
+
+  # Fluent style helper proxy.
+  def style : StyleProxy
+    @style_proxy ||= StyleProxy.new(self)
+  end
+
   # Set background opacity for a selector.
   def set_style_bg_opa(value : Lvgl::Opa | UInt8, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
     opacity = value.is_a?(Lvgl::Opa) ? value.to_i.to_u8 : value
@@ -326,8 +410,9 @@ class Lvgl::Object
   end
 
   # Set gradient direction for a selector.
-  def set_style_bg_grad_dir(dir : Lvgl::GradDir, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
-    LibLvgl.lv_obj_set_style_bg_grad_dir(@raw, dir.to_i, selector.to_unsafe)
+  def set_style_bg_grad_dir(dir : Lvgl::GradDir | Lvgl::GradientDirection, selector : Lvgl::StyleSelector = Lvgl.style_selector) : Nil
+    normalized = dir.is_a?(Lvgl::GradientDirection) ? dir.to_grad_dir : dir
+    LibLvgl.lv_obj_set_style_bg_grad_dir(@raw, normalized.to_i, selector.to_unsafe)
   end
 
   # Set border color for a selector.

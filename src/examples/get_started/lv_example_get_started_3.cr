@@ -6,9 +6,9 @@ class ExampleGetStarted3 < Lvgl::Applet
   @style_button_pressed : Lvgl::Style
   @style_button_red : Lvgl::Style
 
-  # Create a simple button style
+  # Create a simple button style.
   #
-  # This is done in `initialize` to be available for use in `setup`
+  # This is done in `initialize` to be available for use in `setup`.
   def initialize
     @style_btn = Lvgl::Style.new
     @style_btn.radius = 10
@@ -26,9 +26,8 @@ class ExampleGetStarted3 < Lvgl::Applet
     # Create a style for the pressed state.
     # Use a color filter to simply modify all colors in this state.
     @style_button_pressed = Lvgl::Style.new
-    @style_button_pressed.color.filter do |descriptor, color, opacity|
-      opacity = Lvgl::Opacity::P20
-      color.darken
+    @style_button_pressed.color.filter(Lvgl::Opacity::P20) do |_style, color, opacity|
+      color.darken(opacity)
     end
 
     # Create a red style. Change only some colors.
@@ -39,13 +38,13 @@ class ExampleGetStarted3 < Lvgl::Applet
 
   # Create styles from scratch for buttons.
   def setup(screen)
-    # Styles are already initialized when an instance of this class is made
+    # Styles are already initialized when an instance of this class is made.
 
     # Create a button and use the new styles.
     btn = Lvgl::Button.new(screen)
     # Remove the styles coming from the theme.
-    # Note that size and position are also stored as style properties.
-    # so lv_obj_remove_style_all will remove the set size and position too
+    # Note that size and position are also stored as style properties,
+    # so `Lvgl::Style#remove_all` will remove the set size and position too.
     btn.style.remove_all
     btn.position = {10, 10}
     btn.size = {120, 50}
@@ -53,21 +52,22 @@ class ExampleGetStarted3 < Lvgl::Applet
     btn.style.add(@style_button_pressed, selector: Lvgl::State::Pressed)
 
     # Add a label to the button.
-    label = Lvgl::Button.new(btn)
+    label = Lvgl::Label.new(btn)
     label.text = "Button"
     label.center
 
     # Create another button and use the red style too.
     btn2 = Lvgl::Button.new(screen)
-    btn2.style.remove_all                                 # Remove the styles coming from the theme.
+    btn2.style.remove_all # Remove the styles coming from the theme.
     btn2.position = {10, 80}
     btn2.size = {120, 50}
     btn2.style.add(@style_btn)
     btn2.style.add(@style_button_red)
     btn2.style.add(@style_button_pressed, selector: Lvgl::State::Pressed)
-    btn2.style.radius(Lvgl::Radius::Circle, selector: 0)  # Add a local style too.
+    btn2.style.radius(Lvgl::Radius::Circle, selector: 0) # Add a local style too.
 
     label = Lvgl::Label.new(btn2)
     label.text = "Button 2"
     label.center
+  end
 end

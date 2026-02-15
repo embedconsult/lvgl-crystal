@@ -20,12 +20,27 @@ module Lvgl
   enum Part : UInt32
     # `LV_PART_MAIN` in LVGL (`lv_part_t`).
     Main = 0x000000
+
+    # Combine a part with a state selector.
+    def |(other : Lvgl::State) : Lvgl::StyleSelector
+      Lvgl.style_selector(part: self, state: other)
+    end
   end
 
   # LVGL object state flags used in style selectors.
   enum State : UInt32
     Default = 0x0000
     Pressed = 0x0020
+
+    # Combine two state flags into one style selector mask.
+    def |(other : Lvgl::State) : Lvgl::StyleSelector
+      Lvgl::StyleSelector.new(to_i.to_u32 | other.to_i.to_u32)
+    end
+
+    # Combine state and part into one style selector.
+    def |(other : Lvgl::Part) : Lvgl::StyleSelector
+      Lvgl.style_selector(part: other, state: self)
+    end
   end
 
   # LVGL background gradient direction values.
@@ -35,11 +50,39 @@ module Lvgl
     Hor  = 2
   end
 
+  # Crystal-friendly gradient direction aliases.
+  enum GradientDirection : Int32
+    None       = 0
+    Vertical   = 1
+    Horizontal = 2
+
+    def to_grad_dir : Lvgl::GradDir
+      case self
+      when None
+        Lvgl::GradDir::None
+      when Vertical
+        Lvgl::GradDir::Ver
+      when Horizontal
+        Lvgl::GradDir::Hor
+      else
+        raise "Unsupported gradient direction: #{self}"
+      end
+    end
+  end
+
   # Common LVGL opacity presets.
   enum Opa : UInt8
     Transparent =   0
     P20         =  51
     Cover       = 255
+  end
+
+  # Crystal-friendly opacity alias.
+  alias Opacity = Opa
+
+  # Common radius presets.
+  enum Radius : Int32
+    Circle = 0x7fff
   end
 
   # Built-in LVGL Material palettes.
@@ -69,6 +112,14 @@ module Lvgl
 
     def to_unsafe : UInt32
       @raw
+    end
+
+    def |(other : Lvgl::State) : StyleSelector
+      StyleSelector.new(@raw | other.to_i.to_u32)
+    end
+
+    def |(other : Lvgl::Part) : StyleSelector
+      StyleSelector.new(@raw | other.to_i.to_u32)
     end
   end
 
@@ -105,8 +156,13 @@ module Lvgl
       new(LibLvgl.lv_color_hex(value.to_u32))
     end
 
+    # Convenience black color (`0x000000`).
+    def self.black : self
+      hex(0x000000)
+    end
+
     # Return a darkened variant of this color.
-    def darken(level : Lvgl::Opa | UInt8) : self
+    def darken(level : Lvgl::Opa | UInt8 = Lvgl::Opa::P20) : self
       value = level.is_a?(Lvgl::Opa) ? level.to_i.to_u8 : level
       self.class.new(LibLvgl.lv_color_darken(@raw, value))
     end
