@@ -122,10 +122,12 @@ class Lvgl::Style
   @color : ColorScope?
 
   def initialize
+    Lvgl::Runtime.start
     initialize_raw_style
   end
 
   def reset : Nil
+    Lvgl::Runtime.start
     clear_color_filter_handler
     reset_raw_style
     initialize_raw_style
@@ -133,6 +135,8 @@ class Lvgl::Style
 
   def finalize : Nil
     clear_color_filter_handler
+    return unless Lvgl::Runtime.initialized?
+
     reset_raw_style
   end
 

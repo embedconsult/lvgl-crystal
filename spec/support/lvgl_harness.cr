@@ -41,6 +41,26 @@ module Lvgl::SpecSupport
       end
     end
 
+    def self.with_headless_backend(& : Lvgl::Object ->)
+      backend = Lvgl::Backend::HeadlessTestBackend.new
+      unless lvgl_library_available? && backend.available?
+        reason = if lvgl_library_available?
+                   backend.unavailable_reason || "headless backend unavailable"
+                 else
+                   lvgl_library_unavailable_reason
+                 end
+        raise reason
+      end
+
+      backend.setup!
+      begin
+        yield Lvgl::Object.screen_active
+      ensure
+        backend.teardown!
+        Lvgl::Runtime.shutdown if Lvgl::Runtime.initialized?
+      end
+    end
+
     def self.safe_cleanup : Nil
       begin
         @@backend.teardown! if @@setup_attempted
