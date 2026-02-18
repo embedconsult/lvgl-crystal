@@ -39,17 +39,20 @@ require "./examples/**"
 {% end %}
 
 class Examples < Lvgl::Applet
+  # Canonical metadata record collected from @[ExampleMetadata(...)] annotations.
   record DocsEntry,
     applet_class : Lvgl::Applet.class,
     class_name : String,
     section : String,
     title : String,
     image_path : String do
+    # Absolute output location used by image generation scripts.
     def docs_output_path : String
       File.join("docs", image_path)
     end
   end
 
+  # Compile-time list of all annotated example applets.
   DOCS_ENTRIES = begin
     entries = [] of DocsEntry
 
@@ -69,10 +72,13 @@ class Examples < Lvgl::Applet
     entries
   end
 
+  # Returns metadata entries for all annotated applets.
   def self.docs_entries : Array(DocsEntry)
     DOCS_ENTRIES
   end
 
+  # Ensures every registered applet (except this aggregate runner) is annotated
+  # and that there are no stale metadata entries.
   def self.validate_docs_metadata! : Nil
     documented_names = docs_entries.map(&.class_name)
     registered_names = Lvgl::Applet.registry.map(&.new.class_name).reject { |name| name == "Examples" }

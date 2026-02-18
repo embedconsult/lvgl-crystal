@@ -5,6 +5,9 @@ require "file_utils"
 require "../src/examples"
 
 # Generates example screenshots from applet metadata annotations.
+#
+# Metadata source: `@[ExampleMetadata(...)]` on each applet class.
+# Screenshot output: `docs/images/*.png`.
 
 def with_headless_backend(&)
   backend = Lvgl::Backend::HeadlessTestBackend.new
@@ -19,8 +22,10 @@ def with_headless_backend(&)
   end
 end
 
+# Fail fast if metadata/app registrations are out of sync.
 Examples.validate_docs_metadata!
 
+# Render one screenshot per metadata entry.
 Examples.docs_entries.each do |entry|
   puts "Generating #{entry.docs_output_path} for #{entry.class_name}..."
   FileUtils.mkdir_p(File.dirname(entry.docs_output_path))
