@@ -1,3 +1,4 @@
+require "./examples/metadata"
 require "./examples/**"
 
 # An applet is an easy way to build an LVGL application in Crystal.
@@ -13,9 +14,6 @@ require "./examples/**"
 #
 # Replace `src/examples.cr` with the particular example you'd like to run.
 #
-# ### Examples:
-# * [Get Started](#get-started)
-#
 # ### Background summary:
 # * [Original C examples](https://docs.lvgl.io/9.4/examples.html)
 # * Each example inherits the `Lvgl::Applet` class to simplify integration.
@@ -24,21 +22,80 @@ require "./examples/**"
 # * The backend can be set with the LVGL_BACKEND environment variable.
 # * The `liblvgl.so` library is linked dynamically and available backends are configured at run-time.
 #
-# ## Get Started
+# ### Example image index (macro-generated from `@[ExampleMetadata(...)]`)
 #
-# ### A very simple _hello world_ label
+{% for subclass in Lvgl::Applet.all_subclasses %}
+  {% metadata = subclass.annotation(ExampleMetadata) %}
+  {% if metadata %}
+# #### {{ metadata[:section] }}
 #
-# `ExampleGetStarted1`
+# {{ metadata[:title] }}
 #
-# ![ExampleGetStarted1](images/lv_example_get_started_1.png)
+# `{{ subclass.name.stringify }}`
 #
-# ### A button with a label and react on click event
+# ![{{ subclass.name.stringify }}]({{ metadata[:image_path] }})
 #
-# `ExampleGetStarted2`
-#
-# ![ExampleGetStarted2](images/lv_example_get_started_2.png)
-#
+  {% end %}
+{% end %}
+
 class Examples < Lvgl::Applet
+  record DocsEntry,
+    applet_class : Lvgl::Applet.class,
+    class_name : String,
+    section : String,
+    title : String,
+    image_path : String do
+    def docs_output_path : String
+      File.join("docs", image_path)
+    end
+  end
+
+  DOCS_ENTRIES = begin
+    entries = [] of DocsEntry
+
+    {% for subclass in Lvgl::Applet.all_subclasses %}
+      {% metadata = subclass.annotation(ExampleMetadata) %}
+      {% if metadata %}
+        entries << DocsEntry.new(
+          applet_class: {{ subclass }},
+          class_name: {{ subclass.name.stringify }},
+          section: {{ metadata[:section] }},
+          title: {{ metadata[:title] }},
+          image_path: {{ metadata[:image_path] }}
+        )
+      {% end %}
+    {% end %}
+
+    entries
+  end
+
+  def self.docs_entries : Array(DocsEntry)
+    DOCS_ENTRIES
+  end
+
+  def self.validate_docs_metadata! : Nil
+    documented_names = docs_entries.map(&.class_name)
+    registered_names = Lvgl::Applet.registry.map(&.new.class_name).reject { |name| name == "Examples" }
+
+    missing_metadata = registered_names.reject { |name| documented_names.includes?(name) }
+    stale_metadata = documented_names.reject { |name| registered_names.includes?(name) }
+
+    return if missing_metadata.empty? && stale_metadata.empty?
+
+    STDERR.puts "Example metadata mismatch detected:"
+    unless missing_metadata.empty?
+      STDERR.puts "- Applets missing @[ExampleMetadata(...)] annotation:"
+      missing_metadata.sort.each { |name| STDERR.puts "  - #{name}" }
+    end
+
+    unless stale_metadata.empty?
+      STDERR.puts "- Metadata entries without registered applets:"
+      stale_metadata.sort.each { |name| STDERR.puts "  - #{name}" }
+    end
+
+    raise "example metadata is out of sync"
+  end
+
   #
   # To build your initial window/screen, use the screen object provided to you in `setup`.
   #
