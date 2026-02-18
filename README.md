@@ -74,7 +74,7 @@ On macOS (MacPorts), install equivalent toolchain prerequisites:
 sudo port install crystal shards pkgconfig libsdl2
 ```
 
-### Generate reference images for documentation
+### Generate reference images from macro-collected example metadata
 
 ```bash
 LVGL_BACKEND=headless crystal run scripts/generate_example_images.cr
@@ -83,8 +83,15 @@ LVGL_BACKEND=headless crystal run scripts/generate_example_images.cr
 Generated artifacts:
 
 - `docs/images/*.png`
+- macro-driven applet image/docs references in `src/examples.cr`
 
 These generated images are intentionally not committed to the repository.
+
+To verify CI consistency (metadata annotations + macro-generated docs index):
+
+```bash
+crystal run scripts/check_example_docs_index.cr
+```
 
 Build the default shard target:
 

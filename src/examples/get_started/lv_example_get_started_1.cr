@@ -3,6 +3,7 @@ require "../../lvgl"
 # Basic example to create a "Hello world" label.
 #
 # ![ExampleGetStarted1](images/lv_example_get_started_1.png)
+@[Lvgl::ExampleMetadata(section: "Get Started", title: "A very simple _hello world_ label", image_path: "images/lv_example_get_started_1.png")]
 class ExampleGetStarted1 < Lvgl::Applet
   # Setup the window
   def setup(screen)

@@ -72,6 +72,13 @@ For any user-facing change:
 - Provide minimal copy-paste commands.
 - Keep instructions Debian-first unless asked otherwise.
 
+## Crystal-First Patterns (Agent Reminder)
+
+- Prefer Crystal annotations and macros for compile-time registries/metadata instead of handwritten manifests.
+- When metadata belongs to a type, place it on the type with `@[Annotation(...)]` and collect it via macro expansion.
+- Prefer validation scripts/specs that read Crystal-generated structures directly over scripts that shell out to other scripts.
+- Avoid scripts that rewrite source files when Crystal compile-time generation/verification can enforce consistency.
+
 ## Public Method Coverage Policy
 
 All newly introduced public methods in `src/lvgl.cr` and `src/lvgl/**/*.cr` must have at least one corresponding reference in `spec/**/*.cr`.

@@ -1,8 +1,13 @@
 #!/usr/bin/env crystal
 ENV["LVGL_NO_AUTORUN"] = "1"
 
-require "../src/lvgl"
-require "../src/examples/**"
+require "file_utils"
+require "../src/examples"
+
+# Generates example screenshots from applet metadata annotations.
+#
+# Metadata source: `@[ExampleMetadata(...)]` on each applet class.
+# Screenshot output: `docs/images/*.png`.
 
 def with_headless_backend(&)
   backend = Lvgl::Backend::HeadlessTestBackend.new
@@ -17,13 +22,21 @@ def with_headless_backend(&)
   end
 end
 
-Lvgl::Applet.registry.each do |applet_class|
-  applet = applet_class.new
-  puts "Generating docs/images/#{applet.source_basename}.png for #{applet.class_name}..."
+# Fail fast if metadata/app registrations are out of sync.
+Examples.validate_docs_metadata!
+
+# Render one screenshot per metadata entry.
+Examples.docs_entries.each do |entry|
+  puts "Generating #{entry.docs_output_path} for #{entry.class_name}..."
+  FileUtils.mkdir_p(File.dirname(entry.docs_output_path))
+
   with_headless_backend do |screen|
+    applet = entry.applet_class.new
     applet.setup(screen)
     Lvgl::Runtime.scheduler.timer_handler
-    Lvgl::Snapshot.save_screen("docs/images/#{applet.source_basename}.png")
-    puts "Generated docs/images/#{applet.source_basename}.png"
+    Lvgl::Snapshot.save_screen(entry.docs_output_path)
+    puts "Generated #{entry.docs_output_path}"
   end
 end
+
+puts "Verified applet metadata annotations and macro-generated docs index"

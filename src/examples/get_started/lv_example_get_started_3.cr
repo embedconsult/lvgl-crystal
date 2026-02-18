@@ -1,6 +1,9 @@
 require "../../lvgl"
 
 # Create styles from scratch for buttons.
+#
+# ![ExampleGetStarted3](images/lv_example_get_started_3.png)
+@[Lvgl::ExampleMetadata(section: "Get Started", title: "Create styles from scratch for buttons", image_path: "images/lv_example_get_started_3.png")]
 class ExampleGetStarted3 < Lvgl::Applet
   @style_btn : Lvgl::Style
   @style_button_pressed : Lvgl::Style

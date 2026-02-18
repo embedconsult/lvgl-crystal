@@ -3,6 +3,7 @@ require "../../lvgl"
 # A button with a label and react on click event
 #
 # ![ExampleGetStarted2](images/lv_example_get_started_2.png)
+@[Lvgl::ExampleMetadata(section: "Get Started", title: "A button with a label and react on click event", image_path: "images/lv_example_get_started_2.png")]
 class ExampleGetStarted2 < Lvgl::Applet
   @@cnt = 0
 
