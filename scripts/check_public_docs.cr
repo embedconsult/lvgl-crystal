@@ -5,6 +5,13 @@ require "log"
 files = Dir.glob("src/**/*.cr")
 errors = [] of String
 
+def ignorable_doc_barrier?(line : String) : Bool
+  stripped = line.lstrip
+  stripped.starts_with?("@[") ||
+    stripped.starts_with?("{%") ||
+    stripped.starts_with?("{{")
+end
+
 files.each do |file|
   Log.debug { "Checking #{file}" }
   lines = File.read_lines(file)
@@ -43,7 +50,14 @@ files.each do |file|
     j = idx - 1
     while j >= 0
       prev = lines[j]
-      break if prev.strip.empty?
+      if prev.strip.empty?
+        j -= 1
+        next
+      end
+      if ignorable_doc_barrier?(prev)
+        j -= 1
+        next
+      end
       if prev.lstrip.starts_with?("#")
         has_doc = true
         j -= 1
