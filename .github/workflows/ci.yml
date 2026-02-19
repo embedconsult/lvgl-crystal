@@ -16,7 +16,10 @@ jobs:
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
 
-      - name: Install dependencies
+      - name: Install Ubuntu dependencies
+        run: apt-get install -y clang lld libsdl2-dev
+
+      - name: Install Crystal dependencies
         run: shards install
 
       - name: Check formatting
@@ -65,7 +68,10 @@ jobs:
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
 
-      - name: Install dependencies
+      - name: Install Ubuntu dependencies
+        run: apt-get install -y clang lld libsdl2-dev
+
+      - name: Install Crystal dependencies
         run: shards install
 
       - name: Build API docs for Pages
