@@ -14,6 +14,7 @@ This repository is intended as a practical starting point for:
 - Keep example code small and easy to run.
 - Provide a repeatable Debian setup for contributors.
 - Make it straightforward to add new GUI examples under a consistent structure.
+- Keep a strict 1-to-1 mapping between local examples and LVGL 9.4 upstream examples, and include source links in example comments.
 
 ## Requirements
 
