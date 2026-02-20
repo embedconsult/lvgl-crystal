@@ -24,7 +24,7 @@ describe Examples do
       next unless source_file
 
       content = File.read(source_file)
-      content.includes?("# [Source](#{entry.source_url})").should be_true
+      content.includes?("# [Original C Source](#{entry.source_url})").should be_true
     end
   end
 end
