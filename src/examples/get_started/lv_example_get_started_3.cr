@@ -2,7 +2,7 @@ require "../../lvgl"
 
 # Create styles from scratch for buttons.
 #
-# Source: [https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_3.html](https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_3.html)
+# [Original C Source](https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_3.html)
 #
 # ![ExampleGetStarted3](images/lv_example_get_started_3.png)
 @[Lvgl::ExampleMetadata(section: "Get Started", title: "Create styles from scratch for buttons", image_path: "images/lv_example_get_started_3.png", source_url: "https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_3.html")]

@@ -2,7 +2,7 @@ require "../../lvgl"
 
 # A button with a label and react on click event
 #
-# Source: [https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_2.html](https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_2.html)
+# [Original C Source](https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_2.html)
 #
 # ![ExampleGetStarted2](images/lv_example_get_started_2.png)
 @[Lvgl::ExampleMetadata(section: "Get Started", title: "A button with a label and react on click event", image_path: "images/lv_example_get_started_2.png", source_url: "https://docs.lvgl.io/9.4/examples/get-started/lv_example_get_started_2.html")]

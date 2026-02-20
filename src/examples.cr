@@ -23,25 +23,11 @@ require "./examples/**"
 # * The backend can be set with the LVGL_BACKEND environment variable.
 # * The `liblvgl.so` library is linked dynamically and available backends are configured at run-time.
 #
-# ### Example image index (macro-generated from `@[Lvgl::ExampleMetadata(...)]`)
+# ### Example gallery
 #
-{% for subclass in Lvgl::Applet.all_subclasses %}
-  {% metadata = subclass.annotation(Lvgl::ExampleMetadata) %}
-  {% if metadata %}
-# #### {{ metadata[:section] }}
+# Browse all documented examples from one page in Crystal docs via
+# `Examples::DocsGallery`.
 #
-# {{ metadata[:title] }}
-#
-# `{{ subclass.name.stringify }}`
-#
-# Source: [{{ metadata[:source_url] }}]({{ metadata[:source_url] }})
-#
-# ![{{ subclass.name.stringify }}]({{ metadata[:image_path] }})
-#
-#
-  {% end %}
-{% end %}
-
 class Examples < Lvgl::Applet
   # Canonical metadata record collected from @[Lvgl::ExampleMetadata(...)] annotations.
   record DocsEntry,
@@ -81,6 +67,30 @@ class Examples < Lvgl::Applet
   # Returns metadata entries for all annotated applets.
   def self.docs_entries : Array(DocsEntry)
     DOCS_ENTRIES
+  end
+
+  # Browseable Crystal-docs gallery of examples, inspired by LVGL's upstream
+  # examples index page.
+  module DocsGallery
+    # Returns the same metadata used for docs generation and consistency checks.
+    def self.entries : Array(Examples::DocsEntry)
+      Examples.docs_entries
+    end
+
+    {% for subclass in Lvgl::Applet.all_subclasses %}
+      {% metadata = subclass.annotation(Lvgl::ExampleMetadata) %}
+      {% if metadata %}
+        # {{ metadata[:section].id }}: {{ metadata[:title].id }}
+        #
+        # `{{ subclass.name }}`
+        #
+        # ![{{ subclass.name }}]({{ metadata[:image_path].id }})
+        #
+        # [Source]({{ metadata[:source_url].id }})
+        def self.{{("example_" + subclass.name.stringify.underscore).id}} : Nil
+        end
+      {% end %}
+    {% end %}
   end
 
   # Ensures every registered applet (except this aggregate runner) is annotated
