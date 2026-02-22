@@ -198,6 +198,8 @@ corruption and hard crashes.
 
 - API documentation conventions are described in
   [`DOCUMENTATION_STYLE_GUIDE.md`](DOCUMENTATION_STYLE_GUIDE.md).
+- Crystal-doc generation and gallery layout customization analysis is documented in
+  [`CRYSTAL_DOCS_LAYOUT_ANALYSIS.md`](CRYSTAL_DOCS_LAYOUT_ANALYSIS.md).
 - Prefer thorough, self-contained API docs so users can understand wrappers without leaving this repo.
 - Apply this guide to comments in `src/lvgl/*.cr` and `src/lvgl/widgets/*.cr`.
 - Optional docs lint check:

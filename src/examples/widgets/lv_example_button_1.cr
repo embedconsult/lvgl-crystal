@@ -5,7 +5,7 @@ require "../../lvgl"
 # [Original C Source](https://docs.lvgl.io/9.4/examples.html#simple-buttons)
 #
 # ![ExampleWidgetButton1](images/lv_example_button_1.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Simple button with label", image_path: "images/lv_example_button_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#simple-buttons")]
+@[Lvgl::ExampleMetadata(section: "Widgets", summary: "Introduces a minimal button widget with text and alignment choices suitable for first widget experiments.", title: "Simple button with label", image_path: "images/lv_example_button_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#simple-buttons")]
 class ExampleWidgetButton1 < Lvgl::Applet
   # Create a basic button and center its label.
   def setup(screen)

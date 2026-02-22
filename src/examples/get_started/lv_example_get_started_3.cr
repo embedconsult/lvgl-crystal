@@ -5,7 +5,7 @@ require "../../lvgl"
 # [Original C Source](https://docs.lvgl.io/9.4/examples.html#create-styles-from-scratch-for-buttons)
 #
 # ![ExampleGetStarted3](images/lv_example_get_started_3.png)
-@[Lvgl::ExampleMetadata(section: "Get Started", title: "Create styles from scratch for buttons", image_path: "images/lv_example_get_started_3.png", source_url: "https://docs.lvgl.io/9.4/examples.html#create-styles-from-scratch-for-buttons")]
+@[Lvgl::ExampleMetadata(section: "Get Started", summary: "Builds button styling from scratch to demonstrate stateful style configuration and palette usage.", title: "Create styles from scratch for buttons", image_path: "images/lv_example_get_started_3.png", source_url: "https://docs.lvgl.io/9.4/examples.html#create-styles-from-scratch-for-buttons")]
 class ExampleGetStarted3 < Lvgl::Applet
   @style_btn : Lvgl::Style
   @style_button_pressed : Lvgl::Style

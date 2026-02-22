@@ -5,7 +5,7 @@ require "../../lvgl"
 # [Original C Source](https://docs.lvgl.io/9.4/examples.html#simple-slider)
 #
 # ![ExampleWidgetSlider1](images/lv_example_slider_1.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Slider with live value label", image_path: "images/lv_example_slider_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#simple-slider")]
+@[Lvgl::ExampleMetadata(section: "Widgets", summary: "Shows a slider coupled with a value label to present basic range input feedback.", title: "Slider with live value label", image_path: "images/lv_example_slider_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#simple-slider")]
 class ExampleWidgetSlider1 < Lvgl::Applet
   @value_label : Lvgl::Widgets::Label?
 

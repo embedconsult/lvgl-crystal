@@ -42,6 +42,7 @@ module Lvgl
   # Required named arguments:
   # - `section` (String): High-level docs grouping (e.g., "Get Started").
   # - `title` (String): Human-readable example title shown in docs index.
+  # - `summary` (String): One-paragraph behavior summary for gallery cards.
   # - `image_path` (String): Relative docs path (e.g., "images/example.png").
   # - `source_url` (String): Canonical LVGL upstream example URL under
   #   https://docs.lvgl.io/9.4/examples.html.
