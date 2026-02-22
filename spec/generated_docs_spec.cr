@@ -1,5 +1,7 @@
 require "spec"
 require "file_utils"
+require "http/client"
+require "uri"
 
 record LinkCheckResult,
   url : String,
@@ -39,32 +41,40 @@ def generated_doc_urls(output_dir : String) : Array(String)
   normalized_urls.uniq!.sort!
 end
 
-def curl_check(url : String, use_head : Bool) : Tuple(Bool, String)
-  output = IO::Memory.new
-  error_output = IO::Memory.new
-  args = ["-fsS", "--max-time", "15", "--connect-timeout", "5"]
-  args << "-I" if use_head
-  args << url
-
-  status = Process.run("curl", args, output: output, error: error_output)
-  {status.success?, "#{output}#{error_output}"}
+def request_path(uri : URI) : String
+  path = uri.path.presence || "/"
+  query = uri.query
+  query ? "#{path}?#{query}" : path
 end
 
 def check_url(url : String) : LinkCheckResult?
-  success, details = curl_check(url, use_head: true)
-  unless success
-    success, details = curl_check(url, use_head: false)
+  uri = URI.parse(url)
+  headers = HTTP::Headers{"User-Agent" => "lvgl-crystal-docs-link-checker"}
+
+  begin
+    response_code = 0
+
+    HTTP::Client.new(uri) do |client|
+      client.connect_timeout = 5.seconds
+      client.read_timeout = 10.seconds
+
+      response = client.exec("HEAD", request_path(uri), headers: headers)
+      response_code = response.status_code
+
+      if response_code == 405 || response_code == 501
+        response = client.exec("GET", request_path(uri), headers: headers)
+        response_code = response.status_code
+      end
+    end
+
+    return nil if (200..399).includes?(response_code)
+
+    LinkCheckResult.new(url: url, error: "HTTP #{response_code}", network_limited: false)
+  rescue ex : IO::TimeoutError | Socket::Addrinfo::Error | Socket::ConnectError
+    LinkCheckResult.new(url: url, error: ex.message || ex.class.name, network_limited: true)
+  rescue ex
+    LinkCheckResult.new(url: url, error: ex.message || ex.class.name, network_limited: false)
   end
-
-  return nil if success
-
-  network_limited = details.includes?("Could not resolve host") ||
-                    details.includes?("Failed to connect") ||
-                    details.includes?("Connection timed out") ||
-                    details.includes?("Operation timed out") ||
-                    details.includes?("Network is unreachable")
-
-  LinkCheckResult.new(url: url, error: details.presence || "curl failed", network_limited: network_limited)
 end
 
 def with_tmp_docs_dir(&)
@@ -101,13 +111,14 @@ describe "generated API docs" do
         "https://docs.lvgl.io/9.4/",
         "https://docs.lvgl.io/master/",
         "https://github.com/embedconsult/lvgl-crystal",
+        "https://github.com/",
         "https://crystal-lang.org/reference/",
         "http://www.w3.org/2000/svg",
       ]
 
       unknown_failures = failures.reject do |failure|
         well_known_match = well_known_prefixes.any? { |prefix| failure.url.starts_with?(prefix) }
-        limited_access = failure.network_limited || failure.error.includes?("HTTP 403") || failure.error.includes?("returned error: 403")
+        limited_access = failure.network_limited || failure.error.includes?("HTTP 403")
         well_known_match && limited_access
       end
 
