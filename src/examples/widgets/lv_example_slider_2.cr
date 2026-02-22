@@ -5,7 +5,7 @@ require "../../lvgl"
 # [Original C Source](https://docs.lvgl.io/9.4/examples.html#slider-with-custom-style)
 #
 # ![ExampleWidgetSlider2](images/lv_example_slider_2.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Slider value mirrored across two sliders", image_path: "images/lv_example_slider_2.png", source_url: "https://docs.lvgl.io/9.4/examples.html#slider-with-custom-style")]
+@[Lvgl::ExampleMetadata(section: "Widgets", summary: "Mirrors values across paired sliders to demonstrate synchronization patterns between widget instances.", title: "Slider value mirrored across two sliders", image_path: "images/lv_example_slider_2.png", source_url: "https://docs.lvgl.io/9.4/examples.html#slider-with-custom-style")]
 class ExampleWidgetSlider2 < Lvgl::Applet
   # Create two sliders and keep the second slider synchronized with the first.
   def setup(screen)

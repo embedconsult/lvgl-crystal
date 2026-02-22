@@ -5,7 +5,7 @@ require "../../lvgl"
 # [Original C Source](https://docs.lvgl.io/9.4/examples.html#styling-buttons)
 #
 # ![ExampleWidgetButton2](images/lv_example_button_2.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Button press state toggled by click", image_path: "images/lv_example_button_2.png", source_url: "https://docs.lvgl.io/9.4/examples.html#styling-buttons")]
+@[Lvgl::ExampleMetadata(section: "Widgets", summary: "Demonstrates click-driven pressed-state toggling for buttons and how to reflect interaction state visually.", title: "Button press state toggled by click", image_path: "images/lv_example_button_2.png", source_url: "https://docs.lvgl.io/9.4/examples.html#styling-buttons")]
 class ExampleWidgetButton2 < Lvgl::Applet
   @pressed = false
 

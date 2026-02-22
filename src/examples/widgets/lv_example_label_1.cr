@@ -5,7 +5,7 @@ require "../../lvgl"
 # [Original C Source](https://docs.lvgl.io/9.4/examples.html#line-wrap-recoloring-and-scrolling)
 #
 # ![ExampleWidgetLabel1](images/lv_example_label_1.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Label alignment with simple styles", image_path: "images/lv_example_label_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#line-wrap-recoloring-and-scrolling")]
+@[Lvgl::ExampleMetadata(section: "Widgets", summary: "Highlights label alignment and style settings to compare layout positions and text presentation options.", title: "Label alignment with simple styles", image_path: "images/lv_example_label_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#line-wrap-recoloring-and-scrolling")]
 class ExampleWidgetLabel1 < Lvgl::Applet
   # Build three labels to demonstrate positioning and text color.
   def setup(screen)

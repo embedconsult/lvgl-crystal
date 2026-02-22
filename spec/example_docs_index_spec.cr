@@ -14,6 +14,12 @@ describe Examples do
     Examples::DocsGallery.entries.should eq(Examples.docs_entries)
   end
 
+  it "requires non-empty gallery summary text" do
+    Examples.docs_entries.each do |entry|
+      entry.summary.strip.empty?.should be_false
+    end
+  end
+
   it "ensures each example source comment links to a LVGL upstream example" do
     source_files = Dir.glob(File.join(__DIR__, "..", "src", "examples", "**", "*.cr"))
 

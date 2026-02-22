@@ -35,6 +35,7 @@ class Examples < Lvgl::Applet
     class_name : String,
     section : String,
     title : String,
+    summary : String,
     image_path : String,
     source_url : String do
     # Absolute output location used by image generation scripts.
@@ -55,6 +56,7 @@ class Examples < Lvgl::Applet
           class_name: {{ subclass.name.stringify }},
           section: {{ metadata[:section] }},
           title: {{ metadata[:title] }},
+          summary: {{ metadata[:summary] }},
           image_path: {{ metadata[:image_path] }},
           source_url: {{ metadata[:source_url] }}
         )
@@ -72,6 +74,17 @@ class Examples < Lvgl::Applet
   # Browseable Crystal-docs gallery of examples, inspired by LVGL's upstream
   # examples index page.
   module DocsGallery
+    # API-docs overview with image-backed entries.
+    #
+    # Each generated method below acts like a gallery card:
+    #
+    # 1. Section + title for scanability.
+    # 2. Summary paragraph to explain what the screenshot demonstrates.
+    # 3. Inline screenshot rendered by Crystal docs markdown support.
+    # 4. Upstream LVGL source link for parity checks.
+    #
+    # This layout is intentionally simple because `crystal docs` HTML structure
+    # is template-driven and not theme-extensible from this repository.
     # Returns the same metadata used for docs generation and consistency checks.
     def self.entries : Array(Examples::DocsEntry)
       Examples.docs_entries
@@ -83,6 +96,8 @@ class Examples < Lvgl::Applet
         # {{ metadata[:section].id }}: {{ metadata[:title].id }}
         #
         # `{{ subclass.name }}`
+        #
+        # {{ metadata[:summary].id }}
         #
         # ![{{ subclass.name }}]({{ metadata[:image_path].id }})
         #
