@@ -15,5 +15,16 @@ module Lvgl::Widgets
     def value : Int32
       LibLvgl.lv_slider_get_value(to_unsafe)
     end
+
+    # Sets the slider's value, optionally animating to the new position.
+    def set_value(value : Int32, animated : Bool = false) : Nil
+      LibLvgl.lv_slider_set_value(to_unsafe, value, animated ? 1_u8 : 0_u8)
+    end
+
+    # Convenience writer for setting slider value without animation.
+    def value=(value : Int32) : Int32
+      set_value(value)
+      value
+    end
   end
 end
