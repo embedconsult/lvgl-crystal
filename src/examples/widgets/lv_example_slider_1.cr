@@ -2,10 +2,10 @@ require "../../lvgl"
 
 # Slider event handling with a value readout label.
 #
-# [Original C Source](https://docs.lvgl.io/9.4/examples/widgets/slider/lv_example_slider_1.html)
+# [Original C Source](https://docs.lvgl.io/9.4/examples.html#simple-slider)
 #
 # ![ExampleWidgetSlider1](images/lv_example_slider_1.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Slider with live value label", image_path: "images/lv_example_slider_1.png", source_url: "https://docs.lvgl.io/9.4/examples/widgets/slider/lv_example_slider_1.html")]
+@[Lvgl::ExampleMetadata(section: "Widgets", title: "Slider with live value label", image_path: "images/lv_example_slider_1.png", source_url: "https://docs.lvgl.io/9.4/examples.html#simple-slider")]
 class ExampleWidgetSlider1 < Lvgl::Applet
   @value_label : Lvgl::Widgets::Label?
 

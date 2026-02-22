@@ -2,10 +2,10 @@ require "../../lvgl"
 
 # Toggle button visual state and update text from click events.
 #
-# [Original C Source](https://docs.lvgl.io/9.4/examples/widgets/button/lv_example_button_2.html)
+# [Original C Source](https://docs.lvgl.io/9.4/examples.html#styling-buttons)
 #
 # ![ExampleWidgetButton2](images/lv_example_button_2.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Button press state toggled by click", image_path: "images/lv_example_button_2.png", source_url: "https://docs.lvgl.io/9.4/examples/widgets/button/lv_example_button_2.html")]
+@[Lvgl::ExampleMetadata(section: "Widgets", title: "Button press state toggled by click", image_path: "images/lv_example_button_2.png", source_url: "https://docs.lvgl.io/9.4/examples.html#styling-buttons")]
 class ExampleWidgetButton2 < Lvgl::Applet
   @pressed = false
 

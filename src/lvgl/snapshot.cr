@@ -15,7 +15,7 @@ module Lvgl
   # Exposes utility methods to save an object or active screen as PNG files.
   #
   # ## Links
-  # - [LVGL snapshot API](https://docs.lvgl.io/9.4/API/others/snapshot/lv_snapshot.html)
+  # - [LVGL snapshot API](https://docs.lvgl.io/9.4/API/others/snapshot/lv_snapshot_h.html)
   module Snapshot
     private PNG_SIGNATURE = Bytes[137_u8, 80_u8, 78_u8, 71_u8, 13_u8, 10_u8, 26_u8, 10_u8]
 
@@ -30,7 +30,7 @@ module Lvgl
     # - `color_format`: LVGL snapshot format.
     #
     # ## Links
-    # - [lv_snapshot_take](https://docs.lvgl.io/9.4/API/others/snapshot/lv_snapshot.html)
+    # - [lv_snapshot_take](https://docs.lvgl.io/9.4/API/others/snapshot/lv_snapshot_h.html)
     def self.save_object(obj : Lvgl::Object, path : String, color_format : Lvgl::ColorFormat = Lvgl::ColorFormat::Argb8888) : Nil
       draw_buf = LibLvgl.lv_snapshot_take(obj.raw, color_format.value)
       raise "Failed to snapshot active screen" if draw_buf.null?

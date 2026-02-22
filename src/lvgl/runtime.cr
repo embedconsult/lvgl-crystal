@@ -7,8 +7,8 @@ require "./scheduler"
 # Provides idempotent process-level runtime lifecycle methods and scheduler access.
 #
 # ## Links
-# - [LVGL init API](https://docs.lvgl.io/9.4/API/lv_init.html)
-# - [LVGL timer API](https://docs.lvgl.io/9.4/API/misc/lv_timer.html)
+# - [LVGL init API](https://docs.lvgl.io/9.4/API/lv_init_h.html)
+# - [LVGL timer API](https://docs.lvgl.io/9.4/API/misc/lv_timer_h.html)
 #
 # ## Notes
 #
@@ -65,7 +65,7 @@ module Lvgl::Runtime
   # Source credit:
   # - Header: `lib/lvgl/src/lv_init.h`
   # - Function: `lv_init`
-  # - LVGL docs: https://docs.lvgl.io/9.4/API/lv_init.html
+  # - LVGL docs: https://docs.lvgl.io/9.4/API/lv_init_h.html
   #
   # Initializes LVGL global state and Crystal-side runtime resources.
   #
@@ -92,7 +92,7 @@ module Lvgl::Runtime
   # Source credit:
   # - Header: `lib/lvgl/src/tick/lv_tick.h`
   # - Function: `lv_tick_inc`
-  # - LVGL docs: https://docs.lvgl.io/9.4/API/tick/lv_tick.html
+  # - LVGL docs: https://docs.lvgl.io/9.4/API/tick/lv_tick_h.html
   #
   # Advances LVGL's internal tick counter by `ms` milliseconds.
   #
@@ -106,7 +106,7 @@ module Lvgl::Runtime
   # Source credit:
   # - Header: `lib/lvgl/src/misc/lv_timer.h`
   # - Function: `lv_timer_handler`
-  # - LVGL docs: https://docs.lvgl.io/9.4/API/misc/lv_timer.html
+  # - LVGL docs: https://docs.lvgl.io/9.4/API/misc/lv_timer_h.html
   #
   # Processes expired LVGL timers and scheduled work.
   #
@@ -152,7 +152,7 @@ module Lvgl::Runtime
   # Source credit:
   # - Header: `lib/lvgl/src/lv_init.h`
   # - Function: `lv_deinit`
-  # - LVGL docs: https://docs.lvgl.io/9.4/API/lv_init.html
+  # - LVGL docs: https://docs.lvgl.io/9.4/API/lv_init_h.html
   #
   # Deinitializes LVGL global state.
   #

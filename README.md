@@ -238,9 +238,9 @@ This repository is pinned to LVGL shard version **9.4.0**, and the CI headless p
 
 Docs cross-reference used during implementation:
 
-- 9.4 auxiliary test module index: https://docs.lvgl.io/9.4/details/auxiliary-modules/test/index.html
-- master test docs (newer branch, not the pinned API baseline):
-  https://docs.lvgl.io/master/details/auxiliary-modules/test/index.html
+- 9.4 auxiliary test module index: https://docs.lvgl.io/9.4/details/auxiliary-modules/test.html
+- 9.4 test module guide (pinned API baseline):
+  https://docs.lvgl.io/9.4/details/auxiliary-modules/test.html
 
 To run headless runtime specs in CI-like Debian environments, enable LVGL test symbols in the
 shared library:

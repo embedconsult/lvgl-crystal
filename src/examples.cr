@@ -96,7 +96,7 @@ class Examples < Lvgl::Applet
   # Ensures every registered applet (except this aggregate runner) is annotated
   # and that there are no stale metadata entries.
   def self.validate_docs_metadata! : Nil
-    docs_root = "https://docs.lvgl.io/9.4/examples"
+    docs_root = "https://docs.lvgl.io/9.4/examples.html#"
     documented_names = docs_entries.map(&.class_name)
     source_urls = docs_entries.map(&.source_url)
     registered_names = Lvgl::Applet.registry.map(&.new.class_name).reject { |name| name == "Examples" }
