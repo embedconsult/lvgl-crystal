@@ -20,7 +20,7 @@ require "./object"
 #
 # ## Links
 #
-# - [LVGL events API](https://docs.lvgl.io/9.4/API/misc/lv_event.html)
+# - [LVGL events API](https://docs.lvgl.io/9.4/API/misc/lv_event_h.html)
 module Lvgl::Event
   # Small initial subset of LVGL event codes for examples.
   #

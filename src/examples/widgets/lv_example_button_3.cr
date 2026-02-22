@@ -2,10 +2,10 @@ require "../../lvgl"
 
 # Two buttons that update a shared label.
 #
-# [Original C Source](https://docs.lvgl.io/9.4/examples/widgets/button/lv_example_button_3.html)
+# [Original C Source](https://docs.lvgl.io/9.4/examples.html#gummy-button)
 #
 # ![ExampleWidgetButton3](images/lv_example_button_3.png)
-@[Lvgl::ExampleMetadata(section: "Widgets", title: "Button pair with shared status label", image_path: "images/lv_example_button_3.png", source_url: "https://docs.lvgl.io/9.4/examples/widgets/button/lv_example_button_3.html")]
+@[Lvgl::ExampleMetadata(section: "Widgets", title: "Button pair with shared status label", image_path: "images/lv_example_button_3.png", source_url: "https://docs.lvgl.io/9.4/examples.html#gummy-button")]
 class ExampleWidgetButton3 < Lvgl::Applet
   # Build increment/decrement buttons that update a status label.
   def setup(screen)

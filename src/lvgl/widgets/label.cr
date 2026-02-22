@@ -13,7 +13,7 @@ module Lvgl::Widgets
     # - `parent`: Optional parent object in the LVGL object tree.
     #
     # ## Links
-    # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_create)
+    # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label_h.html#c.lv_label_create)
     # - [LVGL header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/widgets/label/lv_label.h)
     def self.new(parent : Lvgl::Object?) : self
       build_with_parent(parent) do |parent_ptr|

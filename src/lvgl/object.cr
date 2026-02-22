@@ -28,8 +28,8 @@ require "./runtime"
 # ```
 #
 # ## Links
-# - [LVGL object overview](https://docs.lvgl.io/9.4/overview/object.html)
-# - [LVGL object API](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
+# - [LVGL object overview](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html)
+# - [LVGL object API](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html)
 # - [LVGL object header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/core/lv_obj.h)
 class Lvgl::Object
   # Fluent style helper proxy bound to one `Lvgl::Object`.
@@ -110,7 +110,7 @@ class Lvgl::Object
   # - Normal app code should prefer wrapper methods over raw pointer operations.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html)
   def raw : Pointer(LibLvgl::LvObjT)
     @raw
   end
@@ -125,7 +125,7 @@ class Lvgl::Object
   # - External code should not typically mutate object identity after creation.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj.html)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html)
   def raw=(value : Pointer(LibLvgl::LvObjT)) : Pointer(LibLvgl::LvObjT)
     @raw = value
   end
@@ -140,7 +140,7 @@ class Lvgl::Object
   # - This is metadata for wrapper-level composition and debugging.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/overview/object.html)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html)
   def parent : Object?
     @parent
   end
@@ -155,7 +155,7 @@ class Lvgl::Object
   # - Reparenting in LVGL would require explicit LVGL API calls.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/overview/object.html)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html)
   def parent=(value : Object?) : Object?
     @parent = value
   end
@@ -174,7 +174,7 @@ class Lvgl::Object
   # Ensures `Lvgl::Runtime.start` has been called (idempotent).
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj.html#c.lv_obj_create)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_h.html#c.lv_obj_create)
   def self.new(parent : Object?) : Object
     build_with_parent(parent) do |parent_ptr|
       LibLvgl.lv_obj_create(parent_ptr)
@@ -194,7 +194,7 @@ class Lvgl::Object
   # Ensures `Lvgl::Runtime.start` has been called (idempotent).
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/display/lv_display.html#c.lv_screen_active)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/display/lv_display_h.html#c.lv_screen_active)
   def self.screen_active : Object
     Lvgl::Runtime.start
 
@@ -214,7 +214,7 @@ class Lvgl::Object
   # LVGL layout and style rules can affect final rendered geometry.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_size)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos_h.html#c.lv_obj_set_size)
   def set_size(width : Int32, height : Int32) : Nil
     LibLvgl.lv_obj_set_size(@raw, width, height)
   end
@@ -238,7 +238,7 @@ class Lvgl::Object
   # - Updates this object's LVGL position state.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_pos)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos_h.html#c.lv_obj_set_pos)
   def set_pos(x : Int32, y : Int32) : Nil
     LibLvgl.lv_obj_set_pos(@raw, x, y)
   end
@@ -269,7 +269,7 @@ class Lvgl::Object
   # Equivalent to LVGL's shorthand centering helper.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_center)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos_h.html#c.lv_obj_center)
   def center : Nil
     LibLvgl.lv_obj_center(@raw)
   end
@@ -284,7 +284,7 @@ class Lvgl::Object
   # - Updates this object's LVGL alignment state.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_align)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos_h.html#c.lv_obj_align)
   def align(align : Lvgl::Align, offset : Tuple(Int32, Int32) = {0, 0}) : Nil
     LibLvgl.lv_obj_align(@raw, align.to_i, offset[0], offset[1])
   end
@@ -307,7 +307,7 @@ class Lvgl::Object
   # - Raises: `IndexError` when LVGL returns a null child pointer.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_tree.html#c.lv_obj_get_child)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_tree_h.html#c.lv_obj_get_child)
   def [](index : Int32) : Lvgl::Object
     child = LibLvgl.lv_obj_get_child(@raw, index)
     raise IndexError.new("#{index}") if child.null?
@@ -493,7 +493,7 @@ class Lvgl::Object
   # - Returns: The original assigned string value.
   #
   # ## Links
-  # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label.html#c.lv_label_set_text)
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/label/lv_label_h.html#c.lv_label_set_text)
   # - [LVGL header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/widgets/label/lv_label.h)
   def text=(value : String) : String
     LibLvgl.lv_label_set_text(@raw, value)
