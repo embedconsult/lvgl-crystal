@@ -6,5 +6,5 @@ shards:
 
   lvgl:
     git: https://github.com/embedconsult/lvgl.git
-    version: 9.4.0-20260215
+    version: 9.4.0-20260227
 
