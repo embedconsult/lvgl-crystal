@@ -13,7 +13,7 @@ module Lvgl::Widgets
     # - `parent`: Optional parent object in the LVGL object tree.
     #
     # ## Links
-    # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/button/lv_button.html#c.lv_button_create)
+    # - [LVGL docs](https://docs.lvgl.io/9.4/API/widgets/button/lv_button_h.html#c.lv_button_create)
     # - [LVGL header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/widgets/button/lv_button.h)
     def self.new(parent : Lvgl::Object?) : self
       build_with_parent(parent) do |parent_ptr|
@@ -32,7 +32,7 @@ module Lvgl::Widgets
     # - `height`: Height in `lv_coord_t` units (typically pixels).
     #
     # ## Links
-    # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos.html#c.lv_obj_set_size)
+    # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_pos_h.html#c.lv_obj_set_size)
     # - [LVGL header](https://github.com/embedconsult/lvgl/blob/v9.4.0/src/core/lv_obj_pos.h)
     def set_size(width : Int32, height : Int32) : Nil
       super(width, height)

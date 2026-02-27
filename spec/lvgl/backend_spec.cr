@@ -20,6 +20,21 @@ describe Lvgl::Backend do
     end
   end
 
+  it "selects framebuffer backend when LVGL_BACKEND=framebuffer" do
+    previous = ENV["LVGL_BACKEND"]?
+    ENV["LVGL_BACKEND"] = "framebuffer"
+
+    begin
+      Lvgl::Backend.from_env.should be_a(Lvgl::Backend::FramebufferBackend)
+    ensure
+      if previous
+        ENV["LVGL_BACKEND"] = previous
+      else
+        ENV.delete("LVGL_BACKEND")
+      end
+    end
+  end
+
   it "selects macos backend when LVGL_BACKEND=macos" do
     previous = ENV["LVGL_BACKEND"]?
     ENV["LVGL_BACKEND"] = "macos"

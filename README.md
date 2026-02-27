@@ -14,6 +14,8 @@ This repository is intended as a practical starting point for:
 - Keep example code small and easy to run.
 - Provide a repeatable Debian setup for contributors.
 - Make it straightforward to add new GUI examples under a consistent structure.
+- Keep a strict 1-to-1 mapping between local examples and LVGL 9.4 upstream examples, and include source links in example comments.
+- Keep examples browseable in API docs through `Examples::DocsGallery` (image + source link per example).
 
 ## Requirements
 
@@ -56,6 +58,9 @@ This repository is intended as a practical starting point for:
   Wayland driver support (`-DLV_USE_WAYLAND=1`).
 - `LVGL_BACKEND=sdl` is wired when the loaded `liblvgl.so` provides native
   SDL driver support (`-DLV_USE_SDL=1`).
+- `LVGL_BACKEND=framebuffer` is wired when the loaded `liblvgl.so` provides
+  native Linux framebuffer + evdev driver symbols
+  (`-DLV_USE_LINUX_FBDEV=1`, `-DLV_USE_EVDEV=1`).
 - `LVGL_BACKEND=macos` is wired as a macOS profile over LVGL's SDL driver
   symbols (`-DLV_USE_SDL=1`), with optional `LVGL_MACOS_WIDTH` and
   `LVGL_MACOS_HEIGHT` overrides.
@@ -131,6 +136,11 @@ sudo apt-get update
 sudo apt-get install -y libwayland-dev wayland-protocols libxkbcommon-dev
 ```
 
+For framebuffer backend builds (`LVGL_BACKEND=framebuffer`), ensure Linux
+framebuffer/evdev support is enabled in LVGL and run with access to your target
+devices (defaults are `/dev/fb0` and `/dev/input/event0`, configurable via
+`LVGL_FBDEV_DEVICE` and `LVGL_EVDEV_DEVICE`).
+
 For framebuffer or DRM/KMS targets, install the corresponding development
 packages and grant the required runtime permissions.
 
@@ -196,6 +206,8 @@ corruption and hard crashes.
 
 - API documentation conventions are described in
   [`DOCUMENTATION_STYLE_GUIDE.md`](DOCUMENTATION_STYLE_GUIDE.md).
+- Crystal-doc generation and gallery layout customization analysis is documented in
+  [`CRYSTAL_DOCS_LAYOUT_ANALYSIS.md`](CRYSTAL_DOCS_LAYOUT_ANALYSIS.md).
 - Prefer thorough, self-contained API docs so users can understand wrappers without leaving this repo.
 - Apply this guide to comments in `src/lvgl/*.cr` and `src/lvgl/widgets/*.cr`.
 - Optional docs lint check:
@@ -219,6 +231,7 @@ corruption and hard crashes.
 
 The Crystal bindings now expose backend adapter profiles under `src/lvgl/backend/`:
 
+- `FramebufferBackend` (native Linux framebuffer + evdev profile)
 - `HeadlessTestBackend` (recommended for specs/CI)
 - `MacosBackend` (macOS profile using LVGL SDL driver symbols)
 - `SdlBackend` (native SDL window/profile when LVGL is built with SDL support)
@@ -236,9 +249,9 @@ This repository is pinned to LVGL shard version **9.4.0**, and the CI headless p
 
 Docs cross-reference used during implementation:
 
-- 9.4 auxiliary test module index: https://docs.lvgl.io/9.4/details/auxiliary-modules/test/index.html
-- master test docs (newer branch, not the pinned API baseline):
-  https://docs.lvgl.io/master/details/auxiliary-modules/test/index.html
+- 9.4 auxiliary test module index: https://docs.lvgl.io/9.4/details/auxiliary-modules/test.html
+- 9.4 test module guide (pinned API baseline):
+  https://docs.lvgl.io/9.4/details/auxiliary-modules/test.html
 
 To run headless runtime specs in CI-like Debian environments, enable LVGL test symbols in the
 shared library:
@@ -264,6 +277,8 @@ Wayland is wired to LVGL's native Wayland driver symbols and opens a
 Wayland window when those symbols are present in `liblvgl.so`.
 Wayland window size can be configured with `LVGL_WAYLAND_WIDTH` and
 `LVGL_WAYLAND_HEIGHT` (defaults: `800x480`).
+Framebuffer backend binds to `LVGL_FBDEV_DEVICE` and `LVGL_EVDEV_DEVICE`
+(defaults: `/dev/fb0` and `/dev/input/event0`).
 
 ## Development
 

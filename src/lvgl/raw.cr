@@ -168,6 +168,11 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Widgets::Slider#value`.
   fun lv_slider_get_value(obj : Pointer(LvObjT)) : Int32
 
+  # Set slider integer value, optionally with LVGL animation.
+  #
+  # Crystal caller: `Lvgl::Widgets::Slider#set_value`.
+  fun lv_slider_set_value(obj : Pointer(LvObjT), value : Int32, anim : UInt8) : Void
+
   # Set object width and height in LVGL coordinate units.
   #
   # `w` and `h` are `lv_coord_t` values interpreted by LVGL layout/size rules.

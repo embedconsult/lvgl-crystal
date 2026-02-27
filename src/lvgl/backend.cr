@@ -1,4 +1,5 @@
 require "./backend/adapter"
+require "./backend/framebuffer_backend"
 require "./backend/headless_test_backend"
 require "./backend/macos_backend"
 require "./backend/sdl_backend"
@@ -22,7 +23,7 @@ module Lvgl::Backend
   # Selects a backend adapter using `LVGL_BACKEND`.
   #
   # ## Summary
-  # Supports `headless`, `macos`, `sdl`, and `wayland` values.
+  # Supports `framebuffer`, `headless`, `macos`, `sdl`, and `wayland` values.
   # If `LVGL_BACKEND` is unset, defaults to `macos` on Darwin and `sdl`
   # elsewhere. Unknown values fall back to `HeadlessTestBackend`.
   #
@@ -36,6 +37,9 @@ module Lvgl::Backend
     default_backend_key = {% if flag?(:darwin) %}"macos"{% else %}"sdl"{% end %}
 
     case ENV.fetch("LVGL_BACKEND", default_backend_key).downcase
+    when "framebuffer", "fbdev", "fb"
+      Log.debug { "Using framebuffer backend" }
+      FramebufferBackend.new
     when "headless", "headless_test", "ci"
       Log.debug { "Using Headless backend" }
       HeadlessTestBackend.new

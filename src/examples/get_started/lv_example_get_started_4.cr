@@ -2,8 +2,10 @@ require "../../lvgl"
 
 # Create a slider and write its value on a label.
 #
+# [Original C Source](https://docs.lvgl.io/9.4/examples.html#create-a-slider-and-write-its-value-on-a-label)
+#
 # ![ExampleGetStarted4](images/lv_example_get_started_4.png)
-@[Lvgl::ExampleMetadata(section: "Get Started", title: "Create a slider and write its value on a label", image_path: "images/lv_example_get_started_4.png")]
+@[Lvgl::ExampleMetadata(section: "Get Started", summary: "Binds slider events to label updates to illustrate two-widget coordination and live value display.", title: "Create a slider and write its value on a label", image_path: "images/lv_example_get_started_4.png", source_url: "https://docs.lvgl.io/9.4/examples.html#create-a-slider-and-write-its-value-on-a-label")]
 class ExampleGetStarted4 < Lvgl::Applet
   @value_label : Lvgl::Widgets::Label?
 
