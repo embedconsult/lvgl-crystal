@@ -69,7 +69,7 @@ On Linux (Debian/Ubuntu), build prerequisites:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential clang lld pkg-config
+sudo apt-get install -y build-essential clang lld pkg-config libsdl2-dev
 # Install Crystal 1.19.1 and Shards
 ```
 

@@ -1,4 +1,5 @@
 @[Link("lvgl", ldflags: "-L#{__DIR__}/../../lib/lvgl/build/crystal -Wl,-rpath,#{__DIR__}/../../lib/lvgl/build/crystal")]
+@[Link(ldflags: "-Wl,--no-as-needed -lSDL2 -Wl,--as-needed")]
 lib LibLvgl
   # Opaque LVGL base object type from
   # [`lv_obj.h`](lib/lvgl/src/core/lv_obj.h).
