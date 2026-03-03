@@ -48,6 +48,9 @@ describe "Lvgl::Object runtime behavior" do
 
       root[0].raw.should eq(first_child.raw)
       expect_raises(IndexError) { root[99] }
+
+      root.clear_children
+      expect_raises(IndexError) { root[0] }
     end
   end
 

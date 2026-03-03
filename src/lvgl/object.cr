@@ -260,6 +260,20 @@ class Lvgl::Object
     self.pos = value
   end
 
+  # Delete all child objects currently attached to this object.
+  #
+  # ## Summary
+  # Calls `lv_obj_clean` on this object's raw pointer.
+  #
+  # ## Results
+  # - Removes all current children under this object.
+  #
+  # ## Links
+  # - [LVGL docs](https://docs.lvgl.io/9.4/API/core/lv_obj_tree_h.html#c.lv_obj_clean)
+  def clear_children : Nil
+    LibLvgl.lv_obj_clean(@raw)
+  end
+
   # Center this object in its current parent.
   #
   # ## Summary

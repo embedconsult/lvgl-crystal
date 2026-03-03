@@ -250,6 +250,11 @@ lib LibLvgl
   # Crystal caller: `Lvgl::Object#remove_style_all`.
   fun lv_obj_remove_style_all(obj : Pointer(LvObjT)) : Void
 
+  # Delete all children of an object.
+  #
+  # Crystal caller: `Lvgl::Object#clear_children`.
+  fun lv_obj_clean(obj : Pointer(LvObjT)) : Void
+
   # Set the background opacity style value.
   fun lv_obj_set_style_bg_opa(obj : Pointer(LvObjT), value : UInt8, selector : LvStyleSelectorT) : Void
 

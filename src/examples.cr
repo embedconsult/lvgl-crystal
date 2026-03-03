@@ -152,6 +152,7 @@ class Examples < Lvgl::Applet
   @active_example : Lvgl::Applet?
   @event_subscriptions = [] of Lvgl::Event::Subscription
   @status_label : Lvgl::Label?
+  @menu_visible = false
 
   # Build an LVGL menu that can launch one example at a time.
   def setup(screen)
@@ -165,6 +166,8 @@ class Examples < Lvgl::Applet
     status_label.text = "Tap a button to launch an example"
     status_label.position = {10, 34}
     @status_label = status_label
+
+    @menu_visible = true
 
     menu_entries.each_with_index do |entry, index|
       button = Lvgl::Button.new(screen)
@@ -199,8 +202,19 @@ class Examples < Lvgl::Applet
     self.class.docs_entries.sort_by { |entry| {entry.section, entry.title} }
   end
 
+  private def clear_menu(screen : Lvgl::Object) : Nil
+    return unless @menu_visible
+
+    @event_subscriptions.each(&.release)
+    @event_subscriptions.clear
+    screen.clear_children
+    @status_label = nil
+    @menu_visible = false
+  end
+
   private def launch_example(entry : DocsEntry, screen : Lvgl::Object) : Nil
     @active_example.try &.cleanup(screen)
+    clear_menu(screen)
 
     applet = entry.applet_class.new
     @active_example = applet
