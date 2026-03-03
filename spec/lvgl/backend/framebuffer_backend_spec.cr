@@ -15,6 +15,7 @@ describe Lvgl::Backend::FramebufferBackend do
       reason.should_not be_nil
       reason.should contain("LV_USE_LINUX_FBDEV=1") unless reason.nil?
       reason.should contain("LV_USE_EVDEV=1") unless reason.nil?
+      reason.should contain("Missing symbol(s):") unless reason.nil?
     end
   end
 end

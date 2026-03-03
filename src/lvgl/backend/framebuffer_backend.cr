@@ -22,6 +22,7 @@ module Lvgl::Backend
     @display : Pointer(LibLvgl::LvDisplayT) = Pointer(LibLvgl::LvDisplayT).null
     @indev : Pointer(Void) = Pointer(Void).null
     @framebuffer_symbols_available : Bool?
+    @missing_framebuffer_symbols = [] of String
     @dl_handle : Void* = Pointer(Void).null
 
     @fbdev_create : FbdevCreateProc?
@@ -47,7 +48,13 @@ module Lvgl::Backend
     def unavailable_reason : String?
       return nil if available?
 
-      "Framebuffer backend requires LVGL Linux fbdev + evdev driver symbols in #{lvgl_lib_path}; rebuild `liblvgl.so` with LV_USE_LINUX_FBDEV=1 and LV_USE_EVDEV=1."
+      detail = if @missing_framebuffer_symbols.empty?
+                 ""
+               else
+                 " Missing symbol(s): #{@missing_framebuffer_symbols.join(", ")}."
+               end
+
+      "Framebuffer backend requires LVGL Linux fbdev + evdev driver symbols in #{lvgl_lib_path}; rebuild `liblvgl.so` with LV_USE_LINUX_FBDEV=1 and LV_USE_EVDEV=1.#{detail}"
     end
 
     # Starts LVGL runtime, creates an fbdev-backed LVGL display, binds it to
@@ -90,7 +97,11 @@ module Lvgl::Backend
     private def load_framebuffer_symbols : Bool
       loader = ::Crystal::Loader.new([lvgl_lib_dir])
       return false unless loader.load_file?(lvgl_lib_path)
-      return false unless REQUIRED_FRAMEBUFFER_SYMBOLS.all? { |symbol| loader.find_symbol?(symbol) }
+
+      @missing_framebuffer_symbols = REQUIRED_FRAMEBUFFER_SYMBOLS.reject do |symbol|
+        loader.find_symbol?(symbol)
+      end
+      return false unless @missing_framebuffer_symbols.empty?
 
       @dl_handle = LibC.dlopen(lvgl_lib_path, LibC::RTLD_LAZY | LibC::RTLD_GLOBAL)
       return false if @dl_handle.null?
@@ -100,7 +111,13 @@ module Lvgl::Backend
       @evdev_create = load_proc("lv_evdev_create", EvdevCreateProc)
       @evdev_set_file = load_proc("lv_evdev_set_file", EvdevSetFileProc)
 
-      !!(@fbdev_create && @fbdev_set_file && @evdev_create && @evdev_set_file)
+      @missing_framebuffer_symbols = [] of String
+      @missing_framebuffer_symbols << "lv_linux_fbdev_create" unless @fbdev_create
+      @missing_framebuffer_symbols << "lv_linux_fbdev_set_file" unless @fbdev_set_file
+      @missing_framebuffer_symbols << "lv_evdev_create" unless @evdev_create
+      @missing_framebuffer_symbols << "lv_evdev_set_file" unless @evdev_set_file
+
+      @missing_framebuffer_symbols.empty?
     rescue
       false
     end
