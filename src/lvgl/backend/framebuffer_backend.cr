@@ -16,18 +16,19 @@ module Lvgl::Backend
 
     alias FbdevCreateProc = -> Pointer(LibLvgl::LvDisplayT)
     alias FbdevSetFileProc = Pointer(LibLvgl::LvDisplayT), UInt8* ->
-    alias EvdevCreateProc = -> Pointer(Void)
-    alias EvdevSetFileProc = Pointer(Void), UInt8* ->
+    private INDEV_TYPE_POINTER = 1_i32
+
+    alias EvdevCreateProc = Int32, UInt8* -> Pointer(Void)
 
     @display : Pointer(LibLvgl::LvDisplayT) = Pointer(LibLvgl::LvDisplayT).null
     @indev : Pointer(Void) = Pointer(Void).null
     @framebuffer_symbols_available : Bool?
+    @missing_framebuffer_symbols = [] of String
     @dl_handle : Void* = Pointer(Void).null
 
     @fbdev_create : FbdevCreateProc?
     @fbdev_set_file : FbdevSetFileProc?
     @evdev_create : EvdevCreateProc?
-    @evdev_set_file : EvdevSetFileProc?
 
     # Backend selection key used by `Lvgl::Backend.from_env`.
     def key : String
@@ -47,7 +48,13 @@ module Lvgl::Backend
     def unavailable_reason : String?
       return nil if available?
 
-      "Framebuffer backend requires LVGL Linux fbdev + evdev driver symbols in #{lvgl_lib_path}; rebuild `liblvgl.so` with LV_USE_LINUX_FBDEV=1 and LV_USE_EVDEV=1."
+      detail = if @missing_framebuffer_symbols.empty?
+                 ""
+               else
+                 " Missing symbol(s): #{@missing_framebuffer_symbols.join(", ")}."
+               end
+
+      "Framebuffer backend requires LVGL Linux fbdev + evdev driver symbols in #{lvgl_lib_path}; rebuild `liblvgl.so` with LV_USE_LINUX_FBDEV=1 and LV_USE_EVDEV=1.#{detail}"
     end
 
     # Starts LVGL runtime, creates an fbdev-backed LVGL display, binds it to
@@ -64,10 +71,8 @@ module Lvgl::Backend
 
       fbdev_set_file.call(@display, framebuffer_device.to_unsafe)
 
-      @indev = evdev_create.call
-      raise "Framebuffer backend failed to create an input device" if @indev.null?
-
-      evdev_set_file.call(@indev, input_device.to_unsafe)
+      @indev = evdev_create.call(INDEV_TYPE_POINTER, input_device.to_unsafe)
+      raise "Framebuffer backend failed to create an input device for #{input_device}" if @indev.null?
     end
 
     # Clears cached display/input handles.
@@ -84,13 +89,16 @@ module Lvgl::Backend
       "lv_linux_fbdev_create",
       "lv_linux_fbdev_set_file",
       "lv_evdev_create",
-      "lv_evdev_set_file",
     }
 
     private def load_framebuffer_symbols : Bool
       loader = ::Crystal::Loader.new([lvgl_lib_dir])
       return false unless loader.load_file?(lvgl_lib_path)
-      return false unless REQUIRED_FRAMEBUFFER_SYMBOLS.all? { |symbol| loader.find_symbol?(symbol) }
+
+      @missing_framebuffer_symbols = REQUIRED_FRAMEBUFFER_SYMBOLS.reject do |symbol|
+        loader.find_symbol?(symbol)
+      end
+      return false unless @missing_framebuffer_symbols.empty?
 
       @dl_handle = LibC.dlopen(lvgl_lib_path, LibC::RTLD_LAZY | LibC::RTLD_GLOBAL)
       return false if @dl_handle.null?
@@ -98,9 +106,13 @@ module Lvgl::Backend
       @fbdev_create = load_proc("lv_linux_fbdev_create", FbdevCreateProc)
       @fbdev_set_file = load_proc("lv_linux_fbdev_set_file", FbdevSetFileProc)
       @evdev_create = load_proc("lv_evdev_create", EvdevCreateProc)
-      @evdev_set_file = load_proc("lv_evdev_set_file", EvdevSetFileProc)
 
-      !!(@fbdev_create && @fbdev_set_file && @evdev_create && @evdev_set_file)
+      @missing_framebuffer_symbols = [] of String
+      @missing_framebuffer_symbols << "lv_linux_fbdev_create" unless @fbdev_create
+      @missing_framebuffer_symbols << "lv_linux_fbdev_set_file" unless @fbdev_set_file
+      @missing_framebuffer_symbols << "lv_evdev_create" unless @evdev_create
+
+      @missing_framebuffer_symbols.empty?
     rescue
       false
     end
@@ -122,10 +134,6 @@ module Lvgl::Backend
 
     private def evdev_create : EvdevCreateProc
       @evdev_create || raise "Evdev create symbol not loaded"
-    end
-
-    private def evdev_set_file : EvdevSetFileProc
-      @evdev_set_file || raise "Evdev set_file symbol not loaded"
     end
 
     private def framebuffer_device : String
