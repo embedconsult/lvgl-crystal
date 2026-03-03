@@ -98,6 +98,12 @@ To verify CI consistency (metadata annotations + macro-generated docs index):
 crystal run scripts/check_example_docs_index.cr
 ```
 
+Run the LVGL examples menu (launches one selected applet at a time):
+
+```bash
+crystal run src/examples.cr
+```
+
 Build the default shard target:
 
 ```bash

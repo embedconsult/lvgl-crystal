@@ -1,3 +1,5 @@
+ENV["LVGL_NO_AUTORUN"] = "1"
+
 require "log"
 require "./examples/**"
 
@@ -6,20 +8,19 @@ require "./examples/**"
 # Each example is written as an applet. To make an applet, define your application
 # as a class that inherits `Lvgl::Applet`.
 #
-# To invoke an application from the command-line:
+# To invoke the menu from the command-line:
 #
 # ```bash
 # crystal run src/examples.cr
 # ```
 #
-# Replace `src/examples.cr` with the particular example you'd like to run.
+# Then select one of the listed examples from the LVGL menu.
 #
 # ### Background summary:
 # * [Original C examples](https://docs.lvgl.io/9.4/examples.html)
 # * Every local example must map 1-to-1 to a single LVGL upstream example URL.
 # * Each example inherits the `Lvgl::Applet` class to simplify integration.
 # * Each example implements the `setup`, `loop`, and `cleanup` methods if appropriate.
-# * The lifecyle is managed by `Lvgl.main`.
 # * The backend can be set with the LVGL_BACKEND environment variable.
 # * The `liblvgl.so` library is linked dynamically and available backends are configured at run-time.
 #
@@ -27,7 +28,6 @@ require "./examples/**"
 #
 # Browse all documented examples from one page in Crystal docs via
 # `Examples::DocsGallery`.
-#
 class Examples < Lvgl::Applet
   # Canonical metadata record collected from @[Lvgl::ExampleMetadata(...)] annotations.
   record DocsEntry,
@@ -149,28 +149,71 @@ class Examples < Lvgl::Applet
     raise "example metadata is out of sync"
   end
 
-  #
-  # To build your initial window/screen, use the screen object provided to you in `setup`.
-  #
-  # `setup` runs once at the begining of the application. You define it and you have the `Lvgl`
-  # API available to you.
-  #
-  # Here, we just print to the console that all of the examples are being run at once. This is
-  # because we included them all at the top of this source file with `require "./examples/**"`.
-  # That means that every example class was included in our application and will be invoked by
-  # `Lvgl.main`.
-  #
-  # Browse the [example sources](examples/) for the example you'd like to run.
+  @active_example : Lvgl::Applet?
+  @event_subscriptions = [] of Lvgl::Event::Subscription
+  @status_label : Lvgl::Label?
+
+  # Build an LVGL menu that can launch one example at a time.
   def setup(screen)
-    Log.info { "Running all examples at once!" }
+    Log.info { "Opening examples menu" }
+
+    title = Lvgl::Label.new(screen)
+    title.text = "LVGL Crystal Examples"
+    title.position = {10, 10}
+
+    status_label = Lvgl::Label.new(screen)
+    status_label.text = "Tap a button to launch an example"
+    status_label.position = {10, 34}
+    @status_label = status_label
+
+    menu_entries.each_with_index do |entry, index|
+      button = Lvgl::Button.new(screen)
+      button.set_size(420, 32)
+      button.position = {10, 64 + (index * 38)}
+
+      label = Lvgl::Label.new(button)
+      label.text = "#{entry.section}: #{entry.title}"
+      label.center
+
+      subscription = button.on_event(Lvgl::Event::Code::Clicked) do
+        launch_example(entry, screen)
+      end
+      @event_subscriptions << subscription
+    end
   end
 
-  # Called repeatedly to allow you to update UI content
+  # Called repeatedly to allow the selected example to update UI content.
   def loop(screen, message)
+    @active_example.try &.loop(screen, message)
   end
 
-  # Called once when the application is closing
+  # Called once when the application is closing.
   def cleanup(screen)
-    Log.info { "Cleaning up!" }
+    @active_example.try &.cleanup(screen)
+    @event_subscriptions.each(&.release)
+    @event_subscriptions.clear
+    Log.info { "Cleaning up examples menu" }
   end
+
+  private def menu_entries : Array(DocsEntry)
+    self.class.docs_entries.sort_by { |entry| {entry.section, entry.title} }
+  end
+
+  private def launch_example(entry : DocsEntry, screen : Lvgl::Object) : Nil
+    @active_example.try &.cleanup(screen)
+
+    applet = entry.applet_class.new
+    @active_example = applet
+    @status_label.try do |label|
+      label.text = "Running: #{entry.section} / #{entry.title}"
+    end
+
+    Log.info { "Launching #{entry.class_name}" }
+    applet.setup(screen)
+  end
+end
+
+if !PROGRAM_NAME.downcase.includes?("spec")
+  Examples.validate_docs_metadata!
+  Lvgl.main([Examples])
 end

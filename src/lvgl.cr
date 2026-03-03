@@ -106,13 +106,17 @@ module Lvgl
     end
   end
 
-  # Runs all registered applets using the selected backend and scheduler.
-  def self.main : Int32
+  # Runs applets using the selected backend and scheduler.
+  #
+  # When `applet_classes` is not provided, all registered applets are run.
+  def self.main(applet_classes : Array(Applet.class)? = nil) : Int32
     backend = Backend.from_env
     raise backend.unavailable_reason || "LVGL backend unavailable" unless backend.available?
     max_ticks = ENV["LVGL_APPLET_MAX_TICKS"]?.try(&.to_u64?)
 
-    applets = Applet.registry.map(&.new)
+    classes = applet_classes || Applet.registry
+    applets = [] of Applet
+    classes.each { |klass| applets << klass.new.as(Applet) }
     return 0 if applets.empty?
 
     backend.setup!
